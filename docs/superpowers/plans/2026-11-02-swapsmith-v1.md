@@ -47,9 +47,9 @@ Builds the [v1 spec](../specs/2026-11-02-swapsmith-design.md) on the stack in [A
 - [x] Unit tests for the warning rules. E2E: build from Edgar and add a card.
 
 ### 4. Owned cards and printing picker
-- [ ] Owned ticks, a shared collection across decks, basics owned by default (`UnownedBasics`), and a still-to-buy total.
-- [ ] Printing picker listing every paper printing cheapest first, with pick and reset.
-- [ ] Unit tests for totals with owned cards and basics. E2E: tick owned, pick a printing.
+- [x] Owned ticks, a shared collection across decks, basics owned by default (`UnownedBasics`), and a still-to-buy total.
+- [x] Printing picker listing every paper printing cheapest first, with pick and reset.
+- [x] Unit tests for totals with owned cards and basics. E2E: tick owned, pick a printing.
 
 ### 5. Grid view
 - [ ] Card-image grid grouped by type, a view toggle, and the choice remembered.
