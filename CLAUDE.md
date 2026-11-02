@@ -24,6 +24,7 @@ Any developer should be able to say "run the tests" and have it work on the firs
 | Test (single file) | `npx vitest run tests/unit/<file>.test.ts` · `npx playwright test tests/e2e/<file>.spec.ts` |
 | Lint / typecheck | `npm run typecheck` |
 | Format | none yet (no formatter chosen) |
+| Android APK | `npm run apk` (signed release; needs JDK 21, Android SDK, signing key). See [`docs/android-build.md`](docs/android-build.md) |
 | Docs index | `tools/doc-index.sh` (rebuild `docs/INDEX.md`); `tools/doc-index.sh --check` fails on a missing header or stale index |
 
 ## Architecture
