@@ -101,8 +101,11 @@ h3 { font: 500 1.05rem/1.3 var(--font-display); margin: 0; }
 
 /* Home */
 .deck-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr)); }
-.deck-card { display: grid; gap: 0.15rem; padding: 1rem; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); color: inherit; text-decoration: none; }
+.deck-card { display: grid; gap: 0.15rem; padding: 1rem; overflow: hidden; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); color: inherit; text-decoration: none; }
 .deck-card:hover { border-color: var(--accent); }
+.deck-card-art-slot { display: block; margin: -1rem -1rem 0.6rem; aspect-ratio: 626 / 457; max-height: 11rem; width: calc(100% + 2rem); background: var(--tag-bg); }
+.deck-card-art { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0; transition: opacity 0.2s; }
+.deck-card-art.loaded { opacity: 1; }
 .deck-card-name { font: 500 1.1rem/1.2 var(--font-display); }
 .deck-card-commander, .deck-card-meta { color: var(--muted); font-size: 0.9rem; }
 
