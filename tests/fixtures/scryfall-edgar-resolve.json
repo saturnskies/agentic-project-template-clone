@@ -1,0 +1,2427 @@
+{
+ "POST /cards/collection {\"identifiers\":[{\"name\":\"Edgar Markov\"},{\"name\":\"Bloodline Keeper\"},{\"name\":\"Calastria Highborn\"},{\"name\":\"Captivating Vampire\"},{\"name\":\"Chiral Attentive First Year\"},{\"name\":\"Cordial Vampire\"},{\"name\":\"Dracula, Blood Immortal\"},{\"name\":\"Drana, Liberator of Malakir\"},{\"name\":\"Driver of the Dead\"},{\"name\":\"Emeritus of Woe\"},{\"name\":\"Emmerstorm Predator\"},{\"name\":\"Gatekeeper of Malakir\"},{\"name\":\"Healer's Hawk\"},{\"name\":\"Malakir Bloodwitch\"},{\"name\":\"Marauding Blight-Priest\"},{\"name\":\"Master of Dark Rites\"},{\"name\":\"Mentor of the Meek\"},{\"name\":\"Morlun, Devourer of Spiders\"},{\"name\":\"Null Priest of Oblivion\"},{\"name\":\"Postmortem Professor\"},{\"name\":\"Pulse Tracker\"},{\"name\":\"Sanctum Seeker\"},{\"name\":\"Sanguine Siphoner\"},{\"name\":\"Scheming Silvertongue\"},{\"name\":\"Stromkirk Blood-Thief\"},{\"name\":\"Stromkirk Captain\"},{\"name\":\"Stromkirk Noble\"},{\"name\":\"Teysa Karlov\"},{\"name\":\"Vampire Gourmand\"},{\"name\":\"Vampire Nighthawk\"},{\"name\":\"Vengeful Bloodwitch\"},{\"name\":\"Sorin, Imperious Bloodlord\"},{\"name\":\"Ajani's Response\"},{\"name\":\"Blasphemous Act\"},{\"name\":\"Burst Lightning\"},{\"name\":\"Dread Return\"},{\"name\":\"Exsanguinate\"},{\"name\":\"Faithless Looting\"},{\"name\":\"Flashback\"},{\"name\":\"Inside Information\"},{\"name\":\"Lorehold Charm\"},{\"name\":\"Mortify\"},{\"name\":\"Purify\"},{\"name\":\"Repel Calamity\"},{\"name\":\"Rout\"},{\"name\":\"Sign in Blood\"},{\"name\":\"Thrill of Possibility\"},{\"name\":\"Unbury\"},{\"name\":\"Village Rites\"},{\"name\":\"Ark of Hunger\"},{\"name\":\"Arcane Signet\"},{\"name\":\"Panther Idol\"},{\"name\":\"Skullclamp\"},{\"name\":\"Sol Ring\"},{\"name\":\"Swiftfoot Boots\"},{\"name\":\"Talisman of Hierarchy\"},{\"name\":\"Angelic Destiny\"},{\"name\":\"Cathars' Crusade\"},{\"name\":\"Duty Beyond Death\"},{\"name\":\"Heartless Summoning\"},{\"name\":\"Twinblade Blessing\"},{\"name\":\"Blood Mist\"},{\"name\":\"Celestial Armor\"},{\"name\":\"Moogle's Valor\"},{\"name\":\"Abandoned Air Temple\"},{\"name\":\"Cave of the Frost Dragon\"},{\"name\":\"Command Tower\"},{\"name\":\"Evolving Wilds\"},{\"name\":\"Haunted Ridge\"},{\"name\":\"Minas Tirith\"},{\"name\":\"Night Market\"},{\"name\":\"Shattered Sanctum\"},{\"name\":\"Smoldering Marsh\"},{\"name\":\"Sundown Pass\"},{\"name\":\"Thriving Bluff\"}]}": {
+  "status": 200,
+  "body": {
+   "object": "list",
+   "not_found": [
+    {
+     "name": "Calastria Highborn"
+    },
+    {
+     "name": "Chiral Attentive First Year"
+    },
+    {
+     "name": "Dracula, Blood Immortal"
+    },
+    {
+     "name": "Emmerstorm Predator"
+    },
+    {
+     "name": "Sanguine Siphoner"
+    },
+    {
+     "name": "Panther Idol"
+    }
+   ],
+   "data": [
+    {
+     "id": "a577ba08-0aa8-45be-aa83-d5078770127c",
+     "oracle_id": "41e2790d-49f5-4e98-b8d9-04179f47f13a",
+     "name": "Edgar Markov",
+     "set": "inr",
+     "set_name": "Innistrad Remastered",
+     "collector_number": "234",
+     "type_line": "Legendary Creature — Vampire Knight",
+     "color_identity": [
+      "B",
+      "R",
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "44.43",
+      "usd_foil": "46.65",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 596272,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/a/5/a577ba08-0aa8-45be-aa83-d5078770127c.jpg?1783908078",
+      "normal": "https://cards.scryfall.io/normal/front/a/5/a577ba08-0aa8-45be-aa83-d5078770127c.jpg?1783908078"
+     },
+     "object": "card"
+    },
+    {
+     "id": "60658907-dd63-478d-a66a-123e4e9d2a00",
+     "oracle_id": "434e82b5-abd4-41ac-a5b1-2dd01c667374",
+     "name": "Bloodline Keeper // Lord of Lineage",
+     "set": "inr",
+     "set_name": "Innistrad Remastered",
+     "collector_number": "98",
+     "type_line": "Creature — Vampire // Creature — Vampire",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "9.25",
+      "usd_foil": "9.55",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 609687,
+     "card_faces": [
+      {
+       "name": "Bloodline Keeper",
+       "type_line": "Creature — Vampire",
+       "image_uris": {
+        "small": "https://cards.scryfall.io/small/front/6/0/60658907-dd63-478d-a66a-123e4e9d2a00.jpg?1783908156",
+        "normal": "https://cards.scryfall.io/normal/front/6/0/60658907-dd63-478d-a66a-123e4e9d2a00.jpg?1783908156"
+       }
+      },
+      {
+       "name": "Lord of Lineage",
+       "type_line": "Creature — Vampire",
+       "image_uris": {
+        "small": "https://cards.scryfall.io/small/back/6/0/60658907-dd63-478d-a66a-123e4e9d2a00.jpg?1783908156",
+        "normal": "https://cards.scryfall.io/normal/back/6/0/60658907-dd63-478d-a66a-123e4e9d2a00.jpg?1783908156"
+       }
+      }
+     ],
+     "object": "card"
+    },
+    {
+     "id": "0f87aadf-7638-4691-b5a5-86f928e98462",
+     "oracle_id": "acd382ee-94fb-4a29-b14e-c2a3c6dde7e0",
+     "name": "Captivating Vampire",
+     "set": "inr",
+     "set_name": "Innistrad Remastered",
+     "collector_number": "100",
+     "type_line": "Creature — Vampire",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "3.01",
+      "usd_foil": "3.34",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 609646,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/0/f/0f87aadf-7638-4691-b5a5-86f928e98462.jpg?1783908149",
+      "normal": "https://cards.scryfall.io/normal/front/0/f/0f87aadf-7638-4691-b5a5-86f928e98462.jpg?1783908149"
+     },
+     "object": "card"
+    },
+    {
+     "id": "0d91e61d-e3bf-4ddc-9f01-18b1abe35a61",
+     "oracle_id": "d61fb9e8-d05a-481a-a90f-5def300c9abb",
+     "name": "Cordial Vampire",
+     "set": "lcc",
+     "set_name": "The Lost Caverns of Ixalan Commander",
+     "collector_number": "189",
+     "type_line": "Creature — Vampire",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil"
+     ],
+     "prices": {
+      "usd": "2.32",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 525849,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/0/d/0d91e61d-e3bf-4ddc-9f01-18b1abe35a61.jpg?1783913876",
+      "normal": "https://cards.scryfall.io/normal/front/0/d/0d91e61d-e3bf-4ddc-9f01-18b1abe35a61.jpg?1783913876"
+     },
+     "object": "card"
+    },
+    {
+     "id": "0850b41d-3589-40cd-ae22-cc5b4ddee1c4",
+     "oracle_id": "89b24b5f-d837-4274-8877-8ff7dc2708ba",
+     "name": "Drana, Liberator of Malakir",
+     "set": "lcc",
+     "set_name": "The Lost Caverns of Ixalan Commander",
+     "collector_number": "193",
+     "type_line": "Legendary Creature — Vampire Ally",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil"
+     ],
+     "prices": {
+      "usd": "1.09",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 525855,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/0/8/0850b41d-3589-40cd-ae22-cc5b4ddee1c4.jpg?1783913874",
+      "normal": "https://cards.scryfall.io/normal/front/0/8/0850b41d-3589-40cd-ae22-cc5b4ddee1c4.jpg?1783913874"
+     },
+     "object": "card"
+    },
+    {
+     "id": "4443696a-0b9a-4081-91aa-800b5c4065d2",
+     "oracle_id": "7c179e54-3beb-4761-bddf-41fa98b082db",
+     "name": "Driver of the Dead",
+     "set": "fdn",
+     "set_name": "Foundations",
+     "collector_number": "605",
+     "type_line": "Creature — Vampire",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil"
+     ],
+     "prices": {
+      "usd": "0.07",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 591005,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/4/4/4443696a-0b9a-4081-91aa-800b5c4065d2.jpg?1783908930",
+      "normal": "https://cards.scryfall.io/normal/front/4/4/4443696a-0b9a-4081-91aa-800b5c4065d2.jpg?1783908930"
+     },
+     "object": "card"
+    },
+    {
+     "id": "7eb9e83d-515d-4911-a06b-9982200277b2",
+     "oracle_id": "93056597-b964-421f-be2f-e92abef1c2a4",
+     "name": "Emeritus of Woe // Demonic Tutor",
+     "set": "sos",
+     "set_name": "Secrets of Strixhaven",
+     "collector_number": "80",
+     "type_line": "Creature — Vampire Warlock // Sorcery",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "12.23",
+      "usd_foil": "12.80",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 689158,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/7/e/7eb9e83d-515d-4911-a06b-9982200277b2.jpg?1783903682",
+      "normal": "https://cards.scryfall.io/normal/front/7/e/7eb9e83d-515d-4911-a06b-9982200277b2.jpg?1783903682"
+     },
+     "card_faces": [
+      {
+       "name": "Emeritus of Woe",
+       "type_line": "Creature — Vampire Warlock"
+      },
+      {
+       "name": "Demonic Tutor",
+       "type_line": "Sorcery"
+      }
+     ],
+     "object": "card"
+    },
+    {
+     "id": "58c45158-7858-409e-ab37-8a9a66ad8714",
+     "oracle_id": "6781f8ae-2a86-4e3d-bc43-48809c9d6c26",
+     "name": "Gatekeeper of Malakir",
+     "set": "fdn",
+     "set_name": "Foundations",
+     "collector_number": "752",
+     "type_line": "Creature — Vampire Warrior",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil"
+     ],
+     "prices": {
+      "usd": "0.27",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 695536,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/5/8/58c45158-7858-409e-ab37-8a9a66ad8714.jpg?1787562911",
+      "normal": "https://cards.scryfall.io/normal/front/5/8/58c45158-7858-409e-ab37-8a9a66ad8714.jpg?1787562911"
+     },
+     "object": "card"
+    },
+    {
+     "id": "069cfaa5-bba4-4503-b54e-b98fa9f0a0fc",
+     "oracle_id": "28a52ba1-95da-44e1-8ac5-0dc23c902394",
+     "name": "Healer's Hawk",
+     "set": "fdn",
+     "set_name": "Foundations",
+     "collector_number": "734",
+     "type_line": "Creature — Bird",
+     "color_identity": [
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil"
+     ],
+     "prices": {
+      "usd": "0.29",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 695518,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/0/6/069cfaa5-bba4-4503-b54e-b98fa9f0a0fc.jpg?1787563133",
+      "normal": "https://cards.scryfall.io/normal/front/0/6/069cfaa5-bba4-4503-b54e-b98fa9f0a0fc.jpg?1787563133"
+     },
+     "object": "card"
+    },
+    {
+     "id": "b91ceead-5071-43e8-bf90-f379d683acdf",
+     "oracle_id": "870e199e-1d54-44ec-8e24-f24af93ae9c5",
+     "name": "Malakir Bloodwitch",
+     "set": "voc",
+     "set_name": "Crimson Vow Commander",
+     "collector_number": "131",
+     "type_line": "Creature — Vampire Shaman",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil"
+     ],
+     "prices": {
+      "usd": "3.88",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 254121,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/b/9/b91ceead-5071-43e8-bf90-f379d683acdf.jpg?1783924954",
+      "normal": "https://cards.scryfall.io/normal/front/b/9/b91ceead-5071-43e8-bf90-f379d683acdf.jpg?1783924954"
+     },
+     "object": "card"
+    },
+    {
+     "id": "5f70dafc-c638-4ec0-ab5b-62998f752720",
+     "oracle_id": "814b87fe-2a75-4ff2-8637-7e69e3fb285b",
+     "name": "Marauding Blight-Priest",
+     "set": "fdn",
+     "set_name": "Foundations",
+     "collector_number": "178",
+     "type_line": "Creature — Vampire Cleric",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.32",
+      "usd_foil": "0.41",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 591730,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/5/f/5f70dafc-c638-4ec0-ab5b-62998f752720.jpg?1783909072",
+      "normal": "https://cards.scryfall.io/normal/front/5/f/5f70dafc-c638-4ec0-ab5b-62998f752720.jpg?1783909072"
+     },
+     "object": "card"
+    },
+    {
+     "id": "6394a522-37bb-4cf3-b434-5121c8000ac6",
+     "oracle_id": "a65250f6-55e2-47ed-a355-d690047db6f2",
+     "name": "Master of Dark Rites",
+     "set": "lcc",
+     "set_name": "The Lost Caverns of Ixalan Commander",
+     "collector_number": "83",
+     "type_line": "Creature — Vampire Cleric",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil"
+     ],
+     "prices": {
+      "usd": "4.93",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 525716,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/6/3/6394a522-37bb-4cf3-b434-5121c8000ac6.jpg?1783913910",
+      "normal": "https://cards.scryfall.io/normal/front/6/3/6394a522-37bb-4cf3-b434-5121c8000ac6.jpg?1783913910"
+     },
+     "object": "card"
+    },
+    {
+     "id": "05b6a101-4d12-4f50-8f02-5c778e08b149",
+     "oracle_id": "b9f4f96b-6e54-4fe6-8df7-623e0fc72409",
+     "name": "Mentor of the Meek",
+     "set": "hoc",
+     "set_name": "The Hobbit Eternal",
+     "collector_number": "170",
+     "type_line": "Creature — Human Soldier",
+     "color_identity": [
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil"
+     ],
+     "prices": {
+      "usd": "4.75",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 709581,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/0/5/05b6a101-4d12-4f50-8f02-5c778e08b149.jpg?1785497406",
+      "normal": "https://cards.scryfall.io/normal/front/0/5/05b6a101-4d12-4f50-8f02-5c778e08b149.jpg?1785497406"
+     },
+     "object": "card"
+    },
+    {
+     "id": "1beb2eb9-90b5-43ba-8b04-cfce7dcb744b",
+     "oracle_id": "273ad15c-366a-4691-978b-d6028b57005a",
+     "name": "Morlun, Devourer of Spiders",
+     "set": "spm",
+     "set_name": "Marvel's Spider-Man",
+     "collector_number": "59",
+     "type_line": "Legendary Creature — Vampire Villain",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.37",
+      "usd_foil": "0.47",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 652072,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/1/b/1beb2eb9-90b5-43ba-8b04-cfce7dcb744b.jpg?1783905345",
+      "normal": "https://cards.scryfall.io/normal/front/1/b/1beb2eb9-90b5-43ba-8b04-cfce7dcb744b.jpg?1783905345"
+     },
+     "object": "card"
+    },
+    {
+     "id": "b2c7613c-38fc-49c3-93ee-1df93136455a",
+     "oracle_id": "c1111228-ef88-4b64-91e0-66ee32a1f5e4",
+     "name": "Nullpriest of Oblivion",
+     "set": "fdn",
+     "set_name": "Foundations",
+     "collector_number": "611",
+     "type_line": "Creature — Vampire Cleric",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil"
+     ],
+     "prices": {
+      "usd": "0.21",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 591014,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/b/2/b2c7613c-38fc-49c3-93ee-1df93136455a.jpg?1783908928",
+      "normal": "https://cards.scryfall.io/normal/front/b/2/b2c7613c-38fc-49c3-93ee-1df93136455a.jpg?1783908928"
+     },
+     "object": "card"
+    },
+    {
+     "id": "174f5d7e-5d36-4d13-96bf-9b12cd644716",
+     "oracle_id": "0859d16e-2a1f-4b48-8687-99af8a8bdb38",
+     "name": "Postmortem Professor",
+     "set": "sos",
+     "set_name": "Secrets of Strixhaven",
+     "collector_number": "93",
+     "type_line": "Creature — Zombie Warlock",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.23",
+      "usd_foil": "0.30",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 689105,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/1/7/174f5d7e-5d36-4d13-96bf-9b12cd644716.jpg?1783903677",
+      "normal": "https://cards.scryfall.io/normal/front/1/7/174f5d7e-5d36-4d13-96bf-9b12cd644716.jpg?1783903677"
+     },
+     "object": "card"
+    },
+    {
+     "id": "7bc1441e-7d75-4a74-8733-19077dfa69b2",
+     "oracle_id": "f916f689-a314-4952-8107-41c4c2f2e811",
+     "name": "Pulse Tracker",
+     "set": "fdn",
+     "set_name": "Foundations",
+     "collector_number": "755",
+     "type_line": "Creature — Vampire Rogue",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil"
+     ],
+     "prices": {
+      "usd": "0.42",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 695539,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/7/b/7bc1441e-7d75-4a74-8733-19077dfa69b2.jpg?1787562835",
+      "normal": "https://cards.scryfall.io/normal/front/7/b/7bc1441e-7d75-4a74-8733-19077dfa69b2.jpg?1787562835"
+     },
+     "object": "card"
+    },
+    {
+     "id": "893279fb-6f51-4d1e-b2fd-a0cdb603785f",
+     "oracle_id": "afb71560-0fc9-4ea5-9d52-d93c17d72519",
+     "name": "Sanctum Seeker",
+     "set": "lcc",
+     "set_name": "The Lost Caverns of Ixalan Commander",
+     "collector_number": "209",
+     "type_line": "Creature — Vampire Knight",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil"
+     ],
+     "prices": {
+      "usd": "0.34",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 525862,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/8/9/893279fb-6f51-4d1e-b2fd-a0cdb603785f.jpg?1783913869",
+      "normal": "https://cards.scryfall.io/normal/front/8/9/893279fb-6f51-4d1e-b2fd-a0cdb603785f.jpg?1783913869"
+     },
+     "object": "card"
+    },
+    {
+     "id": "fe85a124-0d8b-4a29-8df1-65888a39147f",
+     "oracle_id": "44443716-8356-40cd-a879-35264b29108c",
+     "name": "Scheming Silvertongue // Sign in Blood",
+     "set": "sos",
+     "set_name": "Secrets of Strixhaven",
+     "collector_number": "99",
+     "type_line": "Creature — Vampire Warlock // Sorcery",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "2.03",
+      "usd_foil": "1.79",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 689052,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/f/e/fe85a124-0d8b-4a29-8df1-65888a39147f.jpg?1783903675",
+      "normal": "https://cards.scryfall.io/normal/front/f/e/fe85a124-0d8b-4a29-8df1-65888a39147f.jpg?1783903675"
+     },
+     "card_faces": [
+      {
+       "name": "Scheming Silvertongue",
+       "type_line": "Creature — Vampire Warlock"
+      },
+      {
+       "name": "Sign in Blood",
+       "type_line": "Sorcery"
+      }
+     ],
+     "object": "card"
+    },
+    {
+     "id": "485d6a5a-2054-47d5-91b8-71ce308ed4dc",
+     "oracle_id": "c85987b4-090e-472e-b9af-1114cce56ffb",
+     "name": "Stromkirk Bloodthief",
+     "set": "fdn",
+     "set_name": "Foundations",
+     "collector_number": "185",
+     "type_line": "Creature — Vampire Rogue",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.20",
+      "usd_foil": "0.32",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 563887,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/4/8/485d6a5a-2054-47d5-91b8-71ce308ed4dc.jpg?1783909071",
+      "normal": "https://cards.scryfall.io/normal/front/4/8/485d6a5a-2054-47d5-91b8-71ce308ed4dc.jpg?1783909071"
+     },
+     "object": "card"
+    },
+    {
+     "id": "2f053406-d2e4-4443-81f1-025e3b27c65a",
+     "oracle_id": "599c3fd6-3309-4b5d-adec-9c4062848ad5",
+     "name": "Stromkirk Captain",
+     "set": "voc",
+     "set_name": "Crimson Vow Commander",
+     "collector_number": "157",
+     "type_line": "Creature — Vampire Soldier",
+     "color_identity": [
+      "B",
+      "R"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil"
+     ],
+     "prices": {
+      "usd": "1.31",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 254238,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/2/f/2f053406-d2e4-4443-81f1-025e3b27c65a.jpg?1783924943",
+      "normal": "https://cards.scryfall.io/normal/front/2/f/2f053406-d2e4-4443-81f1-025e3b27c65a.jpg?1783924943"
+     },
+     "object": "card"
+    },
+    {
+     "id": "0f306c7e-cacc-4c26-a3f1-fad4f3ff7cf3",
+     "oracle_id": "c55909d3-1f67-4a4a-9d53-8513d6cf96d8",
+     "name": "Stromkirk Noble",
+     "set": "fdn",
+     "set_name": "Foundations",
+     "collector_number": "632",
+     "type_line": "Creature — Vampire Noble",
+     "color_identity": [
+      "R"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil"
+     ],
+     "prices": {
+      "usd": "0.21",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 591035,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/0/f/0f306c7e-cacc-4c26-a3f1-fad4f3ff7cf3.jpg?1783908921",
+      "normal": "https://cards.scryfall.io/normal/front/0/f/0f306c7e-cacc-4c26-a3f1-fad4f3ff7cf3.jpg?1783908921"
+     },
+     "object": "card"
+    },
+    {
+     "id": "cd14f1ce-7fcd-485c-b7ca-01c5b45fdc01",
+     "oracle_id": "644eeefd-e684-4ca8-8aef-a892ca130c07",
+     "name": "Teysa Karlov",
+     "set": "cmm",
+     "set_name": "Commander Masters",
+     "collector_number": "359",
+     "type_line": "Legendary Creature — Human Advisor",
+     "color_identity": [
+      "B",
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "2.47",
+      "usd_foil": "3.94",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 505594,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/c/d/cd14f1ce-7fcd-485c-b7ca-01c5b45fdc01.jpg?1783915608",
+      "normal": "https://cards.scryfall.io/normal/front/c/d/cd14f1ce-7fcd-485c-b7ca-01c5b45fdc01.jpg?1783915608"
+     },
+     "object": "card"
+    },
+    {
+     "id": "917514c0-9cd5-4b97-85b9-c4f753560ad4",
+     "oracle_id": "3386414c-32fa-40ae-9b30-dab976a158c1",
+     "name": "Vampire Gourmand",
+     "set": "fdn",
+     "set_name": "Foundations",
+     "collector_number": "74",
+     "type_line": "Creature — Vampire",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.28",
+      "usd_foil": "0.31",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 589760,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/9/1/917514c0-9cd5-4b97-85b9-c4f753560ad4.jpg?1783909108",
+      "normal": "https://cards.scryfall.io/normal/front/9/1/917514c0-9cd5-4b97-85b9-c4f753560ad4.jpg?1783909108"
+     },
+     "object": "card"
+    },
+    {
+     "id": "7aff07f9-9528-4149-9af0-f4e3c66c9dc5",
+     "oracle_id": "feb244f8-bcb1-44cf-9940-2719221a7309",
+     "name": "Vampire Nighthawk",
+     "set": "fdn",
+     "set_name": "Foundations",
+     "collector_number": "757",
+     "type_line": "Creature — Vampire Shaman",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil"
+     ],
+     "prices": {
+      "usd": "0.20",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 695541,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/7/a/7aff07f9-9528-4149-9af0-f4e3c66c9dc5.jpg?1787562825",
+      "normal": "https://cards.scryfall.io/normal/front/7/a/7aff07f9-9528-4149-9af0-f4e3c66c9dc5.jpg?1787562825"
+     },
+     "object": "card"
+    },
+    {
+     "id": "bd0c12dd-f138-45c0-9614-d83a1d8e8399",
+     "oracle_id": "4cdbc466-42fc-471f-beab-397caec18101",
+     "name": "Vengeful Bloodwitch",
+     "set": "fdn",
+     "set_name": "Foundations",
+     "collector_number": "76",
+     "type_line": "Creature — Vampire Warlock",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.26",
+      "usd_foil": "0.39",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 563893,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/b/d/bd0c12dd-f138-45c0-9614-d83a1d8e8399.jpg?1783909108",
+      "normal": "https://cards.scryfall.io/normal/front/b/d/bd0c12dd-f138-45c0-9614-d83a1d8e8399.jpg?1783909108"
+     },
+     "object": "card"
+    },
+    {
+     "id": "219d3e48-e0b1-472d-ac45-11c14b292c9e",
+     "oracle_id": "fee680c6-afe2-4321-9d8a-8f81a612a53b",
+     "name": "Sorin, Imperious Bloodlord",
+     "set": "inr",
+     "set_name": "Innistrad Remastered",
+     "collector_number": "133",
+     "type_line": "Legendary Planeswalker — Sorin",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "5.69",
+      "usd_foil": "6.30",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 609696,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/2/1/219d3e48-e0b1-472d-ac45-11c14b292c9e.jpg?1790456308",
+      "normal": "https://cards.scryfall.io/normal/front/2/1/219d3e48-e0b1-472d-ac45-11c14b292c9e.jpg?1790456308"
+     },
+     "object": "card"
+    },
+    {
+     "id": "9cd1417a-badc-4abd-a8ca-5b31f85c1072",
+     "oracle_id": "bf7ec320-64bb-46ca-aac0-ca3d4224b69e",
+     "name": "Ajani's Response",
+     "set": "sos",
+     "set_name": "Secrets of Strixhaven",
+     "collector_number": "6",
+     "type_line": "Instant",
+     "color_identity": [
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.14",
+      "usd_foil": "0.25",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 689447,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/9/c/9cd1417a-badc-4abd-a8ca-5b31f85c1072.jpg?1783903709",
+      "normal": "https://cards.scryfall.io/normal/front/9/c/9cd1417a-badc-4abd-a8ca-5b31f85c1072.jpg?1783903709"
+     },
+     "object": "card"
+    },
+    {
+     "id": "7d4b1d44-126e-4987-9a9f-f0f9627a09cb",
+     "oracle_id": "7a2484a9-04fd-41a0-8224-610c1c07ed10",
+     "name": "Blasphemous Act",
+     "set": "msc",
+     "set_name": "Marvel Super Heroes Commander",
+     "collector_number": "163",
+     "type_line": "Sorcery",
+     "color_identity": [
+      "R"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "1.60",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 698084,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/7/d/7d4b1d44-126e-4987-9a9f-f0f9627a09cb.jpg?1783903234",
+      "normal": "https://cards.scryfall.io/normal/front/7/d/7d4b1d44-126e-4987-9a9f-f0f9627a09cb.jpg?1783903234"
+     },
+     "object": "card"
+    },
+    {
+     "id": "aec5d380-d354-4750-931a-6c91853e2edc",
+     "oracle_id": "ac2086fe-98ee-4280-9c7c-c5c2d6548a8b",
+     "name": "Burst Lightning",
+     "set": "fdn",
+     "set_name": "Foundations",
+     "collector_number": "192",
+     "type_line": "Instant",
+     "color_identity": [
+      "R"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.21",
+      "usd_foil": "0.31",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 590106,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/a/e/aec5d380-d354-4750-931a-6c91853e2edc.jpg?1783909068",
+      "normal": "https://cards.scryfall.io/normal/front/a/e/aec5d380-d354-4750-931a-6c91853e2edc.jpg?1783909068"
+     },
+     "object": "card"
+    },
+    {
+     "id": "34a87901-98bb-41dd-b566-bcb510c20022",
+     "oracle_id": "352b64d2-2ae5-44ee-a64f-94932ef545d3",
+     "name": "Dread Return",
+     "set": "cmm",
+     "set_name": "Commander Masters",
+     "collector_number": "153",
+     "type_line": "Sorcery",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.67",
+      "usd_foil": "0.46",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 507219,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/3/4/34a87901-98bb-41dd-b566-bcb510c20022.jpg?1783915677",
+      "normal": "https://cards.scryfall.io/normal/front/3/4/34a87901-98bb-41dd-b566-bcb510c20022.jpg?1783915677"
+     },
+     "object": "card"
+    },
+    {
+     "id": "f11d7311-4066-4a5d-ba28-9857fa707a0b",
+     "oracle_id": "8164b1e8-3350-465e-8a17-75f57d326344",
+     "name": "Exsanguinate",
+     "set": "fdn",
+     "set_name": "Foundations",
+     "collector_number": "173",
+     "type_line": "Sorcery",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.39",
+      "usd_foil": "0.79",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 591153,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/f/1/f11d7311-4066-4a5d-ba28-9857fa707a0b.jpg?1783909073",
+      "normal": "https://cards.scryfall.io/normal/front/f/1/f11d7311-4066-4a5d-ba28-9857fa707a0b.jpg?1783909073"
+     },
+     "object": "card"
+    },
+    {
+     "id": "fc019ffa-4461-4f3d-ab8d-e4d20e77ca0c",
+     "oracle_id": "3d6fa57a-aa53-4b5c-b8af-a7612c823117",
+     "name": "Faithless Looting",
+     "set": "soc",
+     "set_name": "Secrets of Strixhaven Commander",
+     "collector_number": "244",
+     "type_line": "Sorcery",
+     "color_identity": [
+      "R"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil"
+     ],
+     "prices": {
+      "usd": "0.52",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 687403,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/f/c/fc019ffa-4461-4f3d-ab8d-e4d20e77ca0c.jpg?1783903774",
+      "normal": "https://cards.scryfall.io/normal/front/f/c/fc019ffa-4461-4f3d-ab8d-e4d20e77ca0c.jpg?1783903774"
+     },
+     "object": "card"
+    },
+    {
+     "id": "1b832fda-d7c4-4566-884c-2a8b6da15488",
+     "oracle_id": "02070488-9203-4304-9392-a111d20218c5",
+     "name": "Flashback",
+     "set": "sos",
+     "set_name": "Secrets of Strixhaven",
+     "collector_number": "115",
+     "type_line": "Instant",
+     "color_identity": [
+      "R"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "2.77",
+      "usd_foil": "3.55",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 688521,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/1/b/1b832fda-d7c4-4566-884c-2a8b6da15488.jpg?1783903669",
+      "normal": "https://cards.scryfall.io/normal/front/1/b/1b832fda-d7c4-4566-884c-2a8b6da15488.jpg?1783903669"
+     },
+     "object": "card"
+    },
+    {
+     "id": "9763bd56-fa4b-4907-ad15-c3f040c5fc0a",
+     "oracle_id": "66961bcb-f588-47a7-b3f3-12f4ac674477",
+     "name": "Inside Information",
+     "set": "hob",
+     "set_name": "The Hobbit",
+     "collector_number": "76",
+     "type_line": "Sorcery",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "1.13",
+      "usd_foil": "1.66",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 708207,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/9/7/9763bd56-fa4b-4907-ad15-c3f040c5fc0a.jpg?1785152426",
+      "normal": "https://cards.scryfall.io/normal/front/9/7/9763bd56-fa4b-4907-ad15-c3f040c5fc0a.jpg?1785152426"
+     },
+     "object": "card"
+    },
+    {
+     "id": "5fe70295-e550-4577-a341-dab6c25aabfd",
+     "oracle_id": "a5729f11-6cde-4830-b882-ab4c5251c1a9",
+     "name": "Lorehold Charm",
+     "set": "sos",
+     "set_name": "Secrets of Strixhaven",
+     "collector_number": "200",
+     "type_line": "Instant",
+     "color_identity": [
+      "R",
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.23",
+      "usd_foil": "0.33",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 686553,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/5/f/5fe70295-e550-4577-a341-dab6c25aabfd.jpg?1783903640",
+      "normal": "https://cards.scryfall.io/normal/front/5/f/5fe70295-e550-4577-a341-dab6c25aabfd.jpg?1783903640"
+     },
+     "object": "card"
+    },
+    {
+     "id": "88e85619-3a7d-48c2-b9b0-20718c913696",
+     "oracle_id": "faa01ed1-ccfa-4e58-951f-cd81f9068027",
+     "name": "Mortify",
+     "set": "fdn",
+     "set_name": "Foundations",
+     "collector_number": "662",
+     "type_line": "Instant",
+     "color_identity": [
+      "B",
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil"
+     ],
+     "prices": {
+      "usd": "0.20",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 591064,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/8/8/88e85619-3a7d-48c2-b9b0-20718c913696.jpg?1783908910",
+      "normal": "https://cards.scryfall.io/normal/front/8/8/88e85619-3a7d-48c2-b9b0-20718c913696.jpg?1783908910"
+     },
+     "object": "card"
+    },
+    {
+     "id": "0cfb77ea-6776-4bb4-886d-9a60f56e1fa7",
+     "oracle_id": "cfd1b276-ef5d-4f60-9f63-a548ad315e07",
+     "name": "Purify",
+     "set": "7ed",
+     "set_name": "Seventh Edition",
+     "collector_number": "31",
+     "type_line": "Sorcery",
+     "color_identity": [
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil"
+     ],
+     "prices": {
+      "usd": "0.43",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 3034,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/0/c/0cfb77ea-6776-4bb4-886d-9a60f56e1fa7.jpg?1783945577",
+      "normal": "https://cards.scryfall.io/normal/front/0/c/0cfb77ea-6776-4bb4-886d-9a60f56e1fa7.jpg?1783945577"
+     },
+     "object": "card"
+    },
+    {
+     "id": "d068192a-6270-4981-819d-4945fa4a2b83",
+     "oracle_id": "ba58f508-8036-496c-8a2f-c1e410165e93",
+     "name": "Repel Calamity",
+     "set": "blb",
+     "set_name": "Bloomburrow",
+     "collector_number": "27",
+     "type_line": "Instant",
+     "color_identity": [
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.16",
+      "usd_foil": "0.22",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 558366,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/d/0/d068192a-6270-4981-819d-4945fa4a2b83.jpg?1783910857",
+      "normal": "https://cards.scryfall.io/normal/front/d/0/d068192a-6270-4981-819d-4945fa4a2b83.jpg?1783910857"
+     },
+     "object": "card"
+    },
+    {
+     "id": "15ce585a-67fc-4e7a-92ff-a27292179dfa",
+     "oracle_id": "d69aa624-23d1-406a-b7e0-9140a6f57929",
+     "name": "Rout",
+     "set": "c21",
+     "set_name": "Commander 2021",
+     "collector_number": "101",
+     "type_line": "Sorcery",
+     "color_identity": [
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil"
+     ],
+     "prices": {
+      "usd": "0.42",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 236104,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/1/5/15ce585a-67fc-4e7a-92ff-a27292179dfa.jpg?1783927572",
+      "normal": "https://cards.scryfall.io/normal/front/1/5/15ce585a-67fc-4e7a-92ff-a27292179dfa.jpg?1783927572"
+     },
+     "object": "card"
+    },
+    {
+     "id": "fe85a124-0d8b-4a29-8df1-65888a39147f",
+     "oracle_id": "44443716-8356-40cd-a879-35264b29108c",
+     "name": "Scheming Silvertongue // Sign in Blood",
+     "set": "sos",
+     "set_name": "Secrets of Strixhaven",
+     "collector_number": "99",
+     "type_line": "Creature — Vampire Warlock // Sorcery",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "2.03",
+      "usd_foil": "1.79",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 689052,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/f/e/fe85a124-0d8b-4a29-8df1-65888a39147f.jpg?1783903675",
+      "normal": "https://cards.scryfall.io/normal/front/f/e/fe85a124-0d8b-4a29-8df1-65888a39147f.jpg?1783903675"
+     },
+     "card_faces": [
+      {
+       "name": "Scheming Silvertongue",
+       "type_line": "Creature — Vampire Warlock"
+      },
+      {
+       "name": "Sign in Blood",
+       "type_line": "Sorcery"
+      }
+     ],
+     "object": "card"
+    },
+    {
+     "id": "ddb01913-ad41-4a20-bef0-cf8412cce39c",
+     "oracle_id": "1cb0610b-a731-42c2-b93f-0a29f63cebf4",
+     "name": "Thrill of Possibility",
+     "set": "trc",
+     "set_name": "Star Trek Commander",
+     "collector_number": "455",
+     "type_line": "Instant",
+     "color_identity": [
+      "R"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": null,
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 726374,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/d/d/ddb01913-ad41-4a20-bef0-cf8412cce39c.jpg?1793111905",
+      "normal": "https://cards.scryfall.io/normal/front/d/d/ddb01913-ad41-4a20-bef0-cf8412cce39c.jpg?1793111905"
+     },
+     "object": "card"
+    },
+    {
+     "id": "b00766db-4109-4225-a62a-fa12fd526970",
+     "oracle_id": "e2928d3c-b64a-443e-a1c1-fd204bb098ba",
+     "name": "Unbury",
+     "set": "ecl",
+     "set_name": "Lorwyn Eclipsed",
+     "collector_number": "123",
+     "type_line": "Instant",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.29",
+      "usd_foil": "0.33",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 671658,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/b/0/b00766db-4109-4225-a62a-fa12fd526970.jpg?1783904454",
+      "normal": "https://cards.scryfall.io/normal/front/b/0/b00766db-4109-4225-a62a-fa12fd526970.jpg?1783904454"
+     },
+     "object": "card"
+    },
+    {
+     "id": "42ed35e9-51cd-468a-86a9-9412553cf50d",
+     "oracle_id": "365548fb-5acc-4a8a-b20b-26d28b7d029f",
+     "name": "Village Rites",
+     "set": "inr",
+     "set_name": "Innistrad Remastered",
+     "collector_number": "137",
+     "type_line": "Instant",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.41",
+      "usd_foil": "1.80",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 610071,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/4/2/42ed35e9-51cd-468a-86a9-9412553cf50d.jpg?1783908135",
+      "normal": "https://cards.scryfall.io/normal/front/4/2/42ed35e9-51cd-468a-86a9-9412553cf50d.jpg?1783908135"
+     },
+     "object": "card"
+    },
+    {
+     "id": "79d01c19-162b-4a12-9e27-18366d95eaa0",
+     "oracle_id": "2c654772-c786-4966-a46e-9556bbf31d7c",
+     "name": "Ark of Hunger",
+     "set": "sos",
+     "set_name": "Secrets of Strixhaven",
+     "collector_number": "173",
+     "type_line": "Artifact",
+     "color_identity": [
+      "R",
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.33",
+      "usd_foil": "0.38",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 688665,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/7/9/79d01c19-162b-4a12-9e27-18366d95eaa0.jpg?1783903651",
+      "normal": "https://cards.scryfall.io/normal/front/7/9/79d01c19-162b-4a12-9e27-18366d95eaa0.jpg?1783903651"
+     },
+     "object": "card"
+    },
+    {
+     "id": "795df2ee-fbfc-4961-852c-e3ec50cc52da",
+     "oracle_id": "0bc7f093-bef0-4f1a-852c-4b75ebf54838",
+     "name": "Arcane Signet",
+     "set": "trc",
+     "set_name": "Star Trek Commander",
+     "collector_number": "485",
+     "type_line": "Artifact",
+     "color_identity": [],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": null,
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 726031,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/7/9/795df2ee-fbfc-4961-852c-e3ec50cc52da.jpg?1793021117",
+      "normal": "https://cards.scryfall.io/normal/front/7/9/795df2ee-fbfc-4961-852c-e3ec50cc52da.jpg?1793021117"
+     },
+     "object": "card"
+    },
+    {
+     "id": "e1da8b79-249b-439a-a0ad-c8784bd716df",
+     "oracle_id": "65986c1b-8e51-4604-b685-d82fa7d1263a",
+     "name": "Skullclamp",
+     "set": "trc",
+     "set_name": "Star Trek Commander",
+     "collector_number": "498",
+     "type_line": "Artifact — Equipment",
+     "color_identity": [],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": null,
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 726039,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/e/1/e1da8b79-249b-439a-a0ad-c8784bd716df.jpg?1793021175",
+      "normal": "https://cards.scryfall.io/normal/front/e/1/e1da8b79-249b-439a-a0ad-c8784bd716df.jpg?1793021175"
+     },
+     "object": "card"
+    },
+    {
+     "id": "fc817e07-c1f3-469f-9cf7-0945dea7400f",
+     "oracle_id": "6ad8011d-3471-4369-9d68-b264cc027487",
+     "name": "Sol Ring",
+     "set": "trc",
+     "set_name": "Star Trek Commander",
+     "collector_number": "499",
+     "type_line": "Artifact",
+     "color_identity": [],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": null,
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 726040,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/f/c/fc817e07-c1f3-469f-9cf7-0945dea7400f.jpg?1793021181",
+      "normal": "https://cards.scryfall.io/normal/front/f/c/fc817e07-c1f3-469f-9cf7-0945dea7400f.jpg?1793021181"
+     },
+     "object": "card"
+    },
+    {
+     "id": "3b69b12e-ef29-455c-8939-eacf44c6c3f6",
+     "oracle_id": "c8b143ad-43ec-4e0d-a440-e348daa31391",
+     "name": "Swiftfoot Boots",
+     "set": "trc",
+     "set_name": "Star Trek Commander",
+     "collector_number": "501",
+     "type_line": "Artifact — Equipment",
+     "color_identity": [],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": null,
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 726042,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/3/b/3b69b12e-ef29-455c-8939-eacf44c6c3f6.jpg?1793021194",
+      "normal": "https://cards.scryfall.io/normal/front/3/b/3b69b12e-ef29-455c-8939-eacf44c6c3f6.jpg?1793021194"
+     },
+     "object": "card"
+    },
+    {
+     "id": "66490fc8-3378-4283-a107-f631787133ea",
+     "oracle_id": "b693c3de-2eaf-4850-b405-e79d00adefda",
+     "name": "Talisman of Hierarchy",
+     "set": "trc",
+     "set_name": "Star Trek Commander",
+     "collector_number": "506",
+     "type_line": "Artifact",
+     "color_identity": [
+      "B",
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": null,
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 726044,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/6/6/66490fc8-3378-4283-a107-f631787133ea.jpg?1793021207",
+      "normal": "https://cards.scryfall.io/normal/front/6/6/66490fc8-3378-4283-a107-f631787133ea.jpg?1793021207"
+     },
+     "object": "card"
+    },
+    {
+     "id": "a588b610-86bb-4a18-b54e-a12f7d7d15c8",
+     "oracle_id": "8ba36878-0816-44c7-b543-8ebfc28c2ecd",
+     "name": "Angelic Destiny",
+     "set": "soc",
+     "set_name": "Secrets of Strixhaven Commander",
+     "collector_number": "134",
+     "type_line": "Enchantment — Aura",
+     "color_identity": [
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil"
+     ],
+     "prices": {
+      "usd": "0.34",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 687368,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/a/5/a588b610-86bb-4a18-b54e-a12f7d7d15c8.jpg?1783903814",
+      "normal": "https://cards.scryfall.io/normal/front/a/5/a588b610-86bb-4a18-b54e-a12f7d7d15c8.jpg?1783903814"
+     },
+     "object": "card"
+    },
+    {
+     "id": "5296e353-2efc-4d72-a877-7957eff630b9",
+     "oracle_id": "cc65ac73-5bef-4ecb-ad8e-39199084c027",
+     "name": "Cathars' Crusade",
+     "set": "inr",
+     "set_name": "Innistrad Remastered",
+     "collector_number": "17",
+     "type_line": "Enchantment",
+     "color_identity": [
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "8.23",
+      "usd_foil": "9.30",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 609777,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/5/2/5296e353-2efc-4d72-a877-7957eff630b9.jpg?1783908185",
+      "normal": "https://cards.scryfall.io/normal/front/5/2/5296e353-2efc-4d72-a877-7957eff630b9.jpg?1783908185"
+     },
+     "object": "card"
+    },
+    {
+     "id": "2e92640d-768b-4357-905f-bea017d351cc",
+     "oracle_id": "67e6ce99-4883-4713-9822-cb2334765b5b",
+     "name": "Duty Beyond Death",
+     "set": "tdm",
+     "set_name": "Tarkir: Dragonstorm",
+     "collector_number": "10",
+     "type_line": "Instant",
+     "color_identity": [
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.34",
+      "usd_foil": "0.35",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 624396,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/2/e/2e92640d-768b-4357-905f-bea017d351cc.jpg?1783907415",
+      "normal": "https://cards.scryfall.io/normal/front/2/e/2e92640d-768b-4357-905f-bea017d351cc.jpg?1783907415"
+     },
+     "object": "card"
+    },
+    {
+     "id": "c50fdb09-e06c-463c-87dd-3c46f4db889a",
+     "oracle_id": "fa1be67e-a07e-42ce-88be-446acd643dc6",
+     "name": "Heartless Summoning",
+     "set": "inr",
+     "set_name": "Innistrad Remastered",
+     "collector_number": "117",
+     "type_line": "Enchantment",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "2.16",
+      "usd_foil": "2.14",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 609969,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/c/5/c50fdb09-e06c-463c-87dd-3c46f4db889a.jpg?1783908139",
+      "normal": "https://cards.scryfall.io/normal/front/c/5/c50fdb09-e06c-463c-87dd-3c46f4db889a.jpg?1783908139"
+     },
+     "object": "card"
+    },
+    {
+     "id": "ecf01cbe-9fcb-4f35-bc6b-2280620b06ff",
+     "oracle_id": "b3e1674f-dba1-4570-9990-e5dc643e237d",
+     "name": "Twinblade Blessing",
+     "set": "fdn",
+     "set_name": "Foundations",
+     "collector_number": "26",
+     "type_line": "Enchantment — Aura",
+     "color_identity": [
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.25",
+      "usd_foil": "0.33",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 591302,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/e/c/ecf01cbe-9fcb-4f35-bc6b-2280620b06ff.jpg?1783909122",
+      "normal": "https://cards.scryfall.io/normal/front/e/c/ecf01cbe-9fcb-4f35-bc6b-2280620b06ff.jpg?1783909122"
+     },
+     "object": "card"
+    },
+    {
+     "id": "2c01ef93-f41a-406f-91fc-f015b6014575",
+     "oracle_id": "22188333-69b6-4685-b96b-b8a102ad5531",
+     "name": "Blood Mist",
+     "set": "inr",
+     "set_name": "Innistrad Remastered",
+     "collector_number": "143",
+     "type_line": "Enchantment",
+     "color_identity": [
+      "R"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.37",
+      "usd_foil": "0.34",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 609755,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/2/c/2c01ef93-f41a-406f-91fc-f015b6014575.jpg?1783908125",
+      "normal": "https://cards.scryfall.io/normal/front/2/c/2c01ef93-f41a-406f-91fc-f015b6014575.jpg?1783908125"
+     },
+     "object": "card"
+    },
+    {
+     "id": "809ee8ad-1573-49e5-9e84-b7cdd29efcae",
+     "oracle_id": "4f1b68d7-7d16-4bb1-af5f-f1708b23ca73",
+     "name": "Celestial Armor",
+     "set": "fdn",
+     "set_name": "Foundations",
+     "collector_number": "5",
+     "type_line": "Artifact — Equipment",
+     "color_identity": [
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.36",
+      "usd_foil": "0.69",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 591157,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/8/0/809ee8ad-1573-49e5-9e84-b7cdd29efcae.jpg?1783909129",
+      "normal": "https://cards.scryfall.io/normal/front/8/0/809ee8ad-1573-49e5-9e84-b7cdd29efcae.jpg?1783909129"
+     },
+     "object": "card"
+    },
+    {
+     "id": "caa838a7-60a9-4791-af5b-194f7574c4c8",
+     "oracle_id": "9627ed9a-5ade-412d-bf8d-f0705b1c9405",
+     "name": "Moogles' Valor",
+     "set": "fin",
+     "set_name": "Final Fantasy",
+     "collector_number": "27",
+     "type_line": "Instant",
+     "color_identity": [
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.75",
+      "usd_foil": "1.38",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 631823,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/c/a/caa838a7-60a9-4791-af5b-194f7574c4c8.jpg?1783906647",
+      "normal": "https://cards.scryfall.io/normal/front/c/a/caa838a7-60a9-4791-af5b-194f7574c4c8.jpg?1783906647"
+     },
+     "object": "card"
+    },
+    {
+     "id": "9c0433f9-8f1e-4a19-a83f-a41925f1b1a9",
+     "oracle_id": "9575d7ce-f26d-4b90-87a3-6329e9799572",
+     "name": "Abandoned Air Temple",
+     "set": "tla",
+     "set_name": "Avatar: The Last Airbender",
+     "collector_number": "263",
+     "type_line": "Land",
+     "color_identity": [
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "6.75",
+      "usd_foil": "8.68",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 662801,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/9/c/9c0433f9-8f1e-4a19-a83f-a41925f1b1a9.jpg?1783904914",
+      "normal": "https://cards.scryfall.io/normal/front/9/c/9c0433f9-8f1e-4a19-a83f-a41925f1b1a9.jpg?1783904914"
+     },
+     "object": "card"
+    },
+    {
+     "id": "bdb41396-5008-4a5f-92ca-54ecac42e926",
+     "oracle_id": "1e4146d2-cfa0-4f5e-9761-3c83519b90c3",
+     "name": "Cave of the Frost Dragon",
+     "set": "afr",
+     "set_name": "Adventures in the Forgotten Realms",
+     "collector_number": "253",
+     "type_line": "Land",
+     "color_identity": [
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.35",
+      "usd_foil": "0.52",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 243071,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/b/d/bdb41396-5008-4a5f-92ca-54ecac42e926.jpg?1783926436",
+      "normal": "https://cards.scryfall.io/normal/front/b/d/bdb41396-5008-4a5f-92ca-54ecac42e926.jpg?1783926436"
+     },
+     "object": "card"
+    },
+    {
+     "id": "a73297d2-580c-4174-a427-265f6916d09f",
+     "oracle_id": "0895c9b7-ae7d-4bb3-af17-3b75deb50a25",
+     "name": "Command Tower",
+     "set": "trc",
+     "set_name": "Star Trek Commander",
+     "collector_number": "521",
+     "type_line": "Land",
+     "color_identity": [],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": null,
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 726072,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/a/7/a73297d2-580c-4174-a427-265f6916d09f.jpg?1793021256",
+      "normal": "https://cards.scryfall.io/normal/front/a/7/a73297d2-580c-4174-a427-265f6916d09f.jpg?1793021256"
+     },
+     "object": "card"
+    },
+    {
+     "id": "6e01ec28-d815-47a8-ab0f-d383a4736ebe",
+     "oracle_id": "a75445d3-1303-4bb5-89ad-26ea93fecd48",
+     "name": "Evolving Wilds",
+     "set": "trc",
+     "set_name": "Star Trek Commander",
+     "collector_number": "527",
+     "type_line": "Land",
+     "color_identity": [],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": null,
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 726076,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/6/e/6e01ec28-d815-47a8-ab0f-d383a4736ebe.jpg?1793021295",
+      "normal": "https://cards.scryfall.io/normal/front/6/e/6e01ec28-d815-47a8-ab0f-d383a4736ebe.jpg?1793021295"
+     },
+     "object": "card"
+    },
+    {
+     "id": "a4e4966b-8963-4fac-a8bf-e778e063c7dd",
+     "oracle_id": "e2a37967-4212-4553-9f77-bcb613405807",
+     "name": "Haunted Ridge",
+     "set": "fra",
+     "set_name": "Reality Fracture",
+     "collector_number": "180",
+     "type_line": "Land",
+     "color_identity": [
+      "B",
+      "R"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "1.56",
+      "usd_foil": "2.27",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 715940,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/a/4/a4e4966b-8963-4fac-a8bf-e778e063c7dd.jpg?1788878241",
+      "normal": "https://cards.scryfall.io/normal/front/a/4/a4e4966b-8963-4fac-a8bf-e778e063c7dd.jpg?1788878241"
+     },
+     "object": "card"
+    },
+    {
+     "id": "b38b6760-616f-4b11-8ce7-ac1223c7fd53",
+     "oracle_id": "7b0d7e62-0287-454a-8702-b0bfa7b41245",
+     "name": "Minas Tirith",
+     "set": "ltr",
+     "set_name": "The Lord of the Rings: Tales of Middle-earth",
+     "collector_number": "256",
+     "type_line": "Legendary Land",
+     "color_identity": [
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "6.30",
+      "usd_foil": "7.50",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 498350,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/b/3/b38b6760-616f-4b11-8ce7-ac1223c7fd53.jpg?1783916236",
+      "normal": "https://cards.scryfall.io/normal/front/b/3/b38b6760-616f-4b11-8ce7-ac1223c7fd53.jpg?1783916236"
+     },
+     "object": "card"
+    },
+    {
+     "id": "a8c1dce3-6136-4294-9d2b-5ef8527d733b",
+     "oracle_id": "4cdb9f80-d08f-4986-99c8-573166d66082",
+     "name": "Night Market",
+     "set": "dft",
+     "set_name": "Aetherdrift",
+     "collector_number": "258",
+     "type_line": "Land",
+     "color_identity": [],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "0.27",
+      "usd_foil": "0.30",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 614173,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/a/8/a8c1dce3-6136-4294-9d2b-5ef8527d733b.jpg?1783907841",
+      "normal": "https://cards.scryfall.io/normal/front/a/8/a8c1dce3-6136-4294-9d2b-5ef8527d733b.jpg?1783907841"
+     },
+     "object": "card"
+    },
+    {
+     "id": "5aa0c810-3b7d-4661-979e-e84fb327742d",
+     "oracle_id": "c854ecb0-cc60-4c48-a9aa-7f2348a7a8c6",
+     "name": "Shattered Sanctum",
+     "set": "sos",
+     "set_name": "Secrets of Strixhaven",
+     "collector_number": "260",
+     "type_line": "Land",
+     "color_identity": [
+      "B",
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "2.46",
+      "usd_foil": "2.42",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 686574,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/5/a/5aa0c810-3b7d-4661-979e-e84fb327742d.jpg?1783903618",
+      "normal": "https://cards.scryfall.io/normal/front/5/a/5aa0c810-3b7d-4661-979e-e84fb327742d.jpg?1783903618"
+     },
+     "object": "card"
+    },
+    {
+     "id": "efcacf88-b6f2-4acd-948e-04dad8ea472d",
+     "oracle_id": "390f1b56-264e-4336-83be-dc1fe79bfdcf",
+     "name": "Smoldering Marsh",
+     "set": "trc",
+     "set_name": "Star Trek Commander",
+     "collector_number": "560",
+     "type_line": "Land — Swamp Mountain",
+     "color_identity": [
+      "B",
+      "R"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": null,
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 726933,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/e/f/efcacf88-b6f2-4acd-948e-04dad8ea472d.jpg?1793197613",
+      "normal": "https://cards.scryfall.io/normal/front/e/f/efcacf88-b6f2-4acd-948e-04dad8ea472d.jpg?1793197613"
+     },
+     "object": "card"
+    },
+    {
+     "id": "b34000e9-ff20-4fb4-9d0b-03a172a92457",
+     "oracle_id": "5ad0b405-cca4-475e-985c-4d7e3599d87e",
+     "name": "Sundown Pass",
+     "set": "sos",
+     "set_name": "Secrets of Strixhaven",
+     "collector_number": "264",
+     "type_line": "Land",
+     "color_identity": [
+      "R",
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": "2.90",
+      "usd_foil": "2.76",
+      "usd_etched": null
+     },
+     "tcgplayer_id": 686583,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/b/3/b34000e9-ff20-4fb4-9d0b-03a172a92457.jpg?1783903618",
+      "normal": "https://cards.scryfall.io/normal/front/b/3/b34000e9-ff20-4fb4-9d0b-03a172a92457.jpg?1783903618"
+     },
+     "object": "card"
+    },
+    {
+     "id": "82c96473-d7b9-48dc-9569-cdb649c78463",
+     "oracle_id": "91fceb34-0f2d-4392-be27-00dcd765637f",
+     "name": "Thriving Bluff",
+     "set": "msc",
+     "set_name": "Marvel Super Heroes Commander",
+     "collector_number": "578",
+     "type_line": "Land",
+     "color_identity": [
+      "R"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil"
+     ],
+     "prices": {
+      "usd": "0.23",
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 697457,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/8/2/82c96473-d7b9-48dc-9569-cdb649c78463.jpg?1783903090",
+      "normal": "https://cards.scryfall.io/normal/front/8/2/82c96473-d7b9-48dc-9569-cdb649c78463.jpg?1783903090"
+     },
+     "object": "card"
+    }
+   ]
+  }
+ },
+ "POST /cards/collection {\"identifiers\":[{\"name\":\"Swamp\"},{\"name\":\"Mountain\"},{\"name\":\"Plains\"}]}": {
+  "status": 200,
+  "body": {
+   "object": "list",
+   "not_found": [],
+   "data": [
+    {
+     "id": "b233b117-9369-45c1-80c5-cc857386b6be",
+     "oracle_id": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+     "name": "Swamp",
+     "set": "mdd",
+     "set_name": "Marvel: Darkhold Destiny",
+     "collector_number": "296",
+     "type_line": "Basic Land — Swamp",
+     "color_identity": [
+      "B"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": null,
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 723325,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/b/2/b233b117-9369-45c1-80c5-cc857386b6be.jpg?1791578437",
+      "normal": "https://cards.scryfall.io/normal/front/b/2/b233b117-9369-45c1-80c5-cc857386b6be.jpg?1791578437"
+     },
+     "object": "card"
+    },
+    {
+     "id": "85177bd7-6c50-48da-b692-ae5fe7bd357c",
+     "oracle_id": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+     "name": "Mountain",
+     "set": "mdd",
+     "set_name": "Marvel: Darkhold Destiny",
+     "collector_number": "298",
+     "type_line": "Basic Land — Mountain",
+     "color_identity": [
+      "R"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": null,
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 723326,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/8/5/85177bd7-6c50-48da-b692-ae5fe7bd357c.jpg?1791578439",
+      "normal": "https://cards.scryfall.io/normal/front/8/5/85177bd7-6c50-48da-b692-ae5fe7bd357c.jpg?1791578439"
+     },
+     "object": "card"
+    },
+    {
+     "id": "09ac862f-0a51-44dd-b86f-9412b8218b13",
+     "oracle_id": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+     "name": "Plains",
+     "set": "mdd",
+     "set_name": "Marvel: Darkhold Destiny",
+     "collector_number": "292",
+     "type_line": "Basic Land — Plains",
+     "color_identity": [
+      "W"
+     ],
+     "legalities": {
+      "commander": "legal"
+     },
+     "finishes": [
+      "nonfoil",
+      "foil"
+     ],
+     "prices": {
+      "usd": null,
+      "usd_foil": null,
+      "usd_etched": null
+     },
+     "tcgplayer_id": 723323,
+     "image_uris": {
+      "small": "https://cards.scryfall.io/small/front/0/9/09ac862f-0a51-44dd-b86f-9412b8218b13.jpg?1791578423",
+      "normal": "https://cards.scryfall.io/normal/front/0/9/09ac862f-0a51-44dd-b86f-9412b8218b13.jpg?1791578423"
+     },
+     "object": "card"
+    }
+   ]
+  }
+ },
+ "GET /cards/named?fuzzy=Calastria+Highborn": {
+  "status": 200,
+  "body": {
+   "id": "a3a055ed-60b0-4d35-ad58-04f324b56d65",
+   "oracle_id": "77e319da-d782-4258-bf0e-626755e5adc9",
+   "name": "Kalastria Highborn",
+   "set": "fdn",
+   "set_name": "Foundations",
+   "collector_number": "753",
+   "type_line": "Creature — Vampire Shaman",
+   "color_identity": [
+    "B"
+   ],
+   "legalities": {
+    "commander": "legal"
+   },
+   "finishes": [
+    "nonfoil"
+   ],
+   "prices": {
+    "usd": "0.26",
+    "usd_foil": null,
+    "usd_etched": null
+   },
+   "tcgplayer_id": 695537,
+   "image_uris": {
+    "small": "https://cards.scryfall.io/small/front/a/3/a3a055ed-60b0-4d35-ad58-04f324b56d65.jpg?1787562905",
+    "normal": "https://cards.scryfall.io/normal/front/a/3/a3a055ed-60b0-4d35-ad58-04f324b56d65.jpg?1787562905"
+   },
+   "object": "card"
+  }
+ },
+ "GET /cards/named?fuzzy=Chiral+Attentive+First+Year": {
+  "status": 200,
+  "body": {
+   "id": "c11cb0eb-819e-4905-ad95-e43618d3c81e",
+   "oracle_id": "3a272fa9-5f28-43a4-95de-10cb511f1b43",
+   "name": "Kirol, Attentive First-Year",
+   "set": "ecl",
+   "set_name": "Lorwyn Eclipsed",
+   "collector_number": "231",
+   "type_line": "Legendary Creature — Vampire Cleric",
+   "color_identity": [
+    "R",
+    "W"
+   ],
+   "legalities": {
+    "commander": "legal"
+   },
+   "finishes": [
+    "nonfoil",
+    "foil"
+   ],
+   "prices": {
+    "usd": "0.29",
+    "usd_foil": "0.41",
+    "usd_etched": null
+   },
+   "tcgplayer_id": 668646,
+   "image_uris": {
+    "small": "https://cards.scryfall.io/small/front/c/1/c11cb0eb-819e-4905-ad95-e43618d3c81e.jpg?1783904407",
+    "normal": "https://cards.scryfall.io/normal/front/c/1/c11cb0eb-819e-4905-ad95-e43618d3c81e.jpg?1783904407"
+   },
+   "object": "card"
+  }
+ },
+ "GET /cards/named?fuzzy=Dracula%2C+Blood+Immortal": {
+  "status": 200,
+  "body": {
+   "id": "48d43ab9-772d-4f4d-8536-3ea60e8f9f82",
+   "oracle_id": "940080ce-c504-48c8-a763-326fef907217",
+   "name": "Falkenrath Forebear",
+   "flavor_name": "Dracula, Blood Immortal",
+   "set": "vow",
+   "set_name": "Innistrad: Crimson Vow",
+   "collector_number": "334",
+   "type_line": "Creature — Vampire",
+   "color_identity": [
+    "B"
+   ],
+   "legalities": {
+    "commander": "legal"
+   },
+   "finishes": [
+    "nonfoil",
+    "foil"
+   ],
+   "prices": {
+    "usd": "1.96",
+    "usd_foil": "2.61",
+    "usd_etched": null
+   },
+   "tcgplayer_id": 253071,
+   "image_uris": {
+    "small": "https://cards.scryfall.io/small/front/4/8/48d43ab9-772d-4f4d-8536-3ea60e8f9f82.jpg?1783924744",
+    "normal": "https://cards.scryfall.io/normal/front/4/8/48d43ab9-772d-4f4d-8536-3ea60e8f9f82.jpg?1783924744"
+   },
+   "object": "card"
+  }
+ },
+ "GET /cards/named?fuzzy=Emmerstorm+Predator": {
+  "status": 404,
+  "body": {
+   "object": "error",
+   "code": "not_found",
+   "status": 404,
+   "details": "No cards found matching “Emmerstorm Predator”"
+  }
+ },
+ "GET /cards/named?fuzzy=Sanguine+Siphoner": {
+  "status": 200,
+  "body": {
+   "id": "b1daf5bb-c8e9-4e79-a532-ca92a9a885cd",
+   "oracle_id": "b81a748b-f7a6-4ec4-8b18-40a1819745f6",
+   "name": "Sanguine Syphoner",
+   "set": "fdn",
+   "set_name": "Foundations",
+   "collector_number": "68",
+   "type_line": "Creature — Vampire Warlock",
+   "color_identity": [
+    "B"
+   ],
+   "legalities": {
+    "commander": "legal"
+   },
+   "finishes": [
+    "nonfoil",
+    "foil"
+   ],
+   "prices": {
+    "usd": "0.28",
+    "usd_foil": "0.24",
+    "usd_etched": null
+   },
+   "tcgplayer_id": 591666,
+   "image_uris": {
+    "small": "https://cards.scryfall.io/small/front/b/1/b1daf5bb-c8e9-4e79-a532-ca92a9a885cd.jpg?1783909109",
+    "normal": "https://cards.scryfall.io/normal/front/b/1/b1daf5bb-c8e9-4e79-a532-ca92a9a885cd.jpg?1783909109"
+   },
+   "object": "card"
+  }
+ },
+ "GET /cards/named?fuzzy=Sign+in+Blood": {
+  "status": 200,
+  "body": {
+   "id": "b89d9372-8682-4a61-a003-8bccfbb6cbb4",
+   "oracle_id": "c6207f6a-a624-4754-88f5-dbe700c841ff",
+   "name": "Sign in Blood",
+   "set": "dsc",
+   "set_name": "Duskmourn: House of Horror Commander",
+   "collector_number": "156",
+   "type_line": "Sorcery",
+   "color_identity": [
+    "B"
+   ],
+   "legalities": {
+    "commander": "legal"
+   },
+   "finishes": [
+    "nonfoil"
+   ],
+   "prices": {
+    "usd": "3.49",
+    "usd_foil": null,
+    "usd_etched": null
+   },
+   "tcgplayer_id": 579069,
+   "image_uris": {
+    "small": "https://cards.scryfall.io/small/front/b/8/b89d9372-8682-4a61-a003-8bccfbb6cbb4.jpg?1783909613",
+    "normal": "https://cards.scryfall.io/normal/front/b/8/b89d9372-8682-4a61-a003-8bccfbb6cbb4.jpg?1783909613"
+   },
+   "object": "card"
+  }
+ },
+ "GET /cards/named?fuzzy=Panther+Idol": {
+  "status": 200,
+  "body": {
+   "id": "708ad400-fa01-4473-aa9e-ba3db965b521",
+   "oracle_id": "63fd2a57-7a47-4e07-947c-f4e9da7ee538",
+   "name": "Mind's Eye",
+   "flavor_name": "Panther Idol",
+   "set": "msc",
+   "set_name": "Marvel Super Heroes Commander",
+   "collector_number": "288",
+   "type_line": "Artifact",
+   "color_identity": [],
+   "legalities": {
+    "commander": "legal"
+   },
+   "finishes": [
+    "nonfoil",
+    "foil"
+   ],
+   "prices": {
+    "usd": "0.32",
+    "usd_foil": null,
+    "usd_etched": null
+   },
+   "tcgplayer_id": 698221,
+   "image_uris": {
+    "small": "https://cards.scryfall.io/small/front/7/0/708ad400-fa01-4473-aa9e-ba3db965b521.jpg?1783903186",
+    "normal": "https://cards.scryfall.io/normal/front/7/0/708ad400-fa01-4473-aa9e-ba3db965b521.jpg?1783903186"
+   },
+   "object": "card"
+  }
+ }
+}
