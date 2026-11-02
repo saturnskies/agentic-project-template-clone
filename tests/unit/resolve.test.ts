@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { deckTotals } from '../../src/lib/deck';
 import { parseDeckList } from '../../src/lib/parse';
 import { createClient, memoryCache } from '../../src/scryfall/client';
-import { buildDeck, commanderCandidates, priceDeck, resolveList } from '../../src/scryfall/resolve';
+import { buildDeck, commanderCandidates, priceDeck, resolveList, withPrinting } from '../../src/scryfall/resolve';
 import type { ScryCard } from '../../src/scryfall/types';
 import { fixtureFetch, type FixtureMap } from '../support/fixtures';
 
@@ -154,6 +154,33 @@ describe('priceDeck', () => {
     // 1 collection + 1 shared search for the 5 non-basic cards + 2 for the Swamp (more than a page of printings).
     expect(calls).toHaveLength(4);
     expect(recorded.misses).toEqual([]);
+  });
+
+  it('keeps every printing for the picker, and prices a chosen printing instead of the cheapest', async () => {
+    const { client, lines } = await resolvedLines();
+    const deck = buildDeck('E2E', lines, commanderCandidates(lines)[0]);
+    const priced = await priceDeck(client, deck);
+    const edgar = priced[0];
+    expect(edgar.prints.map((c) => `${c.set} ${c.collector_number}`)).toEqual(expect.arrayContaining(['inr 428', 'inr 328', 'c17 36']));
+
+    const inr328 = edgar.prints.find((c) => c.collector_number === '328')!;
+    const picked = withPrinting(edgar, inr328.id);
+    expect(picked).toMatchObject({ price: 32.66, finish: 'nonfoil', url: 'https://www.tcgplayer.com/product/596295', entry: { printingId: inr328.id } });
+    expect(edgar.entry.printingId).toBeUndefined(); // the original is unchanged
+
+    const reset = withPrinting(picked, undefined);
+    expect(reset).toMatchObject({ price: 29.08, card: { collector_number: '428' } });
+    expect(reset.entry.printingId).toBeUndefined();
+  });
+
+  it('prices the commander at its chosen printing when the deck says so', async () => {
+    const { client, lines, fetch } = await resolvedLines();
+    const deck = buildDeck('E2E', lines, commanderCandidates(lines)[0]);
+    const first = await priceDeck(client, deck);
+    const c17 = first[0].prints.find((c) => c.set === 'c17')!;
+    const again = await priceDeck(client, { ...deck, commanderPrintingId: c17.id });
+    expect(again[0]).toMatchObject({ isCommander: true, price: 42.5, finish: 'foil', card: { set: 'c17' } });
+    expect(fetch.misses).toEqual([]);
   });
 
   it('keeps a card with no Scryfall match in the list, unpriced', async () => {
