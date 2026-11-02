@@ -28,7 +28,7 @@ Decisions: [ADR-003](decisions/ADR-003-android-apk-capacitor.md) (Capacitor wrap
 
 The keystore is the one every installed phone was signed with. Never commit it (the repo is public). The workflow fails with a clear message if a secret is missing, and also fails if the built APK is not signed with the original key.
 
-**Each release:** merge to `main`, then `git tag v0.3.0 && git push origin v0.3.0` (or create the tag from GitHub's Releases page). The workflow builds, then attaches `swapsmith-0.3.0.apk` to a new Release. On the phone, open the repo's **Releases** page in Chrome, download the APK, tap it and choose **Update**. Running the workflow by hand (Actions → Android APK → Run workflow) builds the APK as a downloadable artifact without publishing a release.
+**Each release:** merge to `main`, then either run `git tag v0.3.0 && git push origin v0.3.0`, or on github.com open the repo → **Releases** → **Draft a new release**, type `v0.3.0` in **Choose a tag** → **Create new tag**, and click **Publish release**. Either way the workflow attaches the APK to the release. The workflow builds, then attaches `swapsmith-0.3.0.apk` to a new Release. On the phone, open the repo's **Releases** page in Chrome, download the APK, tap it and choose **Update**. Running the workflow by hand (Actions → Android APK → Run workflow) builds the APK as a downloadable artifact without publishing a release.
 
 Version numbers: CI sets `versionName` from the tag and `versionCode` to the run number plus 100, so each CI build is newer than the last. A local `npm run apk` uses the lower defaults in `android/app/build.gradle`, so **do not install local builds on a phone that already has a CI build**; Android refuses a downgrade. Hand out CI builds only.
 
