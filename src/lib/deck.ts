@@ -10,6 +10,8 @@ export interface DeckEntry {
   qty: number;
   /** A printing the user picked; absent means "cheapest". */
   printingId?: string;
+  /** Pinned by the user: never suggested as a cut or for replacement. */
+  keep?: boolean;
 }
 
 export interface Deck {
