@@ -35,11 +35,11 @@ Builds the [v1 spec](../specs/2026-11-02-swapsmith-design.md) on the stack in [A
 - [x] CLAUDE.md: Stack line and Essential Commands filled in.
 
 ### 2. Paste a list and price it
-- [ ] `lib/parse.ts`: the spec's list formats. Unit tests include the Edgar Markov list.
-- [ ] `lib/price.ts`: cheapest printing across nonfoil, foil and etched, and the TCGplayer link without the affiliate redirect. Unit tests.
-- [ ] Fix-up list for unmatched names, using Scryfall fuzzy "did you mean".
-- [ ] List view with totals and TCGplayer links. Decks saved to `localStorage` (`swapsmith:v1`), with a banner when storage is blocked.
-- [ ] E2E: paste the Edgar list, fix "Calastria Highborn", total shown, deck survives reload.
+- [x] `lib/parse.ts`: the spec's list formats. Unit tests include the Edgar Markov list.
+- [x] `lib/price.ts`: cheapest printing across nonfoil, foil and etched, and the TCGplayer link without the affiliate redirect. Unit tests.
+- [x] Fix-up list for unmatched names, using Scryfall fuzzy "did you mean".
+- [x] List view with totals and TCGplayer links. Decks saved to `localStorage` (`swapsmith:v1`), with a banner when storage is blocked.
+- [x] E2E: paste the Edgar list, fix "Calastria Highborn", total shown, deck survives reload.
 
 ### 3. Commander-first building
 - [ ] New deck: commander autocomplete (`is:commander`), then the editor.
