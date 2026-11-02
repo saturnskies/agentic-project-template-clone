@@ -1,18 +1,11 @@
+import { isOwned, type Collection } from '../lib/owned';
 import type { DeckProfile } from '../lib/profile';
+import type { DeckCardFacts } from '../lib/swaps';
+import type { PricedCard } from './resolve';
 import type { PoolEntry } from '../lib/suggest';
 import { ScryfallError, type ScryfallClient } from './client';
+import { CORE_ROLES } from './roles';
 import type { ScryCard, ScryList } from './types';
-
-/**
- * Roles every Commander deck wants, searched through Scryfall Tagger's functional tags. Themes such
- * as sacrifice or lifegain are searched through the deck's own detected themes instead.
- */
-const CORE_ROLES: Array<{ label: string; query: string }> = [
-  { label: 'ramp', query: 'otag:ramp' },
-  { label: 'card draw', query: 'otag:card-advantage' },
-  { label: 'removal', query: 'otag:removal' },
-  { label: 'board wipe', query: 'otag:board-wipe' },
-];
 
 export interface PoolSearch {
   label: string;
@@ -33,9 +26,14 @@ export function profileSearches(profile: DeckProfile): PoolSearch[] {
 /**
  * Runs each search (most-played first, one page of up to 175 cards) within the commander's colors
  * and legal in Commander. `prefer:usd-low` makes Scryfall return each card's cheapest printing, so
- * suggestions can be priced and tiered without a lookup per card.
+ * suggestions can be priced and tiered without a lookup per card. A search that fails is left out
+ * and named in `failed`; only when every search fails does this throw.
  */
-export async function candidatePool(client: ScryfallClient, profile: DeckProfile, onProgress: (done: number, total: number) => void = () => {}): Promise<PoolEntry[]> {
+export async function candidatePool(
+  client: ScryfallClient,
+  profile: DeckProfile,
+  onProgress: (done: number, total: number) => void = () => {},
+): Promise<{ pool: PoolEntry[]; failed: string[] }> {
   const identity = profile.colorIdentity.join('').toLowerCase() || 'c';
   const searches = profileSearches(profile);
   const byId = new Map<string, PoolEntry>();
@@ -50,12 +48,15 @@ export async function candidatePool(client: ScryfallClient, profile: DeckProfile
         return { s, cards: res.data };
       } catch (e) {
         if (e instanceof ScryfallError && e.status === 404) return { s, cards: [] as ScryCard[] };
-        throw e;
+        return { s, cards: [] as ScryCard[], error: e };
       } finally {
         onProgress(++done, searches.length);
       }
     }),
   );
+  const failures = results.filter((r) => 'error' in r);
+  if (failures.length === results.length) throw failures[0].error;
+
   // Merge in search order so tags read tribe → themes → roles.
   for (const { s, cards } of results) {
     for (const card of cards) {
@@ -66,5 +67,32 @@ export async function candidatePool(client: ScryfallClient, profile: DeckProfile
       byId.set(id, entry);
     }
   }
-  return [...byId.values()];
+  return { pool: [...byId.values()], failed: failures.map((f) => f.s.label) };
+}
+
+/** A card's rules text, both faces for double-faced cards. */
+export const rulesText = (c: ScryCard | null) => (c ? (c.oracle_text ?? c.card_faces?.map((f) => f.oracle_text ?? '').join('\n') ?? '') : '');
+
+/**
+ * Facts about each priced deck card for swap rules. A card added from suggestions after the role
+ * lookup takes its roles from its pool entry.
+ */
+export function deckCardFacts(priced: PricedCard[], roles: Map<string, string[]>, pool: PoolEntry[], collection: Collection): DeckCardFacts[] {
+  const poolRoles = new Map(pool.map((e) => [e.card.oracle_id ?? e.card.card_faces?.[0]?.oracle_id ?? e.card.id, e.roles]));
+  return priced.map((p) => {
+    const id = p.entry.card.oracleId;
+    return {
+      oracleId: id,
+      name: p.entry.card.name,
+      typeLine: p.typeLine,
+      oracleText: rulesText(p.card),
+      price: p.price,
+      rank: p.card?.edhrec_rank ?? null,
+      roles: roles.get(id) ?? poolRoles.get(id) ?? [],
+      isCommander: p.isCommander,
+      // A card whose Scryfall data didn't load can't be judged, so it is never offered as a cut.
+      keep: !!p.entry.keep || !p.card || !!p.failed,
+      owned: isOwned(collection, id, p.typeLine),
+    };
+  });
 }

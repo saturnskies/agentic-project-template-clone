@@ -11,7 +11,7 @@ test('switch to a card grid grouped by type, with images, prices and TCGplayer l
   await expect(page.getByRole('button', { name: 'Grid' })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByRole('table')).toHaveCount(0);
 
-  const headings = page.getByRole('heading', { level: 3 }).filter({ hasNotText: 'Upgrades' });
+  const headings = page.getByRole('heading', { level: 3 }).filter({ hasNotText: 'Suggestions' });
   await expect(headings).toHaveText(['Commander (1)', 'Creatures (3)', 'Artifacts (1)', 'Lands (8)']);
 
   const edgar = page.getByRole('listitem').filter({ hasText: 'Edgar Markov' });

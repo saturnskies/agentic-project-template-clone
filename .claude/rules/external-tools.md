@@ -17,3 +17,5 @@ For code that calls an outside program, server, or API:
   - Reused names: nothing a log or record points to gets overwritten
 - **Checks cover the whole input.** Validate everything a request or command could contain (every field, nested values), not just the shape of today's example.
 - **Validate first, then fill in user text.** User text can contain anything, including strings that look like file names or flags. Every check runs before the job starts, so nothing raises after the expensive work is done.
+- **One failed call never discards the others.** When several calls to an outside API run together (searches, batches), collect what succeeded, report what failed, and throw only if all failed. `Promise.all` over optional calls throws away good results on the first error.
+- **Silent truncation exists.** Check a long request against the real API before relying on it; Scryfall quietly drops the end of a query past ~1,000 characters, which loses data without any error.

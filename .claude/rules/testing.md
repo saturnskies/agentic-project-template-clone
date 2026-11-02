@@ -14,3 +14,4 @@ paths:
 - Never weaken or delete a failing test to make a change pass — fix the code or ask
 - A bug fix starts with a failing test that reproduces it
 - A test runner that exits 0 must have run at least one test and loaded every test file: check for load or compile errors and a zero test count, not just the exit code. Some runners exit 0 when a test file fails to compile; wrap those in a script that fails on it
+- Retrying assertions (Playwright `expect`) can pass on an in-between state. When a test checks that something does NOT happen (no duplicate, no warning), let the action settle first, and prove the test fails on the old code before trusting it

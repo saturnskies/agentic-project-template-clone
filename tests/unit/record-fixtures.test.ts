@@ -7,7 +7,9 @@ import { buildDeck, commanderCandidates, oracleIdOf, priceDeck, priceEntries, re
 import { fuzzyCard } from '../../src/scryfall/cards';
 import { deckProfile } from '../../src/lib/profile';
 import { scoreSuggestions, upgradesByTier } from '../../src/lib/suggest';
-import { candidatePool } from '../../src/scryfall/suggest';
+import { candidatePool, deckCardFacts, rulesText } from '../../src/scryfall/suggest';
+import { deckRoles } from '../../src/scryfall/roles';
+import { cheaperReplacements, swapPairs } from '../../src/lib/swaps';
 import { requestKey, trim, type FixtureMap } from '../support/fixtures';
 
 /**
@@ -83,17 +85,22 @@ describe.runIf(process.env.RECORD === '1')('record Scryfall fixtures', () => {
     const deck = { ...buildDeck('Edgar Vampires', lines, commanderCandidates(lines)[0], new Date('2026-11-02T00:00:00Z')), id: 'edgarfull' };
     writeFileSync(new URL('../fixtures/edgar-deck.json', import.meta.url), JSON.stringify(deck, null, 1) + '\n');
 
-    // What the deck page does: price it, then Find upgrades, then Add the top Budget pick.
+    // What the deck page does: price it, then Find suggestions, then
+    // add the top Budget pick, apply the first swap, and take the first cheaper replacement. (Same
+    // requests as the panel: the pool, then the deck's roles.)
     const priced = await priceDeck(client, deck);
     const commander = priced.find((p) => p.isCommander)!.card!;
-    const profile = deckProfile(
-      priced.map((p) => ({ name: p.entry.card.name, typeLine: p.typeLine, oracleText: p.card?.oracle_text ?? p.card?.card_faces?.map((f) => f.oracle_text ?? '').join('\n') ?? '', isCommander: p.isCommander })),
-      commander.color_identity,
-    );
-    const pool = await candidatePool(client, profile);
-    const tiers = upgradesByTier(scoreSuggestions(pool, { colorIdentity: profile.colorIdentity, oracleIds: new Set(priced.map((p) => p.entry.card.oracleId)) }, new Set()), 10);
-    const top = tiers.budget[0].card;
-    await priceEntries(client, [{ entry: { card: { oracleId: oracleIdOf(top), name: top.name }, qty: 1 }, isCommander: false }], undefined, new Map([[oracleIdOf(top), top]]));
+    const profile = deckProfile(priced.map((p) => ({ name: p.entry.card.name, typeLine: p.typeLine, oracleText: rulesText(p.card), isCommander: p.isCommander })), commander.color_identity);
+    const { pool } = await candidatePool(client, profile);
+    const { roles } = await deckRoles(client, priced.filter((c) => !c.isCommander).map((c) => ({ oracleId: c.entry.card.oracleId, name: c.entry.card.name })));
+    const scored = scoreSuggestions(pool, { colorIdentity: profile.colorIdentity, oracleIds: new Set(priced.map((p) => p.entry.card.oracleId)) }, new Set());
+    const tiers = upgradesByTier(scored, 10);
+    const facts = deckCardFacts(priced, roles, pool, { owned: [], unownedBasics: [] });
+    const firstSwap = swapPairs(scored, facts, profile)[0].add.card;
+    const firstCheaper = cheaperReplacements(facts, scored)[0].options[0].add.card;
+    for (const card of [tiers.budget[0].card, firstSwap, firstCheaper]) {
+      await priceEntries(client, [{ entry: { card: { oracleId: oracleIdOf(card), name: card.name }, qty: 1 }, isCommander: false }], undefined, new Map([[oracleIdOf(card), card]]));
+    }
 
     // Suggestion results are only scored and shown, never read for rules text: drop it to keep the fixture small.
     for (const [key, rec] of Object.entries(map)) {

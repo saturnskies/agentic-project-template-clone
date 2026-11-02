@@ -18,7 +18,10 @@ export interface Suggestion {
   oracleId: string;
   price: number;
   finish: Finish;
+  /** Tribe and theme matches. */
   tags: string[];
+  /** Generic role matches (ramp, removal…). */
+  roles: string[];
   owned: boolean;
   score: number;
   reason: string;
@@ -69,7 +72,7 @@ export function scoreSuggestions(
     const popularity = card.edhrec_rank ? 1 - card.edhrec_rank / maxRank : 0;
     const reason = [...tags, ...roles, card.edhrec_rank ? `EDHREC #${card.edhrec_rank}` : null, owned ? 'owned' : null].filter(Boolean).join(' · ');
     const score = popularity + MATCH_WEIGHT * tags.length + ROLE_WEIGHT * roles.length + (owned ? OWNED_BONUS : 0);
-    out.push({ card, oracleId, price: p.price, finish: p.finish, tags: [...tags, ...roles], owned, score, reason });
+    out.push({ card, oracleId, price: p.price, finish: p.finish, tags, roles, owned, score, reason });
   }
   return out.sort((a, b) => b.score - a.score || a.card.name.localeCompare(b.card.name));
 }
