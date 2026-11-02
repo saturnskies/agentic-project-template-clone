@@ -3,7 +3,7 @@ import { h, usd } from './dom';
 
 export function renderHome(view: HTMLElement, ctx: AppContext): void {
   const decks = [...ctx.store.decks].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
-  const actions = h('div', { class: 'actions' }, h('a', { class: 'button primary', href: '#/paste' }, 'Paste a list'));
+  const actions = h('div', { class: 'actions' }, h('a', { class: 'button primary', href: '#/new' }, 'New deck'), h('a', { class: 'button', href: '#/paste' }, 'Paste a list'));
 
   const body = decks.length
     ? h(
@@ -33,7 +33,7 @@ export function renderHome(view: HTMLElement, ctx: AppContext): void {
         'div',
         { class: 'empty' },
         h('p', {}, h('strong', {}, 'No decks yet.')),
-        h('p', {}, 'Paste a decklist from any deck site to see what each card costs on TCGplayer.'),
+        h('p', {}, 'Start a deck from a commander, or paste a decklist from any deck site to see what each card costs on TCGplayer.'),
       );
 
   view.append(
