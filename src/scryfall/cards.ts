@@ -75,6 +75,7 @@ export async function fuzzyCard(client: ScryfallClient, name: string): Promise<S
 /** One card object per Oracle ID (whichever printing Scryfall picks), for names, types and images. */
 export async function cardsByOracleId(client: ScryfallClient, oracleIds: string[]): Promise<Map<string, ScryCard>> {
   const unique = [...new Set(oracleIds)];
+  if (!unique.length) return new Map();
   const cards = await collection(client, unique.map((oracle_id) => ({ oracle_id })));
   const map = new Map<string, ScryCard>();
   for (const c of cards) {
@@ -172,6 +173,48 @@ class PrintingsError extends Error {
 export async function cardById(client: ScryfallClient, id: string): Promise<ScryCard | null> {
   try {
     return await client.get<ScryCard>(`/cards/${encodeURIComponent(id)}`);
+  } catch (e) {
+    if (e instanceof ScryfallError && e.status === 404) return null;
+    throw e;
+  }
+}
+
+const MIN_QUERY = 2;
+const MAX_SUGGESTIONS = 10;
+
+/** Cards that can be a commander whose name contains the typed text, most-played first. */
+export async function searchCommanders(client: ScryfallClient, typed: string): Promise<ScryCard[]> {
+  const text = typed.replace(/["\\]/g, ' ').replace(/\s+/g, ' ').trim();
+  if (text.length < MIN_QUERY) return [];
+  try {
+    const res = await client.get<ScryList<ScryCard>>(`/cards/search?${new URLSearchParams({ q: `is:commander game:paper "${text}"`, order: 'edhrec' })}`);
+    return res.data.slice(0, MAX_SUGGESTIONS);
+  } catch (e) {
+    if (e instanceof ScryfallError && e.status === 404) return [];
+    throw e;
+  }
+}
+
+/**
+ * Card names starting with or containing the typed text (Scryfall's autocomplete). Drops oddities
+ * like "Sol Ring // Sol Ring" (art-series cards), whose two halves share one name.
+ */
+export async function autocompleteNames(client: ScryfallClient, typed: string): Promise<string[]> {
+  const text = typed.trim();
+  if (text.length < MIN_QUERY) return [];
+  const res = await client.get<{ data: string[] }>(`/cards/autocomplete?${new URLSearchParams({ q: text })}`);
+  return (res.data ?? [])
+    .filter((n) => {
+      const [a, b] = n.split(' // ');
+      return b === undefined || a !== b;
+    })
+    .slice(0, MAX_SUGGESTIONS);
+}
+
+/** A card by its exact name, or null. */
+export async function cardByName(client: ScryfallClient, name: string): Promise<ScryCard | null> {
+  try {
+    return await client.get<ScryCard>(`/cards/named?${new URLSearchParams({ exact: name })}`);
   } catch (e) {
     if (e instanceof ScryfallError && e.status === 404) return null;
     throw e;
