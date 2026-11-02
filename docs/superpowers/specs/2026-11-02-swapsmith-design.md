@@ -194,7 +194,7 @@ Rules for every search:
 
 ### 2. Swap pairs
 
-- **Adds:** the top 10 overall candidates, filtered by a budget tier if one is set.
+- **Adds:** the best-scoring candidates in the chosen price tier (any price by default), up to 10 pairs. Filtering by tier first means a tier always shows its own best swaps.
 - **The paired cut** comes from the deck with the lowest keep score: `popularity + 0.5 × (tribe and theme matches) + 0.25 × roles`, the same scale as suggestion scores. Popularity is normalised by the worst EDHREC rank in the deck.
 - **Only improvements:** an add is skipped when its score is no better than the cut's keep score, so a swap never offers a downgrade.
 - **Cut preference:** a card that shares a role with the add, so a removal spell replaces a removal spell. If none shares a role, the lowest keep score overall.
@@ -202,7 +202,8 @@ Rules for every search:
 - **Lands:** a land is only cut for a land.
 - **Apply:** one click swaps the two cards. **Undo** reverts the last apply.
 - **Deck roles** come from `otag:<role> (!"A" or !"B" …)` searches over the deck's own names (front faces), batched under the query cap: 4 roles × 2 batches for a 100-card deck. They load after the pool, so upgrades show first. If they fail, swaps and replacements use the roles seen in the pool searches and say matching is approximate.
-- **Lists update locally:** after Find suggestions, adding, swapping, undoing or toggling Keep recomputes every list with no new requests.
+- **Lists update locally:** after Find suggestions, adding, swapping, undoing, or toggling Keep or Owned recomputes every list with no new requests. Any edit other than a swap ends the Undo offer.
+- **One swap at a time:** a swap re-finds its cut card after pricing and is ignored if the card is already gone, so double clicks can't grow the deck.
 
 ### 3. Cheaper replacements
 
