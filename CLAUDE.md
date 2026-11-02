@@ -104,6 +104,7 @@ Test gates and commits are shell scripts (run the tests, then `git commit` only 
 - Scripted file edits on Windows: Python text mode rewrites LF as CRLF and can double carriage returns; read and write bytes or use `newline=""`, or prefer the Edit tool. Backslashes in a heredoc'd Python string get unescaped twice (`\1` became a control character), so sed or regex text goes through the Edit tool. `git ls-files --eol | grep i/crlf` finds files stored with the wrong endings.
 - Saved tool output: when a Bash or agent result says it was saved to a file, Grep it or Read a slice with offset/limit; never open it whole. Whatever is read stays in context and is re-sent every later turn.
 - Measure your own transcripts before adopting someone else's token fix: a guard that sounds useful may fire once a session here.
+- Re-recording Scryfall fixtures picks up that day's prices, so e2e totals move. Each e2e test reads only its own flow's fixture map (fixtures recorded at different times hold the same request with different prices); update the pinned totals together with the recording.
 - Git Bash rewrites `branch:path` arguments (`git show main:docs/x.md`) into Windows paths; set `MSYS_NO_PATHCONV=1` for those commands.
 
 <!-- Add Claude's recurring mistakes here as you find them. This is the highest-signal section. -->
