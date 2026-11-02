@@ -21,3 +21,12 @@ app.innerHTML = `
 `;
 
 startApp(app.querySelector<HTMLElement>('#main')!);
+
+// Installable app + offline shell. Production only: the dev server serves unhashed modules.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch(() => {
+      // Unsupported or blocked (private mode, http): the site works the same without it.
+    });
+  });
+}
