@@ -13,6 +13,8 @@ export default defineConfig({
   use: {
     baseURL: `http://localhost:${PORT}/swapsmith/`,
     trace: 'on-first-retry',
+    // Keep fixtures in charge: a service worker would sit between page.route and the network.
+    serviceWorkers: 'block',
   },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
