@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bestPrice, cheapestPrinting, tcgplayerUrl } from '../../src/lib/price';
+import { bestPrice, cheapestPrinting, sortPrintings, tcgplayerUrl } from '../../src/lib/price';
 import type { ScryCard } from '../../src/scryfall/types';
 
 const card = (over: Omit<Partial<ScryCard>, 'prices'> & { prices?: Partial<ScryCard['prices']> }): ScryCard => ({
@@ -74,5 +74,17 @@ describe('tcgplayerUrl', () => {
 
     const bare = card({ name: "Healer's Hawk" });
     expect(tcgplayerUrl(bare, 'nonfoil')).toBe("https://www.tcgplayer.com/search/magic/product?q=Healer's%20Hawk&productLineName=magic");
+  });
+});
+
+describe('sortPrintings', () => {
+  it('puts the cheapest printing first, counting foil, and unpriced printings last', () => {
+    const prints = [
+      card({ id: 'none', prices: {} }),
+      card({ id: 'two', prices: { usd: '2.00' } }),
+      card({ id: 'foil', prices: { usd: '5.00', usd_foil: '0.50' } }),
+      card({ id: 'none2', prices: {} }),
+    ];
+    expect(sortPrintings(prints).map((c) => c.id)).toEqual(['foil', 'two', 'none', 'none2']);
   });
 });
