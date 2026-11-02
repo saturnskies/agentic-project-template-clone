@@ -1,0 +1,180 @@
+import 'fake-indexeddb/auto';
+import { describe, expect, it } from 'vitest';
+import notFound from '../fixtures/scryfall-404-named.json';
+import { createClient, idbCache, memoryCache, ScryfallError } from '../../src/scryfall/client';
+
+type Call = { url: string; init?: RequestInit };
+
+function fakeFetch(responses: Array<() => Response>) {
+  const calls: Call[] = [];
+  let i = 0;
+  const fn = async (url: string | URL | Request, init?: RequestInit) => {
+    calls.push({ url: String(url), init });
+    const make = responses[Math.min(i, responses.length - 1)];
+    i += 1;
+    return make();
+  };
+  return { fn: fn as typeof fetch, calls };
+}
+
+const json = (body: unknown, status = 200, headers: Record<string, string> = {}) => () =>
+  new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json', ...headers } });
+
+/** A fake clock: sleep advances time instantly and records each wait. */
+function fakeClock(start = 1_000_000) {
+  let t = start;
+  const sleeps: number[] = [];
+  return {
+    now: () => t,
+    sleep: async (ms: number) => { sleeps.push(ms); t += ms; },
+    advance: (ms: number) => { t += ms; },
+    sleeps,
+  };
+}
+
+describe('Scryfall client', () => {
+  it('spaces requests at least spacingMs apart', async () => {
+    const clock = fakeClock();
+    const f = fakeFetch([json({ object: 'card', name: 'A' })]);
+    const client = createClient({ fetch: f.fn, cache: memoryCache(), now: clock.now, sleep: clock.sleep, spacingMs: 100 });
+
+    await Promise.all([client.get('/cards/named?exact=A'), client.get('/cards/named?exact=B')]);
+
+    expect(f.calls).toHaveLength(2);
+    expect(clock.sleeps).toEqual([100]);
+  });
+
+  it('sends requests to api.scryfall.com with an Accept header', async () => {
+    const clock = fakeClock();
+    const f = fakeFetch([json({ ok: true })]);
+    const client = createClient({ fetch: f.fn, cache: memoryCache(), now: clock.now, sleep: clock.sleep });
+
+    await client.get('/cards/autocomplete?q=edgar');
+
+    expect(f.calls[0].url).toBe('https://api.scryfall.com/cards/autocomplete?q=edgar');
+    expect(new Headers(f.calls[0].init?.headers).get('accept')).toBe('application/json');
+  });
+
+  it('retries after a 429, honoring Retry-After', async () => {
+    const clock = fakeClock();
+    const f = fakeFetch([json({ object: 'error' }, 429, { 'retry-after': '2' }), json({ name: 'Sol Ring' })]);
+    const client = createClient({ fetch: f.fn, cache: memoryCache(), now: clock.now, sleep: clock.sleep });
+
+    const body = await client.get<{ name: string }>('/cards/named?exact=Sol+Ring');
+
+    expect(body.name).toBe('Sol Ring');
+    expect(f.calls).toHaveLength(2);
+    expect(clock.sleeps).toContain(2000);
+  });
+
+  it('gives up after maxRetries 429s with a ScryfallError', async () => {
+    const clock = fakeClock();
+    const f = fakeFetch([json({ object: 'error', details: 'slow down' }, 429)]);
+    const client = createClient({ fetch: f.fn, cache: memoryCache(), now: clock.now, sleep: clock.sleep, maxRetries: 2 });
+
+    await expect(client.get('/cards/search?q=x')).rejects.toMatchObject({ status: 429 });
+    expect(f.calls).toHaveLength(3);
+  });
+
+  it('throws a ScryfallError with Scryfall details on other errors, without retrying', async () => {
+    const clock = fakeClock();
+    // Real reply captured from api.scryfall.com on 2026-11-02 (tests/fixtures/scryfall-404-named.json).
+    const f = fakeFetch([json(notFound, 404)]);
+    const client = createClient({ fetch: f.fn, cache: memoryCache(), now: clock.now, sleep: clock.sleep });
+
+    const err = (await client.get('/cards/named?exact=Calastria+Highborn').catch((e: unknown) => e)) as ScryfallError;
+
+    expect(err).toBeInstanceOf(ScryfallError);
+    expect(err.status).toBe(404);
+    expect(err.message).toContain(notFound.details);
+    expect(f.calls).toHaveLength(1);
+  });
+
+  it('serves a repeat request from the cache within the TTL', async () => {
+    const clock = fakeClock();
+    const f = fakeFetch([json({ name: 'Edgar Markov' })]);
+    const client = createClient({ fetch: f.fn, cache: memoryCache(), now: clock.now, sleep: clock.sleep, ttlMs: 1000 });
+
+    await client.get('/cards/named?exact=Edgar+Markov');
+    clock.advance(999);
+    const again = await client.get<{ name: string }>('/cards/named?exact=Edgar+Markov');
+
+    expect(again.name).toBe('Edgar Markov');
+    expect(f.calls).toHaveLength(1);
+  });
+
+  it('fetches again once the cached entry is older than the TTL', async () => {
+    const clock = fakeClock();
+    const f = fakeFetch([json({ v: 1 }), json({ v: 2 })]);
+    const client = createClient({ fetch: f.fn, cache: memoryCache(), now: clock.now, sleep: clock.sleep, ttlMs: 1000 });
+
+    await client.get('/x');
+    clock.advance(1001);
+    const fresh = await client.get<{ v: number }>('/x');
+
+    expect(fresh.v).toBe(2);
+    expect(f.calls).toHaveLength(2);
+  });
+
+  it('caches POST requests by body, so different bodies are fetched separately', async () => {
+    const clock = fakeClock();
+    const f = fakeFetch([json({ n: 1 }), json({ n: 2 })]);
+    const client = createClient({ fetch: f.fn, cache: memoryCache(), now: clock.now, sleep: clock.sleep });
+
+    await client.post('/cards/collection', { identifiers: [{ name: 'A' }] });
+    await client.post('/cards/collection', { identifiers: [{ name: 'A' }] });
+    await client.post('/cards/collection', { identifiers: [{ name: 'B' }] });
+
+    expect(f.calls).toHaveLength(2);
+    expect(f.calls[0].init?.method).toBe('POST');
+  });
+
+  it('keeps working when the cache throws', async () => {
+    const clock = fakeClock();
+    const f = fakeFetch([json({ ok: true })]);
+    const broken = { get: async () => { throw new Error('blocked'); }, set: async () => { throw new Error('blocked'); } };
+    const client = createClient({ fetch: f.fn, cache: broken, now: clock.now, sleep: clock.sleep });
+
+    await expect(client.get('/x')).resolves.toEqual({ ok: true });
+  });
+
+  it('does not cache error replies', async () => {
+    const clock = fakeClock();
+    const f = fakeFetch([json(notFound, 404), json({ name: 'Kalastria Highborn' })]);
+    const client = createClient({ fetch: f.fn, cache: memoryCache(), now: clock.now, sleep: clock.sleep });
+
+    await client.get('/x').catch(() => undefined);
+    await expect(client.get('/x')).resolves.toEqual({ name: 'Kalastria Highborn' });
+  });
+
+  it('reports a non-JSON error body by HTTP status', async () => {
+    const clock = fakeClock();
+    const f = fakeFetch([() => new Response('<html>Bad gateway</html>', { status: 502, statusText: 'Bad Gateway' })]);
+    const client = createClient({ fetch: f.fn, cache: memoryCache(), now: clock.now, sleep: clock.sleep });
+
+    await expect(client.get('/x')).rejects.toMatchObject({ status: 502, message: 'Scryfall 502: Bad Gateway' });
+  });
+});
+
+describe.runIf(process.env.SCRYFALL_LIVE === '1')('live Scryfall (SCRYFALL_LIVE=1)', () => {
+  it('fetches a real card and a real 404', async () => {
+    // Scryfall rejects Node's default User-Agent; browsers send their own, which it accepts.
+    const withUa: typeof fetch = (input, init) =>
+      fetch(input, { ...init, headers: { ...Object.fromEntries(new Headers(init?.headers)), 'User-Agent': 'Swapsmith-tests/0.1' } });
+    const client = createClient({ cache: memoryCache(), fetch: withUa });
+    const card = await client.get<{ name: string; prices: Record<string, string | null> }>('/cards/named?exact=Sol+Ring');
+    expect(card.name).toBe('Sol Ring');
+    expect(card.prices).toHaveProperty('usd');
+    await expect(client.get('/cards/named?exact=Calastria+Highborn')).rejects.toMatchObject({ status: 404 });
+  });
+});
+
+describe('idbCache', () => {
+  it('round-trips entries through IndexedDB', async () => {
+    const cache = idbCache('swapsmith-test');
+    await cache.set('k', { t: 5, body: { a: 1 } });
+
+    expect(await cache.get('k')).toEqual({ t: 5, body: { a: 1 } });
+    expect(await cache.get('missing')).toBeUndefined();
+  });
+});
