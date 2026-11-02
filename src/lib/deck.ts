@@ -78,3 +78,11 @@ export function isDeck(x: unknown): x is Deck {
     typeof d.updatedAt === 'string'
   );
 }
+
+export const MAX_DECK_NAME = 80;
+
+/** Trims a typed deck name; null when it is empty, so a rename never leaves a deck nameless. */
+export function cleanDeckName(raw: string): string | null {
+  const name = raw.trim().replace(/\s+/g, ' ').slice(0, MAX_DECK_NAME).trim();
+  return name || null;
+}
