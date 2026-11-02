@@ -21,7 +21,7 @@ async function deliver(text: string, fileName: string): Promise<void> {
 
 /** "Back up" and "Restore" for the home screen: decks live only on this device, so this is the safety net. */
 export function backupSection(ctx: AppContext): HTMLElement {
-  const status = h('p', { class: 'muted small', role: 'status' });
+  const status = h('p', { class: 'muted small', 'aria-live': 'polite' });
   const alert = h('p', { class: 'notice', role: 'alert' });
 
   const backBtn = h('button', { type: 'button', class: 'button' }, 'Back up my decks');
@@ -49,7 +49,7 @@ export function backupSection(ctx: AppContext): HTMLElement {
       ctx.replaceStore(result.store);
       ctx.refresh();
       // refresh() rebuilt the screen, so show the outcome on the new one.
-      const note = document.querySelector('.backup [role=status]');
+      const note = document.querySelector('.backup [aria-live]');
       if (note) note.textContent = `Restored: ${result.added} deck${result.added === 1 ? '' : 's'} added, ${result.updated} updated. Nothing was deleted.`;
     } catch (e) {
       alert.textContent = e instanceof BackupError ? e.message : "Couldn't read that file.";
