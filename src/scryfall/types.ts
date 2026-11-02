@@ -19,8 +19,8 @@ export interface ScryCard {
   tcgplayer_id?: number;
   tcgplayer_etched_id?: number;
   purchase_uris?: { tcgplayer?: string };
-  image_uris?: { small?: string; normal?: string };
-  card_faces?: Array<{ name: string; oracle_id?: string; type_line?: string; oracle_text?: string; image_uris?: { small?: string; normal?: string } }>;
+  image_uris?: { small?: string; normal?: string; art_crop?: string };
+  card_faces?: Array<{ name: string; oracle_id?: string; type_line?: string; oracle_text?: string; image_uris?: { small?: string; normal?: string; art_crop?: string } }>;
 }
 
 export interface ScryList<T> {
