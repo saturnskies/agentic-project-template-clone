@@ -22,3 +22,20 @@ test('decks still list normally when the art lookup fails', async ({ page }) => 
   await expect(page.getByRole('link', { name: /Edgar Markov/ })).toBeVisible();
   await expect(page.locator('.deck-card-art')).not.toHaveAttribute('src', /.+/);
 });
+
+test('a deck whose commander printing was picked shows that printing\'s art', async ({ page }) => {
+  const pickedArt = 'https://cards.scryfall.io/art_crop/front/test/picked.jpg';
+  const requests: string[] = [];
+  await page.route('https://cards.scryfall.io/**', (route) => route.fulfill({ status: 200, contentType: 'image/png', body: PIXEL }));
+  await page.route('https://api.scryfall.com/cards/collection', (route) => {
+    const body = route.request().postData() ?? '';
+    requests.push(body);
+    const card = body.includes('picked-printing') ? { ...edgar, id: 'picked-printing', image_uris: { art_crop: pickedArt } } : edgar;
+    return route.fulfill({ status: 200, json: { object: 'list', data: [card], not_found: [] } });
+  });
+  const deck = { ...(await seedEdgarDeck(page)), commanderPrintingId: 'picked-printing' };
+  await page.addInitScript((d) => localStorage.setItem('swapsmith:v1', JSON.stringify({ version: 1, decks: [d], owned: [], unownedBasics: [], prefs: { view: 'list' } })), deck);
+  await page.goto('./');
+  await expect(page.locator('.deck-card-art')).toHaveAttribute('src', pickedArt);
+  expect(requests.some((r) => r.includes('"id":"picked-printing"'))).toBe(true);
+});
