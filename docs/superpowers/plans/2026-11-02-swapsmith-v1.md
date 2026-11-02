@@ -70,7 +70,7 @@ Builds the [v1 spec](../specs/2026-11-02-swapsmith-design.md) on the stack in [A
 - [x] Swap pairs with role-matched cuts and the spec's never-cut rules. Apply and Undo.
 - [x] Cheaper replacements for unowned cards of $5 or more.
 - [x] Unit tests for each rule's guarantees. E2E: apply a swap, undo it, swap in a replacement.
-- [ ] Code review, then `/go` for the PR.
+- [x] Code review, then `/go` for the PR.
 
 ## Before the first deploy (owner)
 
