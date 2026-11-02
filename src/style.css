@@ -233,3 +233,11 @@ dialog.picker::backdrop { background: rgb(0 0 0 / 0.45); }
 .replace-group { display: grid; gap: 0.5rem; }
 .replace-group h4 { margin: 0; font: 500 0.95rem/1.3 var(--font-display); }
 .undo-box:empty { display: none; }
+
+.button.small { padding: 0.3rem 0.75rem; font-size: 0.85rem; }
+.deck-title-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.title-edit { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.title-input { flex: 1 1 14rem; min-width: 0; font-size: 1.2rem; }
+.backup { display: grid; gap: 0.5rem; }
+.backup .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.backup p { margin: 0; }

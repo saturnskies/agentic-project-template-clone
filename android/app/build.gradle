@@ -1,0 +1,89 @@
+apply plugin: 'com.android.application'
+
+// Every build that people install must be signed with the SAME key, or Android refuses to update the
+// app in place and the only way forward is to uninstall, which deletes their decks (ADR-004).
+// The key is described in android/keystore.properties (never committed; see keystore.properties.example)
+// or in SWAPSMITH_* environment variables.
+def keystoreProps = new Properties()
+def keystoreFile = rootProject.file('keystore.properties')
+if (keystoreFile.exists()) keystoreFile.withInputStream { keystoreProps.load(it) }
+def signingValue = { String prop, String env -> System.getenv(env) ?: keystoreProps.getProperty(prop) }
+def haveSigningKey = signingValue('storeFile', 'SWAPSMITH_KEYSTORE') != null
+
+android {
+    namespace = "io.github.saturnskies.swapsmith"
+    compileSdk = rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "io.github.saturnskies.swapsmith"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        // CI sets these (android.yml). A local build falls back to the numbers below, which are LOWER than any
+        // CI build, so a phone that already has a CI build will refuse a local one (see docs/android-build.md).
+        versionCode = Integer.parseInt(System.getenv('SWAPSMITH_VERSION_CODE') ?: '2')
+        versionName = System.getenv('SWAPSMITH_VERSION_NAME') ?: '0.2.0'
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    signingConfigs {
+        swapsmith {
+            if (haveSigningKey) {
+                storeFile file(signingValue('storeFile', 'SWAPSMITH_KEYSTORE'))
+                storePassword signingValue('storePassword', 'SWAPSMITH_KEYSTORE_PASSWORD')
+                keyAlias signingValue('keyAlias', 'SWAPSMITH_KEY_ALIAS')
+                keyPassword signingValue('keyPassword', 'SWAPSMITH_KEY_PASSWORD')
+            }
+        }
+    }
+    buildTypes {
+        debug {
+            if (haveSigningKey) signingConfig signingConfigs.swapsmith
+        }
+        release {
+            if (haveSigningKey) signingConfig signingConfigs.swapsmith
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+gradle.taskGraph.whenReady { graph ->
+    if (!haveSigningKey) {
+        if (graph.allTasks.any { it.name.toLowerCase().contains('release') && it.name.startsWith('assemble') || it.name.startsWith('bundleRelease') }) {
+            throw new GradleException('No signing key. Create android/keystore.properties (see keystore.properties.example) or set SWAPSMITH_KEYSTORE. Builds signed with a different key cannot update an installed app.')
+        }
+        logger.warn('WARNING: no signing key configured; using this machine\'s temporary debug key. An APK signed this way cannot update an app installed from a build with another key.')
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}

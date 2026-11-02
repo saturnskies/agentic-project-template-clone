@@ -11,9 +11,17 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "check": "npm run typecheck && npm run test && npm run test:e2e"
+    "check": "npm run typecheck && npm run test && npm run test:e2e",
+    "apk": "vite build --base=./ && cap sync android && cd android && ./gradlew assembleRelease",
+    "apk:debug": "vite build --base=./ && cap sync android && cd android && ./gradlew assembleDebug"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/cli": "^8.6.0",
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/share": "^8.0.3",
     "@playwright/test": "^1.63.0",
     "@types/node": "^22.20.5",
     "fake-indexeddb": "^6.2.7",

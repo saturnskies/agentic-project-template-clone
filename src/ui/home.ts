@@ -3,6 +3,7 @@ import type { ScryCard } from '../scryfall/types';
 import type { AppContext } from './app';
 import { cardArt } from '../lib/groups';
 import { cardsByOracleId, cardsByPrintingId } from '../scryfall/cards';
+import { backupSection } from './backup';
 import { h, usd } from './dom';
 
 export function renderHome(view: HTMLElement, ctx: AppContext): void {
@@ -45,6 +46,7 @@ export function renderHome(view: HTMLElement, ctx: AppContext): void {
 
   view.append(
     h('section', { class: 'stack', 'aria-labelledby': 'decks-h' }, h('div', { class: 'row-between' }, h('h2', { id: 'decks-h' }, 'Your decks'), actions), body),
+    backupSection(ctx),
   );
 
   // Two batched, cached lookups fill in the art: the printing each user picked for their commander,

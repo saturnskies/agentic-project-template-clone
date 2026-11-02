@@ -1,0 +1,39 @@
+import { expect, test } from '@playwright/test';
+
+test('manifest is linked and every icon it lists loads', async ({ page, request }) => {
+  await page.route('https://api.scryfall.com/**', (route) => route.abort());
+  await page.goto('./');
+
+  const href = await page.locator('link[rel="manifest"]').getAttribute('href');
+  expect(href).toBe('/swapsmith/manifest.webmanifest');
+  const manifestUrl = new URL(href!, page.url()).href;
+  const manifest = await (await request.get(manifestUrl)).json();
+
+  expect(manifest).toMatchObject({ name: 'Swapsmith', display: 'standalone', start_url: './', scope: './' });
+  const sizes = manifest.icons.map((i: { sizes: string; purpose: string }) => `${i.sizes}:${i.purpose}`);
+  expect(sizes).toEqual(expect.arrayContaining(['192x192:any', '512x512:any', '512x512:maskable']));
+  for (const icon of manifest.icons) {
+    const res = await request.get(new URL(icon.src, manifestUrl).href);
+    expect(res.status(), icon.src).toBe(200);
+    expect(res.headers()['content-type']).toContain('image/png');
+  }
+  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#000000');
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveCount(1);
+});
+
+test.describe('service worker', () => {
+  test.use({ serviceWorkers: 'allow' });
+
+  test('registers, takes control, and opens the app shell offline', async ({ page, context }) => {
+    await page.route('https://api.scryfall.com/**', (route) => route.abort());
+    await page.goto('./');
+    await page.evaluate(() => navigator.serviceWorker.ready);
+    await page.reload(); // first load is uncontrolled; the reload is served through the worker
+    await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
+
+    await context.setOffline(true);
+    await page.reload();
+    await expect(page.getByRole('heading', { level: 1, name: 'Swapsmith' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Your decks' })).toBeVisible();
+  });
+});

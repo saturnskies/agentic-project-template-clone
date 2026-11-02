@@ -1,5 +1,7 @@
 import './style.css';
+import { Capacitor } from '@capacitor/core';
 import { startApp } from './ui/app';
+import { installNativeBack } from './ui/native';
 
 const app = document.querySelector<HTMLDivElement>('#app');
 if (!app) throw new Error('Swapsmith: #app element missing');
@@ -20,3 +22,15 @@ app.innerHTML = `
 `;
 
 startApp(app.querySelector<HTMLElement>('#main')!);
+void installNativeBack();
+
+// Installable app + offline shell. Production only: the dev server serves unhashed modules.
+// Skipped inside the Android app (ADR-003), which already ships the files in the APK.
+const insideApk = Capacitor.isNativePlatform();
+if (import.meta.env.PROD && 'serviceWorker' in navigator && !insideApk) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch(() => {
+      // Unsupported or blocked (private mode, http): the site works the same without it.
+    });
+  });
+}

@@ -1,4 +1,4 @@
-import { deckTotals, newDeckId, type Deck, type DeckEntry } from '../lib/deck';
+import { cleanDeckName, deckTotals, newDeckId, type Deck, type DeckEntry } from '../lib/deck';
 import { deckFileName, deckToText } from '../lib/export';
 import { decodeDeck, encodeDeck, ShareError } from '../lib/share';
 import { cardWarnings, DECK_SIZE, isBasicLand, warningText } from '../lib/format';
@@ -10,6 +10,7 @@ import { oracleIdOf, priceDeck, priceEntries, withPrinting, type PricedCard } fr
 import type { ScryCard } from '../scryfall/types';
 import type { AppContext } from './app';
 import { combobox } from './combobox';
+import { saveFile } from './saveFile';
 import { suggestionsPanel } from './suggestions';
 import { h, usd } from './dom';
 
@@ -64,6 +65,49 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   const note = h('p', { class: 'muted' });
   const adder = h('div', { class: 'stack' });
   const body = h('div', { class: 'stack' });
+
+  // ---- Title and rename -----------------------------------------------------------------------
+  const titleBox = h('div', { class: 'deck-head' });
+  const drawTitle = () => {
+    const rename = h('button', { type: 'button', class: 'button small' }, 'Rename');
+    rename.addEventListener('click', editTitle);
+    titleBox.replaceChildren(
+      h('div', { class: 'deck-title-row' }, h('h2', {}, deck.name || 'Shared deck'), readOnly ? null : rename),
+      h('p', { class: 'muted' }, `Commander: ${deck.commander.name}`),
+    );
+    return rename;
+  };
+  function editTitle() {
+    const input = h('input', { type: 'text', 'aria-label': 'Deck name', autocomplete: 'off', maxlength: 80, value: deck.name, class: 'title-input' });
+    const error = h('p', { class: 'notice', role: 'alert' });
+    const saveBtn = h('button', { type: 'submit', class: 'button primary small' }, 'Save name');
+    const cancel = h('button', { type: 'button', class: 'button small' }, 'Cancel');
+    const finish = () => drawTitle().focus();
+    cancel.addEventListener('click', finish);
+    const form = h('form', { class: 'title-edit' }, input, saveBtn, cancel);
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = cleanDeckName(input.value);
+      if (!name) {
+        error.textContent = 'Give the deck a name.';
+        titleBox.replaceChildren(form, error);
+        input.focus();
+        return;
+      }
+      if (name !== deck.name) {
+        deck = { ...deck, name, updatedAt: new Date().toISOString() };
+        persist(deck);
+      }
+      finish();
+    });
+    form.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') finish();
+    });
+    titleBox.replaceChildren(form);
+    input.focus();
+    input.select();
+  }
+  drawTitle();
 
   const owned = (p: PricedCard) => isOwned(ctx.store, p.entry.card.oracleId, p.typeLine);
   const summary = () => ({
@@ -288,7 +332,7 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
     const no = h('button', { type: 'button', class: 'button' }, 'Cancel');
     yes.addEventListener('click', () => {
       ctx.deleteDeck(deck.id);
-      ctx.go('#/');
+      ctx.replace('#/');
     });
     no.addEventListener('click', () => confirmBox.replaceChildren(del));
     confirmBox.replaceChildren(h('span', {}, 'Delete this deck? This cannot be undone.'), yes, no);
@@ -327,20 +371,20 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
     }
   });
   const downloadBtn = h('button', { type: 'button', class: 'button' }, 'Download .txt');
-  downloadBtn.addEventListener('click', () => {
-    const url = URL.createObjectURL(new Blob([deckToText(deck)], { type: 'text/plain' }));
-    const a = h('a', { href: url, download: deckFileName(deck) });
-    document.body.append(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    exportMsg.textContent = 'Deck list downloaded.';
+  downloadBtn.addEventListener('click', async () => {
+    try {
+      await saveFile(deckToText(deck), deckFileName(deck), 'text/plain');
+      exportMsg.textContent = 'Deck list saved.';
+    } catch (e) {
+      // Closing the share sheet rejects on some devices; that is not an error.
+      if (!/cancel|dismiss/i.test(String((e as Error)?.message))) exportMsg.textContent = "Couldn't save the deck list. Try again.";
+    }
   });
 
   const save = h('button', { type: 'button', class: 'button primary' }, 'Save to my decks');
   save.addEventListener('click', () => {
     ctx.saveDeck(deck);
-    ctx.go(`#/deck/${deck.id}`);
+    ctx.replace(`#/deck/${deck.id}`);
   });
   const sharedBanner = h('div', { class: 'banner row-between' }, h('p', {}, 'A shared deck. Save it to change it or track your cards.'), save);
 
@@ -353,7 +397,7 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
       h(
         'div',
         { class: 'row-between' },
-        h('div', { class: 'deck-head' }, h('h2', {}, deck.name || 'Shared deck'), h('p', { class: 'muted' }, `Commander: ${deck.commander.name}`)),
+        titleBox,
         h('div', { class: 'actions' }, copyBtn, downloadBtn, readOnly ? null : shareBtn),
       ),
       exportMsg,

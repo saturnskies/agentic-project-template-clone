@@ -30,7 +30,7 @@ export function renderNewDeck(view: HTMLElement, ctx: AppContext): void {
     if (!commander) return;
     const deck = buildDeck(name.value, [], commander);
     ctx.saveDeck(deck);
-    ctx.go(`#/deck/${deck.id}`);
+    ctx.replace(`#/deck/${deck.id}`);
   });
 
   view.append(
