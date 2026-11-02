@@ -2,20 +2,21 @@ import { expect, test } from '@playwright/test';
 import { edgarFull, mockScryfall, seedEdgarDeck } from './helpers';
 
 // The full Edgar Markov deck with Scryfall replies recorded 2026-11-02 (tests/fixtures/scryfall-edgar-full.json).
+// Prices are that recording's: re-recording moves them, so update the totals below with it.
 
 test('find upgrades by price tier that fit the deck', async ({ page }) => {
   const misses = await mockScryfall(page, edgarFull);
   const deck = await seedEdgarDeck(page);
   await page.goto(`./#/deck/${deck.id}`);
-  await expect(page.getByTestId('deck-total')).toHaveText('$119.65');
+  await expect(page.getByTestId('deck-total')).toHaveText('$119.73');
 
-  await page.getByRole('button', { name: 'Find upgrades' }).click();
+  await page.getByRole('button', { name: 'Find suggestions' }).click();
   const profile = page.getByTestId('deck-profile');
   await expect(profile).toContainText('Colors: black, red, white');
   await expect(profile).toContainText('Tribe: Vampire');
   await expect(profile).toContainText('Themes: sacrifice, lifegain, +1/+1 counters, graveyard');
 
-  const panel = page.getByRole('complementary', { name: 'Upgrades' });
+  const panel = page.getByRole('complementary', { name: 'Suggestions' });
   await expect(panel.getByRole('button', { name: 'Budget (10)' })).toHaveAttribute('aria-pressed', 'true');
   const budget = panel.getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem');
   await expect(budget).toHaveCount(10);
@@ -40,11 +41,104 @@ test('add a suggested card to the deck', async ({ page }) => {
   const misses = await mockScryfall(page, edgarFull);
   const deck = await seedEdgarDeck(page);
   await page.goto(`./#/deck/${deck.id}`);
-  await page.getByRole('button', { name: 'Find upgrades' }).click();
+  await page.getByRole('button', { name: 'Find suggestions' }).click();
 
   await page.getByRole('button', { name: 'Add Indulgent Aristocrat' }).click();
-  await expect(page.getByRole('button', { name: 'Add Indulgent Aristocrat' })).toHaveText('Added');
   await expect(page.getByTestId('deck-count')).toHaveText('101 / 100 cards');
+  // Now in the deck, so it drops out of the suggestions; the list refills without new searches.
+  await expect(page.getByRole('button', { name: 'Add Indulgent Aristocrat' })).toHaveCount(0);
+  await expect(page.getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem')).toHaveCount(10);
   await expect(page.getByRole('row').filter({ hasText: 'Indulgent Aristocrat' })).toContainText('$0.21');
   expect(misses).toEqual([]);
+});
+
+test('swap a weak card for a suggestion, then undo it', async ({ page }) => {
+  const misses = await mockScryfall(page, edgarFull);
+  const deck = await seedEdgarDeck(page);
+  await page.goto(`./#/deck/${deck.id}`);
+  await page.getByRole('button', { name: 'Find suggestions' }).click();
+  const panel = page.getByRole('complementary', { name: 'Suggestions' });
+  await panel.getByRole('button', { name: 'Swaps' }).click();
+
+  const first = panel.getByRole('list', { name: 'Swap pairs' }).getByRole('listitem').first();
+  await expect(first).toContainText('Cut Purify');
+  await expect(first).toContainText('Add Indulgent Aristocrat');
+  await first.getByRole('button', { name: 'Swap Purify for Indulgent Aristocrat' }).click();
+
+  await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
+  await expect(page.getByRole('row').filter({ hasText: 'Indulgent Aristocrat' })).toBeVisible();
+  await expect(page.getByRole('row').filter({ hasText: 'Purify' })).toHaveCount(0);
+  // The list updates without new searches: the next pair moves up.
+  await expect(panel.getByRole('list', { name: 'Swap pairs' }).getByRole('listitem').first()).not.toContainText('Purify');
+
+  await expect(panel).toContainText('Swapped Purify → Indulgent Aristocrat.');
+  await panel.getByRole('button', { name: 'Undo' }).click();
+  await expect(page.getByRole('row').filter({ hasText: 'Purify' })).toBeVisible();
+  await expect(page.getByRole('row').filter({ hasText: 'Indulgent Aristocrat' })).toHaveCount(0);
+  await expect(page.getByTestId('deck-total')).toHaveText('$119.73');
+  expect(misses).toEqual([]);
+});
+
+test('cards marked Keep are never offered as cuts', async ({ page }) => {
+  await mockScryfall(page, edgarFull);
+  const deck = await seedEdgarDeck(page);
+  await page.goto(`./#/deck/${deck.id}`);
+  await page.getByRole('button', { name: 'Keep Purify' }).click();
+  await expect(page.getByRole('button', { name: 'Keep Purify' })).toHaveAttribute('aria-pressed', 'true');
+
+  await page.getByRole('button', { name: 'Find suggestions' }).click();
+  const panel = page.getByRole('complementary', { name: 'Suggestions' });
+  await panel.getByRole('button', { name: 'Swaps' }).click();
+  await expect(panel.getByRole('list', { name: 'Swap pairs' })).not.toContainText('Cut Purify');
+
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Keep Purify' })).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('replace an expensive card with a cheaper one that does the same job', async ({ page }) => {
+  const misses = await mockScryfall(page, edgarFull);
+  const deck = await seedEdgarDeck(page);
+  await page.goto(`./#/deck/${deck.id}`);
+  await page.getByRole('button', { name: 'Find suggestions' }).click();
+  const panel = page.getByRole('complementary', { name: 'Suggestions' });
+  await panel.getByRole('button', { name: 'Cheaper' }).click();
+
+  const group = panel.getByRole('region', { name: 'Cheaper than Minas Tirith' });
+  await expect(group).toContainText('Minas Tirith · $6.08');
+  await expect(group.getByRole('listitem').first()).toContainText('Buried Ruin');
+  await expect(group.getByRole('listitem').first()).toContainText('Save $5.81');
+  await group.getByRole('button', { name: 'Swap Minas Tirith for Buried Ruin' }).click();
+
+  await expect(page.getByTestId('deck-total')).toHaveText('$113.92');
+  await expect(page.getByRole('row').filter({ hasText: 'Buried Ruin' })).toBeVisible();
+  await expect(page.getByRole('row').filter({ hasText: 'Minas Tirith' })).toHaveCount(0);
+  await expect(panel.getByRole('region', { name: 'Cheaper than Minas Tirith' })).toHaveCount(0);
+  expect(misses).toEqual([]);
+});
+
+test('if the role lookup fails, upgrades still show and swaps say matching is approximate', async ({ page }) => {
+  await mockScryfall(page, edgarFull);
+  // Role lookups are searches over the deck's own names (`!"Name"`); make them all fail.
+  await page.route(/api\.scryfall\.com\/cards\/search\?q=otag%3A[^&]*%21%22/, (route) => route.abort());
+  const deck = await seedEdgarDeck(page);
+  await page.goto(`./#/deck/${deck.id}`);
+  await page.getByRole('button', { name: 'Find suggestions' }).click();
+
+  const panel = page.getByRole('complementary', { name: 'Suggestions' });
+  await expect(panel.getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem').first()).toContainText('Indulgent Aristocrat');
+  await panel.getByRole('button', { name: 'Swaps' }).click();
+  await expect(panel).toContainText("Couldn't check what every card in your deck does", { timeout: 30_000 });
+  await expect(panel.getByRole('list', { name: 'Swap pairs' }).getByRole('listitem').first()).toBeVisible();
+});
+
+test('if one search fails, the rest still give suggestions and a note says what is missing', async ({ page }) => {
+  await mockScryfall(page, edgarFull);
+  await page.route(/api\.scryfall\.com\/cards\/search\?q=f%3Acommander[^&]*otag%3Aramp/, (route) => route.abort());
+  const deck = await seedEdgarDeck(page);
+  await page.goto(`./#/deck/${deck.id}`);
+  await page.getByRole('button', { name: 'Find suggestions' }).click();
+
+  const panel = page.getByRole('complementary', { name: 'Suggestions' });
+  await expect(panel).toContainText("Scryfall didn't answer every search (ramp)", { timeout: 30_000 });
+  await expect(panel.getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem').first()).toContainText('Indulgent Aristocrat');
 });
