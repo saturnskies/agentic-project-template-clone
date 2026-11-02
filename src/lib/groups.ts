@@ -58,3 +58,9 @@ export function cardImage(card: ScryCard | null, size: 'small' | 'normal' = 'nor
   if (!card) return null;
   return card.image_uris?.[size] ?? card.card_faces?.[0]?.image_uris?.[size] ?? null;
 }
+
+/** The cropped artwork of a card; double-faced cards use the front face. */
+export function cardArt(card: ScryCard | null): string | null {
+  if (!card) return null;
+  return card.image_uris?.art_crop ?? card.card_faces?.[0]?.image_uris?.art_crop ?? null;
+}
