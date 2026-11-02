@@ -102,7 +102,8 @@ Prefs    = { view: 'grid' | 'list', budgetTier?: 'budget' | 'mid' | 'premium' }
 
 A share link holds the deck in the URL hash (`#d=<data>`), so no server is needed.
 
-- **Encoding:** commander and card lines as compact text (`qty name|printingId`), compressed with the browser's built-in `CompressionStream('deflate-raw')`, then base64url-encoded. A 100-card deck makes a URL of roughly 1–2 KB.
+- **Encoding:** compact text lines (`qty|oracleId|printingId|name`; the exact format is documented in `src/lib/share.ts`), compressed with the browser's built-in `CompressionStream('deflate-raw')`, then base64url-encoded. Oracle IDs make the deck exact without re-matching names. The full 100-card Edgar deck makes a link of about 3.6 KB (measured 2026-11-02).
+- **Untrusted input:** a link can come from anyone, so decoding checks every field and refuses links that inflate past 64 KB or list more than 250 cards.
 - **Opening a link:** shows the deck read-only, with a **Save to my decks** button.
 - **Owned cards stay out.** They're personal and are never put in a share link.
 
