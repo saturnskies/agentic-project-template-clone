@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="b" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d11a2a"/>
+      <stop offset="1" stop-color="#6e0a14"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="#14100f"/>
+  <path d="M40 168C96 164 128 128 184 128H468V236H376C352 236 342 258 338 280C336 304 348 322 376 340V396H136V340C164 322 176 304 174 280C170 258 158 236 128 236C84 236 54 204 40 168Z" fill="url(#b)"/>
+  <path d="M184 128H468V146H184Z" fill="#ff5a66" opacity=".35"/>
+  <!-- emblem placeholder: swap arrows (replace with the logo you have rights to use) -->
+  <g fill="none" stroke="#14100f" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M214 170h200m-22-18 22 18-22 18"/>
+    <path d="M414 208H214m22-18-22 18 22 18" transform="translate(0 -4)"/>
+  </g>
+</svg>
