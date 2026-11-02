@@ -20,6 +20,12 @@ export interface AppContext {
   /** Remembers the list or grid view for every deck. */
   setView(view: 'list' | 'grid'): void;
   go(route: string): void;
+  /** Like go, but swaps the current history entry, so back skips the screen we just left. */
+  replace(route: string): void;
+  /** Redraws the current screen (after the store changed underneath it). */
+  refresh(): void;
+  /** Overwrites the saved decks, owned cards and view with `next` (used by restore) and saves. */
+  replaceStore(next: Store): void;
 }
 
 export function startApp(root: HTMLElement): void {
@@ -54,6 +60,18 @@ export function startApp(root: HTMLElement): void {
     go(route) {
       if (location.hash === route) render();
       else location.hash = route;
+    },
+    replace(route) {
+      if (location.hash === route) render();
+      else location.replace(route);
+    },
+    refresh: () => render(),
+    replaceStore(next) {
+      store.decks = next.decks;
+      store.owned = next.owned;
+      store.unownedBasics = next.unownedBasics;
+      store.prefs = next.prefs;
+      save();
     },
   };
 
