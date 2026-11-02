@@ -45,3 +45,20 @@ describe('candidatePool', () => {
     expect(profileSearches(profile)).toHaveLength(6);
   });
 });
+
+describe('deckCardFacts', () => {
+  it('never offers a card whose Scryfall data failed to load as a cut or for replacement', async () => {
+    const { deckCardFacts } = await import('../../src/scryfall/suggest');
+    const facts = deckCardFacts(
+      [
+        { entry: { card: { oracleId: 'o-ok', name: 'Ok' }, qty: 1 }, isCommander: false, card: { name: 'Ok', edhrec_rank: 10 } as never, typeLine: 'Creature', price: 1, finish: 'nonfoil', url: null, prints: [] },
+        { entry: { card: { oracleId: 'o-gone', name: 'Gone' }, qty: 1 }, isCommander: false, card: null, typeLine: '', price: null, finish: null, url: null, prints: [] },
+        { entry: { card: { oracleId: 'o-fail', name: 'Failed' }, qty: 1 }, isCommander: false, card: { name: 'Failed' } as never, typeLine: 'Creature', price: null, finish: null, url: null, prints: [], failed: true },
+      ],
+      new Map(),
+      [],
+      { owned: [], unownedBasics: [] },
+    );
+    expect(facts.map((f) => [f.name, f.keep])).toEqual([['Ok', false], ['Gone', true], ['Failed', true]]);
+  });
+});
