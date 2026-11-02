@@ -13,12 +13,17 @@ Status: **current** = in force or in progress; **draft** = proposed, not approve
 
 ## docs/decisions/
 
+- [ADR-001-swapsmith-stack-and-hosting.md](decisions/ADR-001-swapsmith-stack-and-hosting.md) — draft, 2026-11-02 — Chooses a static Vite + TypeScript site with no framework, Scryfall called from the browser, and GitHub Pages hosting for Swapsmith
 - [README.md](decisions/README.md) — current, 2026-10-29 — How to write ADRs: naming, front matter, status rules, never rewrite accepted ADRs
 
 ## docs/research/
 
 - [edgar-markov-deck-pricing-opus.md](research/edgar-markov-deck-pricing-opus.md) — current, 2026-11-02 — TCGplayer price guide for the Edgar Markov Vampires Commander deck (cheapest printings, spot-checked) plus budget/mid/premium upgrades; Opus re-check of the Sonnet guide
 - [edgar-markov-deck-pricing.md](research/edgar-markov-deck-pricing.md) — current, 2026-11-02 — TCGplayer-based price guide for the Edgar Markov Commander deck, with upgrade options by price tier
+
+## docs/superpowers/specs/
+
+- [2026-11-02-swapsmith-design.md](superpowers/specs/2026-11-02-swapsmith-design.md) — draft, 2026-11-02 — Swapsmith v1 design spec — free static Commander deckbuilder with live TCGplayer prices via Scryfall, owned-card tracking, and rules-based swap/upgrade/cheaper-replacement suggestions
 
 ## tutorial/
 
