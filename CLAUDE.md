@@ -28,9 +28,9 @@ Any developer should be able to say "run the tests" and have it work on the firs
 
 ## Architecture
 
-- `src/scryfall/` — the only code that calls Scryfall: queued ~100 ms apart, 429 retry, 24 h IndexedDB cache. Scryfall rejects Node's default User-Agent; browsers are fine
+- `src/scryfall/` — the only code that calls Scryfall: queued ~100 ms apart (500 ms for search/named/collection), 429 and network-error retry, 24 h IndexedDB cache. Scryfall quirks that shaped it (query length cap, 429s without CORS, lenient batch matching) are listed in the spec's "Data source" section
 - `src/lib/` — pure logic (parser, pricing, suggestions, share links), unit-tested in `tests/unit/`
-- `src/ui/` — screens; `tests/e2e/` drives them with Scryfall answered from `tests/fixtures/` (real captured replies)
+- `src/ui/` — screens; `tests/e2e/` drives them with Scryfall answered from `tests/fixtures/` (real replies; re-record with `RECORD=1 npx vitest run tests/unit/record-fixtures.test.ts`)
 - `.github/workflows/pages.yml` — CI on every push/PR; deploys `dist/` to Pages from `main` only
 
 <!-- TODO: Key directories and what lives where. Prefer an ASCII diagram for data flow. -->

@@ -38,10 +38,91 @@ describe('Scryfall client', () => {
     const f = fakeFetch([json({ object: 'card', name: 'A' })]);
     const client = createClient({ fetch: f.fn, cache: memoryCache(), now: clock.now, sleep: clock.sleep, spacingMs: 100 });
 
-    await Promise.all([client.get('/cards/named?exact=A'), client.get('/cards/named?exact=B')]);
+    await Promise.all([client.get('/cards/a1'), client.get('/cards/b2')]);
 
     expect(f.calls).toHaveLength(2);
     expect(clock.sleeps).toEqual([100]);
+  });
+
+  it('spaces searches, name lookups and collection lookups at least 500 ms apart', async () => {
+    const clock = fakeClock();
+    const f = fakeFetch([json({ object: 'list', data: [] })]);
+    const client = createClient({ fetch: f.fn, cache: memoryCache(), now: clock.now, sleep: clock.sleep, spacingMs: 100 });
+
+    await Promise.all([client.get('/cards/search?q=a'), client.get('/cards/named?fuzzy=b'), client.post('/cards/collection', { identifiers: [] }), client.get('/cards/abc')]);
+
+    // search → named waits 500; named → collection waits 500; collection → /cards/abc only 100.
+    expect(clock.sleeps).toEqual([500, 500, 100]);
+  });
+
+  it('starts the next request without waiting for the previous reply', async () => {
+    const clock = fakeClock();
+    let release!: () => void;
+    const gate = new Promise<void>((r) => { release = r; });
+    const started: string[] = [];
+    const slowFetch = (async (url: string | URL | Request) => {
+      started.push(String(url));
+      if (started.length === 1) await gate; // the first reply is slow
+      return json({ ok: true })();
+    }) as typeof fetch;
+    const client = createClient({ fetch: slowFetch, cache: memoryCache(), now: clock.now, sleep: clock.sleep, spacingMs: 100 });
+
+    const first = client.get('/slow');
+    const second = client.get('/fast');
+    await expect(second).resolves.toEqual({ ok: true });
+    expect(started).toHaveLength(2);
+    release();
+    await first;
+  });
+
+  it('retries a request that fails at the network level, then succeeds', async () => {
+    const clock = fakeClock();
+    let calls = 0;
+    const flaky = (async () => {
+      calls += 1;
+      if (calls === 1) throw new TypeError('Failed to fetch');
+      return json({ ok: true })();
+    }) as typeof fetch;
+    const client = createClient({ fetch: flaky, cache: memoryCache(), now: clock.now, sleep: clock.sleep });
+
+    await expect(client.get('/x')).resolves.toEqual({ ok: true });
+    expect(calls).toBe(2);
+    expect(clock.sleeps).toContain(1000);
+  });
+
+  it('gives up after maxRetries network failures with a ScryfallError of status 0', async () => {
+    const clock = fakeClock();
+    let calls = 0;
+    const down = (async () => { calls += 1; throw new TypeError('Failed to fetch'); }) as typeof fetch;
+    const client = createClient({ fetch: down, cache: memoryCache(), now: clock.now, sleep: clock.sleep, maxRetries: 2 });
+
+    await expect(client.get('/x')).rejects.toMatchObject({ name: 'ScryfallError', status: 0 });
+    expect(calls).toBe(3);
+  });
+
+  it('keeps at most maxInFlight requests open at once', async () => {
+    const clock = fakeClock();
+    let open = 0;
+    let peak = 0;
+    const releases: Array<() => void> = [];
+    const slow = (async () => {
+      open += 1;
+      peak = Math.max(peak, open);
+      await new Promise<void>((r) => releases.push(r));
+      open -= 1;
+      return json({ ok: true })();
+    }) as typeof fetch;
+    const client = createClient({ fetch: slow, cache: memoryCache(), now: clock.now, sleep: clock.sleep, maxInFlight: 2 });
+
+    const all = Promise.all([1, 2, 3, 4, 5].map((i) => client.get(`/r${i}`)));
+    for (let i = 0; i < 5; i += 1) {
+      await new Promise((r) => setTimeout(r, 0));
+      releases.shift()?.();
+    }
+    await new Promise((r) => setTimeout(r, 0));
+    while (releases.length) releases.shift()!();
+    await all;
+    expect(peak).toBe(2);
   });
 
   it('sends requests to api.scryfall.com with an Accept header', async () => {

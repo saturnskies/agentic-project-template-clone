@@ -1,0 +1,78 @@
+1 Edgar Markov
+1 Bloodline Keeper // Lord of Lineage
+1 Calastria Highborn
+1 Captivating Vampire
+1 Chiral Attentive First Year
+1 Cordial Vampire
+1 Dracula, Blood Immortal
+1 Drana, Liberator of Malakir
+1 Driver of the Dead
+1 Emeritus of Woe
+1 Emmerstorm Predator
+1 Gatekeeper of Malakir
+1 Healer's Hawk
+1 Malakir Bloodwitch
+1 Marauding Blight-Priest
+1 Master of Dark Rites
+1 Mentor of the Meek
+1 Morlun, Devourer of Spiders
+1 Null Priest of Oblivion
+1 Postmortem Professor
+1 Pulse Tracker
+1 Sanctum Seeker
+1 Sanguine Siphoner
+1 Scheming Silvertongue
+1 Stromkirk Blood-Thief
+1 Stromkirk Captain
+1 Stromkirk Noble
+1 Teysa Karlov
+1 Vampire Gourmand
+1 Vampire Nighthawk
+1 Vengeful Bloodwitch
+1 Sorin, Imperious Bloodlord
+1 Ajani's Response
+1 Blasphemous Act
+1 Burst Lightning
+1 Dread Return
+1 Exsanguinate
+1 Faithless Looting
+1 Flashback
+1 Inside Information
+1 Lorehold Charm
+1 Mortify
+1 Purify
+1 Repel Calamity
+1 Rout
+1 Sign in Blood
+1 Thrill of Possibility
+1 Unbury
+1 Village Rites
+1 Ark of Hunger
+1 Arcane Signet
+1 Panther Idol
+1 Skullclamp
+1 Sol Ring
+1 Swiftfoot Boots
+1 Talisman of Hierarchy
+1 Angelic Destiny
+1 Cathars' Crusade
+1 Duty Beyond Death
+1 Heartless Summoning
+1 Twinblade Blessing
+1 Blood Mist
+1 Celestial Armor
+1 Moogle's Valor
+1 Abandoned Air Temple
+1 Cave of the Frost Dragon
+1 Command Tower
+1 Evolving Wilds
+1 Haunted Ridge
+1 Minas Tirith
+1 Night Market
+1 Shattered Sanctum
+1 Smoldering Marsh
+1 Sundown Pass
+1 Thriving Bluff
+8 Swamp
+8 Mountain
+9 Plains

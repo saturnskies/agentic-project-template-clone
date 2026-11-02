@@ -60,7 +60,20 @@ Every card fact and price comes from the free public [Scryfall API](https://scry
 - It caches responses in IndexedDB for 24 hours, keyed by URL. Prices only change daily, so a reopened deck loads mostly from cache.
 - The footer credits Scryfall. The site never charges for Scryfall data, which Scryfall's terms require.
 
-**Load cost.** A new 100-card deck needs 2 collection calls, plus up to 100 printings searches to find each card's cheapest printing (about 10 s at 10 requests a second). A progress bar shows this on first load. Each card first shows the price of its default printing, then switches to the cheapest once its printings arrive. After that, the cache makes reloads fast.
+**Load cost.** A deck is priced in about 15 requests:
+- 2 collection lookups.
+- A few batched printings searches, each covering about 15 Oracle IDs OR-ed together, following every page.
+- One price-filtered search per basic land.
+
+The full 100-card Edgar list was priced in 8 s against the live API on 2026-11-02, and a reload takes 0.1 s from the cache.
+
+**Scryfall behaviour found while building (2026-11-02):**
+- **Query length:** queries longer than about 1,000 characters are silently cut short, so batches stay under 900.
+- **Rate limits:** bursts of searches at 10 a second get 429s. Those replies carry no CORS headers, so browsers report them as a network error. Searches, name lookups and collection lookups are spaced 500 ms apart, and network errors are retried like 429s.
+- **Batch lookups:** results come back in request order with misses left out. Matching is forgiving: "Stromkirk Blood-Thief" finds Stromkirk Bloodthief. It can also return the wrong card: "Sign in Blood" returns Scheming Silvertongue // Sign in Blood. So each pairing is checked by name, and a mismatch falls back to fuzzy lookup.
+- **Double-faced cards:** a batch lookup only matches the front-face name, not "A // B".
+- **Alternate names:** names printed on some versions (`flavor_name`, e.g. Panther Idol for Mind's Eye) are matched and shown to the user.
+- **User-Agent:** the API rejects Node's default User-Agent, but browsers are fine.
 
 ## Data model
 
