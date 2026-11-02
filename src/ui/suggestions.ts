@@ -21,7 +21,8 @@ const VIEWS: Array<{ id: View; label: string }> = [
 
 export interface PanelActions {
   add(card: ScryCard): Promise<void>;
-  swap(cut: PricedCard, add: ScryCard): Promise<void>;
+  /** Replaces the deck card with this Oracle ID by the suggested card. */
+  swap(cutOracleId: string, add: ScryCard): Promise<void>;
   undo(): void;
   /** A short label for the last swap, or null when there is nothing to undo. */
   lastSwap(): string | null;
@@ -39,6 +40,8 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
   let roles = new Map<string, string[]>();
   /** The deck's own roles load after the pool; until then (or if that fails) swaps use roles seen in the pool. */
   let rolesState: 'loading' | 'ok' | 'approx' = 'loading';
+  /** Each Find bumps this; replies from an earlier Find are ignored. */
+  let run = 0;
   let profile: DeckProfile | null = null;
   let view: View = 'upgrades';
   let tier: Tier = 'budget';
@@ -77,17 +80,22 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
   };
   const busyButton = (label: string, aria: string, run: () => Promise<void>) => {
     const b = h('button', { type: 'button', class: 'button', 'aria-label': aria }, label);
+    const err = h('span', { class: 'muted small', role: 'status' });
     b.addEventListener('click', async () => {
       b.disabled = true;
       b.textContent = 'Working…';
+      err.textContent = '';
       try {
         await run();
       } catch {
+        err.textContent = "Couldn't reach Scryfall. Try again.";
+      } finally {
+        // Usually the list redraws first; if not (a failure), the button is usable again.
         b.disabled = false;
         b.textContent = label;
       }
     });
-    return b;
+    return h('span', { class: 'actions' }, b, err);
   };
 
   const drawUndo = () => {
@@ -147,7 +155,6 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
               'ul',
               { class: 'sugg-list', 'aria-label': 'Swap pairs' },
               ...pairs.map(({ add, cut, sharedRole }) => {
-                const cutCard = priced().find((p) => p.entry.card.oracleId === cut.oracleId)!;
                 return h(
                   'li',
                   { class: 'sugg' },
@@ -158,7 +165,7 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
                     h('p', { class: 'small swap-cut' }, 'Cut ', h('strong', {}, cut.name), cut.price != null ? ` (${usd(cut.price)})` : ''),
                     h('div', { class: 'sugg-head' }, h('span', {}, 'Add ', nameLink(add)), h('span', { class: 'sugg-price' }, usd(add.price))),
                     h('p', { class: 'muted small sugg-reason' }, [sharedRole ? `Both ${sharedRole}.` : null, add.reason].filter(Boolean).join(' ')),
-                    busyButton('Swap', `Swap ${cut.name} for ${add.card.name}`, () => actions.swap(cutCard, add.card)),
+                    busyButton('Swap', `Swap ${cut.name} for ${add.card.name}`, () => actions.swap(cut.oracleId, add.card)),
                   ),
                 );
               }),
@@ -175,7 +182,6 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
               'div',
               { class: 'stack', 'aria-label': 'Cheaper replacements', role: 'group' },
               ...replacements.map(({ card, options }) => {
-                const cutCard = priced().find((p) => p.entry.card.oracleId === card.oracleId)!;
                 return h(
                   'section',
                   { class: 'replace-group', 'aria-label': `Cheaper than ${card.name}` },
@@ -194,7 +200,7 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
                           h('div', { class: 'sugg-head' }, nameLink(add), h('span', { class: 'sugg-price' }, usd(add.price))),
                           h('p', { class: 'small save' }, `Save ${usd(saves)}`),
                           h('p', { class: 'muted small sugg-reason' }, add.reason),
-                          busyButton('Swap', `Swap ${card.name} for ${add.card.name}`, () => actions.swap(cutCard, add.card)),
+                          busyButton('Swap', `Swap ${card.name} for ${add.card.name}`, () => actions.swap(card.oracleId, add.card)),
                         ),
                       ),
                     ),
@@ -209,6 +215,7 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
   };
 
   find.addEventListener('click', async () => {
+    const mine = ++run;
     const cards = priced();
     const commander = cards.find((p) => p.isCommander)?.card ?? null;
     profile = deckProfile(
@@ -221,7 +228,9 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
     try {
       let done = 0;
       const tick = () => (status.textContent = `Searching Scryfall (${++done} searches done)…`);
-      ({ pool, failed: failedSearches } = await candidatePool(ctx.client, profile, (n) => n && tick()));
+      const result = await candidatePool(ctx.client, profile, (n) => n && tick());
+      if (mine !== run) return;
+      ({ pool, failed: failedSearches } = result);
       find.textContent = 'Refresh suggestions';
       // Upgrades show now; the deck's own roles (needed only for swaps) load afterwards, and a
       // failure there falls back to the roles the pool searches revealed.
@@ -229,18 +238,21 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
       rolesState = 'loading';
       draw();
       deckRoles(ctx.client, cards.filter((c) => !c.isCommander).map((c) => ({ oracleId: c.entry.card.oracleId, name: c.entry.card.name })))
-        .then((r) => {
+        .then(({ roles: r, complete }) => {
+          if (mine !== run) return;
           roles = r;
-          rolesState = 'ok';
+          rolesState = complete ? 'ok' : 'approx';
+          draw();
         })
         .catch(() => {
+          if (mine !== run) return;
           rolesState = 'approx';
-        })
-        .finally(draw);
+          draw();
+        });
     } catch {
-      status.textContent = "Couldn't reach Scryfall. Check your connection and try again.";
+      if (mine === run) status.textContent = "Couldn't reach Scryfall. Check your connection and try again.";
     } finally {
-      find.disabled = false;
+      if (mine === run) find.disabled = false;
     }
   });
 
