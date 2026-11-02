@@ -97,7 +97,7 @@ function renderFixUp(host: HTMLElement, ctx: AppContext, deckName: string, lines
       if (!commander) return;
       const deck = buildDeck(deckName, matched, commander);
       ctx.saveDeck(deck);
-      ctx.go(`#/deck/${deck.id}`);
+      ctx.replace(`#/deck/${deck.id}`);
     });
     host.append(commanderBlock, h('div', { class: 'actions' }, create, open.length ? h('span', { class: 'muted' }, 'Fix or remove the cards above first.') : null));
   };
