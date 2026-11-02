@@ -70,11 +70,14 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
     toBuy: stillToBuy(priced.map((p) => ({ qty: p.entry.qty, price: p.price, owned: owned(p) }))),
   });
 
-  /** Saves the deck and redraws totals and the table from `priced`. */
+  let panel: { root: HTMLElement; refresh(): void } | null = null;
+
+  /** Saves the deck and redraws totals, the cards and the suggestions from `priced`. */
   const commit = (cards: DeckEntry[], extra: Partial<Deck> = {}) => {
     deck = { ...deck, ...extra, cards, updatedAt: new Date().toISOString(), summary: summary() };
     persist(deck);
     redraw();
+    panel?.refresh();
   };
   const cardsOf = () => priced.filter((x) => !x.isCommander).map((x) => x.entry);
 
@@ -102,6 +105,13 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
           redraw();
         },
         onPrinting: openPicker,
+        onKeep: (p, value) => {
+          const entry = { ...p.entry };
+          if (value) entry.keep = true;
+          else delete entry.keep;
+          priced = priced.map((x) => (x === p ? { ...x, entry } : x));
+          commit(cardsOf());
+        },
         readOnly,
       }),
     );
@@ -172,6 +182,26 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
       const [p] = await priceEntries(ctx.client, [{ entry, isCommander: false }], undefined, new Map([[oid, card]]));
       priced = [...priced, p];
     }
+    commit(cardsOf());
+  };
+
+  // ---- Swapping (from suggestions) ------------------------------------------------------------
+  let lastSwap: { removed: PricedCard; index: number; addedOracleId: string; label: string } | null = null;
+  /** Replaces a deck card with a suggested card; Undo puts it back. */
+  const swap = async (cut: PricedCard, card: ScryCard) => {
+    const oid = oracleIdOf(card);
+    const [added] = await priceEntries(ctx.client, [{ entry: { card: { oracleId: oid, name: card.name }, qty: 1 }, isCommander: false }], undefined, new Map([[oid, card]]));
+    const index = priced.indexOf(cut);
+    priced = [...priced.filter((x) => x !== cut), added];
+    lastSwap = { removed: cut, index, addedOracleId: oid, label: `${cut.entry.card.name} → ${card.name}` };
+    commit(cardsOf());
+  };
+  const undo = () => {
+    if (!lastSwap) return;
+    const { removed, index, addedOracleId } = lastSwap;
+    priced = priced.filter((x) => x.isCommander || x.entry.card.oracleId !== addedOracleId);
+    priced.splice(Math.min(index, priced.length), 0, removed);
+    lastSwap = null;
     commit(cardsOf());
   };
 
@@ -319,7 +349,8 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
       else {
         adder.append(search.root, warningBox, status, viewSwitch);
         columns.classList.add('with-panel');
-        columns.append(suggestionsPanel(ctx, () => priced, add));
+        panel = suggestionsPanel(ctx, () => priced, { add, swap, undo, lastSwap: () => lastSwap?.label ?? null });
+        columns.append(panel.root);
       }
       redraw();
     })
@@ -335,12 +366,13 @@ interface TableHandlers {
   owned: (p: PricedCard) => boolean;
   onOwned: (p: PricedCard, owned: boolean) => void;
   onPrinting: (p: PricedCard) => void;
+  onKeep: (p: PricedCard, keep: boolean) => void;
   /** A shared deck: no owned ticks, removing or changing printings. */
   readOnly?: boolean;
 }
 
 /** The controls every card gets in both views: link, owned tick, printing button, remove button. */
-function cardControls(p: PricedCard, { onRemove, owned, onOwned, onPrinting, readOnly }: TableHandlers) {
+function cardControls(p: PricedCard, { onRemove, owned, onOwned, onPrinting, onKeep, readOnly }: TableHandlers) {
   const name = p.entry.card.name;
   const printing = p.card ? `${p.card.set.toUpperCase()} #${p.card.collector_number}` : '—';
   const finish = p.finish ? FINISH_LABEL[p.finish] : '';
@@ -365,8 +397,16 @@ function cardControls(p: PricedCard, { onRemove, owned, onOwned, onPrinting, rea
     btn.addEventListener('click', () => onRemove(p));
     return btn;
   };
+  /** "Keep" pins a card so suggestions never offer to cut or replace it. */
+  const keepToggle = () => {
+    if (readOnly || p.isCommander || isBasicLand(p.typeLine)) return null;
+    const kept = !!p.entry.keep;
+    const btn = h('button', { type: 'button', class: 'keep-toggle', 'aria-pressed': String(kept), 'aria-label': `Keep ${name}`, title: kept ? 'Kept: never suggested as a cut' : 'Keep: never suggest cutting this card' }, 'Keep');
+    btn.addEventListener('click', () => onKeep(p, !kept));
+    return btn;
+  };
   const priceText = p.price != null ? usd(p.price) : p.failed ? "couldn't load" : 'no price';
-  return { name, link, own, printingControl, finishTag, remove, priceText };
+  return { name, link, own, printingControl, finishTag, remove, keepToggle, priceText };
 }
 
 const asLine = (p: PricedCard) => ({ name: p.entry.card.name, typeLine: p.typeLine, qty: p.entry.qty, price: p.price, isCommander: p.isCommander, p });
@@ -397,7 +437,7 @@ function grid(priced: PricedCard[], sort: SortKey, handlers: TableHandlers): HTM
               h('div', { class: 'card-art' }, c.link(art), p.entry.qty > 1 ? h('span', { class: 'qty-badge' }, `×${p.entry.qty}`) : null),
               h('div', { class: 'card-meta' }, h('span', { class: 'card-tile-name' }, c.link(c.name)), h('span', { class: 'card-tile-price' }, c.priceText)),
               h('div', { class: 'card-printing' }, c.printingControl(), c.finishTag()),
-              handlers.readOnly ? null : h('div', { class: 'card-tools' }, h('label', { class: 'own-label' }, c.own(), 'Owned'), c.remove()),
+              handlers.readOnly ? null : h('div', { class: 'card-tools' }, h('label', { class: 'own-label' }, c.own(), 'Owned'), c.keepToggle(), c.remove()),
             );
           }),
         ),
@@ -438,6 +478,7 @@ function table(priced: PricedCard[], sort: SortKey, handlers: TableHandlers): HT
         { class: 'name' },
         nameEl,
         p.isCommander ? h('span', { class: 'tag' }, 'Commander') : null,
+        c.keepToggle(),
         // On phones the Printing column is hidden, so the printing shows under the name.
         h('div', { class: 'show-narrow sub' }, c.printingControl(), c.finishTag()),
       ),
