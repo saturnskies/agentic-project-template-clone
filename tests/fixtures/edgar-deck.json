@@ -1,0 +1,551 @@
+{
+ "id": "edgarfull",
+ "name": "Edgar Vampires",
+ "format": "commander",
+ "commander": {
+  "oracleId": "41e2790d-49f5-4e98-b8d9-04179f47f13a",
+  "name": "Edgar Markov"
+ },
+ "cards": [
+  {
+   "card": {
+    "oracleId": "434e82b5-abd4-41ac-a5b1-2dd01c667374",
+    "name": "Bloodline Keeper // Lord of Lineage"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "77e319da-d782-4258-bf0e-626755e5adc9",
+    "name": "Kalastria Highborn"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "acd382ee-94fb-4a29-b14e-c2a3c6dde7e0",
+    "name": "Captivating Vampire"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "3a272fa9-5f28-43a4-95de-10cb511f1b43",
+    "name": "Kirol, Attentive First-Year"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "d61fb9e8-d05a-481a-a90f-5def300c9abb",
+    "name": "Cordial Vampire"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "940080ce-c504-48c8-a763-326fef907217",
+    "name": "Falkenrath Forebear"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "89b24b5f-d837-4274-8877-8ff7dc2708ba",
+    "name": "Drana, Liberator of Malakir"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "7c179e54-3beb-4761-bddf-41fa98b082db",
+    "name": "Driver of the Dead"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "93056597-b964-421f-be2f-e92abef1c2a4",
+    "name": "Emeritus of Woe // Demonic Tutor"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "fcb6c6d4-ea8d-49cf-b6df-377084bdb757",
+    "name": "Immersturm Predator"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "6781f8ae-2a86-4e3d-bc43-48809c9d6c26",
+    "name": "Gatekeeper of Malakir"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "28a52ba1-95da-44e1-8ac5-0dc23c902394",
+    "name": "Healer's Hawk"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "870e199e-1d54-44ec-8e24-f24af93ae9c5",
+    "name": "Malakir Bloodwitch"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "814b87fe-2a75-4ff2-8637-7e69e3fb285b",
+    "name": "Marauding Blight-Priest"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "a65250f6-55e2-47ed-a355-d690047db6f2",
+    "name": "Master of Dark Rites"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "b9f4f96b-6e54-4fe6-8df7-623e0fc72409",
+    "name": "Mentor of the Meek"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "273ad15c-366a-4691-978b-d6028b57005a",
+    "name": "Morlun, Devourer of Spiders"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "c1111228-ef88-4b64-91e0-66ee32a1f5e4",
+    "name": "Nullpriest of Oblivion"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "0859d16e-2a1f-4b48-8687-99af8a8bdb38",
+    "name": "Postmortem Professor"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "f916f689-a314-4952-8107-41c4c2f2e811",
+    "name": "Pulse Tracker"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "afb71560-0fc9-4ea5-9d52-d93c17d72519",
+    "name": "Sanctum Seeker"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "b81a748b-f7a6-4ec4-8b18-40a1819745f6",
+    "name": "Sanguine Syphoner"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "44443716-8356-40cd-a879-35264b29108c",
+    "name": "Scheming Silvertongue // Sign in Blood"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "c85987b4-090e-472e-b9af-1114cce56ffb",
+    "name": "Stromkirk Bloodthief"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "599c3fd6-3309-4b5d-adec-9c4062848ad5",
+    "name": "Stromkirk Captain"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "c55909d3-1f67-4a4a-9d53-8513d6cf96d8",
+    "name": "Stromkirk Noble"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "644eeefd-e684-4ca8-8aef-a892ca130c07",
+    "name": "Teysa Karlov"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "3386414c-32fa-40ae-9b30-dab976a158c1",
+    "name": "Vampire Gourmand"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "feb244f8-bcb1-44cf-9940-2719221a7309",
+    "name": "Vampire Nighthawk"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "4cdbc466-42fc-471f-beab-397caec18101",
+    "name": "Vengeful Bloodwitch"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "fee680c6-afe2-4321-9d8a-8f81a612a53b",
+    "name": "Sorin, Imperious Bloodlord"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "bf7ec320-64bb-46ca-aac0-ca3d4224b69e",
+    "name": "Ajani's Response"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "7a2484a9-04fd-41a0-8224-610c1c07ed10",
+    "name": "Blasphemous Act"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "ac2086fe-98ee-4280-9c7c-c5c2d6548a8b",
+    "name": "Burst Lightning"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "352b64d2-2ae5-44ee-a64f-94932ef545d3",
+    "name": "Dread Return"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "8164b1e8-3350-465e-8a17-75f57d326344",
+    "name": "Exsanguinate"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "3d6fa57a-aa53-4b5c-b8af-a7612c823117",
+    "name": "Faithless Looting"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "02070488-9203-4304-9392-a111d20218c5",
+    "name": "Flashback"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "66961bcb-f588-47a7-b3f3-12f4ac674477",
+    "name": "Inside Information"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "a5729f11-6cde-4830-b882-ab4c5251c1a9",
+    "name": "Lorehold Charm"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "faa01ed1-ccfa-4e58-951f-cd81f9068027",
+    "name": "Mortify"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "cfd1b276-ef5d-4f60-9f63-a548ad315e07",
+    "name": "Purify"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "ba58f508-8036-496c-8a2f-c1e410165e93",
+    "name": "Repel Calamity"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "d69aa624-23d1-406a-b7e0-9140a6f57929",
+    "name": "Rout"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "c6207f6a-a624-4754-88f5-dbe700c841ff",
+    "name": "Sign in Blood"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "1cb0610b-a731-42c2-b93f-0a29f63cebf4",
+    "name": "Thrill of Possibility"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "e2928d3c-b64a-443e-a1c1-fd204bb098ba",
+    "name": "Unbury"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "365548fb-5acc-4a8a-b20b-26d28b7d029f",
+    "name": "Village Rites"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "2c654772-c786-4966-a46e-9556bbf31d7c",
+    "name": "Ark of Hunger"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "0bc7f093-bef0-4f1a-852c-4b75ebf54838",
+    "name": "Arcane Signet"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "63fd2a57-7a47-4e07-947c-f4e9da7ee538",
+    "name": "Mind's Eye"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "65986c1b-8e51-4604-b685-d82fa7d1263a",
+    "name": "Skullclamp"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "6ad8011d-3471-4369-9d68-b264cc027487",
+    "name": "Sol Ring"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "c8b143ad-43ec-4e0d-a440-e348daa31391",
+    "name": "Swiftfoot Boots"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "b693c3de-2eaf-4850-b405-e79d00adefda",
+    "name": "Talisman of Hierarchy"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "8ba36878-0816-44c7-b543-8ebfc28c2ecd",
+    "name": "Angelic Destiny"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "cc65ac73-5bef-4ecb-ad8e-39199084c027",
+    "name": "Cathars' Crusade"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "67e6ce99-4883-4713-9822-cb2334765b5b",
+    "name": "Duty Beyond Death"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "fa1be67e-a07e-42ce-88be-446acd643dc6",
+    "name": "Heartless Summoning"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "b3e1674f-dba1-4570-9990-e5dc643e237d",
+    "name": "Twinblade Blessing"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "22188333-69b6-4685-b96b-b8a102ad5531",
+    "name": "Blood Mist"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "4f1b68d7-7d16-4bb1-af5f-f1708b23ca73",
+    "name": "Celestial Armor"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "9627ed9a-5ade-412d-bf8d-f0705b1c9405",
+    "name": "Moogles' Valor"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "9575d7ce-f26d-4b90-87a3-6329e9799572",
+    "name": "Abandoned Air Temple"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "1e4146d2-cfa0-4f5e-9761-3c83519b90c3",
+    "name": "Cave of the Frost Dragon"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "0895c9b7-ae7d-4bb3-af17-3b75deb50a25",
+    "name": "Command Tower"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "a75445d3-1303-4bb5-89ad-26ea93fecd48",
+    "name": "Evolving Wilds"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "e2a37967-4212-4553-9f77-bcb613405807",
+    "name": "Haunted Ridge"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "7b0d7e62-0287-454a-8702-b0bfa7b41245",
+    "name": "Minas Tirith"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "4cdb9f80-d08f-4986-99c8-573166d66082",
+    "name": "Night Market"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "c854ecb0-cc60-4c48-a9aa-7f2348a7a8c6",
+    "name": "Shattered Sanctum"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "390f1b56-264e-4336-83be-dc1fe79bfdcf",
+    "name": "Smoldering Marsh"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "5ad0b405-cca4-475e-985c-4d7e3599d87e",
+    "name": "Sundown Pass"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "91fceb34-0f2d-4392-be27-00dcd765637f",
+    "name": "Thriving Bluff"
+   },
+   "qty": 1
+  },
+  {
+   "card": {
+    "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+    "name": "Swamp"
+   },
+   "qty": 8
+  },
+  {
+   "card": {
+    "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+    "name": "Mountain"
+   },
+   "qty": 8
+  },
+  {
+   "card": {
+    "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+    "name": "Plains"
+   },
+   "qty": 9
+  }
+ ],
+ "updatedAt": "2026-11-02T00:00:00.000Z"
+}
