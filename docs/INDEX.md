@@ -15,6 +15,10 @@ Status: **current** = in force or in progress; **draft** = proposed, not approve
 
 - [README.md](decisions/README.md) — current, 2026-10-29 — How to write ADRs: naming, front matter, status rules, never rewrite accepted ADRs
 
+## docs/research/
+
+- [edgar-markov-deck-pricing.md](research/edgar-markov-deck-pricing.md) — current, 2026-11-02 — TCGplayer-based price guide for the Edgar Markov Commander deck, with upgrade options by price tier
+
 ## tutorial/
 
 - [01-computer-setup.md](../tutorial/01-computer-setup.md) — current, 2026-10-29 — Tutorial step 1: install Git, Node.js, Python, browser, terminal and Lightpanda on a new computer
