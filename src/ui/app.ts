@@ -1,4 +1,5 @@
 import type { Deck } from '../lib/deck';
+import { setOwned as setOwnedIn } from '../lib/owned';
 import { browserStorage, loadStore, saveStore, type Store } from '../lib/storage';
 import { createClient, type ScryfallClient } from '../scryfall/client';
 import { renderDeck } from './deckView';
@@ -14,6 +15,8 @@ export interface AppContext {
   persistent: boolean;
   saveDeck(deck: Deck): void;
   deleteDeck(id: string): void;
+  /** Ticks or unticks a card in the owned collection shared by every deck. */
+  setOwned(oracleId: string, typeLine: string, owned: boolean): void;
   go(route: string): void;
 }
 
@@ -30,6 +33,12 @@ export function startApp(root: HTMLElement): void {
       const i = store.decks.findIndex((d) => d.id === deck.id);
       if (i >= 0) store.decks[i] = deck;
       else store.decks.unshift(deck);
+      save();
+    },
+    setOwned(oracleId, typeLine, owned) {
+      const next = setOwnedIn(store, oracleId, typeLine, owned);
+      store.owned = next.owned;
+      store.unownedBasics = next.unownedBasics;
       save();
     },
     deleteDeck(id) {
