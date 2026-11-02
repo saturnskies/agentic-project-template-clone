@@ -56,9 +56,9 @@ Builds the [v1 spec](../specs/2026-11-02-swapsmith-design.md) on the stack in [A
 - [x] E2E: toggle the view, and the choice persists.
 
 ### 6. Share links
-- [ ] `lib/share.ts`: deflate-raw plus base64url. Round-trip unit tests. Owned cards are never included.
-- [ ] Read-only shared view with **Save to my decks**.
-- [ ] E2E: copy a link, open it in a fresh context, save it.
+- [x] `lib/share.ts`: deflate-raw plus base64url. Round-trip unit tests. Owned cards are never included.
+- [x] Read-only shared view with **Save to my decks**.
+- [x] E2E: copy a link, open it in a fresh context, save it.
 
 ### 7. Suggestions: profile, pool and upgrades
 - [ ] `lib/profile.ts`: color identity, tribe and themes. `scryfall/roles.ts`: role lookup by `otag:`.
