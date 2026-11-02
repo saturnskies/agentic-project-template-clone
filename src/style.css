@@ -134,6 +134,9 @@ table.cards { width: 100%; border-collapse: collapse; font-variant-numeric: tabu
 th[aria-sort="ascending"] .sort::after { content: " ↑"; }
 th[aria-sort="descending"] .sort::after { content: " ↓"; }
 @media (max-width: 40rem) { .hide-narrow { display: none; } }
+.show-narrow { display: none; }
+@media (max-width: 40rem) { .show-narrow { display: block; } }
+.cards td .sub { font-size: 0.85rem; color: var(--muted); margin-top: 0.15rem; }
 
 /* Combobox (commander and add-card search) */
 .narrow { max-width: 40rem; }
@@ -152,3 +155,18 @@ th[aria-sort="descending"] .sort::after { content: " ↓"; }
 .icon-button:hover { color: var(--danger); border-color: var(--line); }
 .cards td.remove { width: 2.5rem; padding-block: 0.25rem; text-align: right; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Owned column and printing picker */
+.cards td.owned, .cards th.owned { text-align: center; width: 4rem; }
+.cards td.owned input { width: 1.1rem; height: 1.1rem; accent-color: var(--accent); }
+.link-button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
+.link-button:hover { color: var(--accent); }
+dialog.picker { width: min(40rem, calc(100vw - 32px)); max-height: min(80vh, 46rem); padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); color: var(--ink); }
+dialog.picker::backdrop { background: rgb(0 0 0 / 0.45); }
+.picker-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.picker-list { list-style: none; margin: 0.75rem 0; padding: 0; display: grid; gap: 0.25rem; }
+.picker-list li { display: grid; grid-template-columns: 1fr auto auto; gap: 0.75rem; align-items: center; padding: 0.5rem; border-radius: var(--radius); }
+.picker-list li.current { background: var(--tag-bg); }
+.picker-name { display: grid; min-width: 0; }
+.picker-prices { font-variant-numeric: tabular-nums; font-size: 0.9rem; text-align: right; }
+@media (max-width: 40rem) { .picker-list li { grid-template-columns: 1fr; } .picker-prices { text-align: left; } }

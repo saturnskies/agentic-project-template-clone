@@ -1,7 +1,9 @@
 import { deckTotals, type Deck, type DeckEntry } from '../lib/deck';
-import { cardWarnings, DECK_SIZE, warningText } from '../lib/format';
+import { cardWarnings, DECK_SIZE, isBasicLand, warningText } from '../lib/format';
+import { isOwned, stillToBuy } from '../lib/owned';
+import { sortPrintings } from '../lib/price';
 import { autocompleteNames, cardByName } from '../scryfall/cards';
-import { oracleIdOf, priceDeck, priceEntries, type PricedCard } from '../scryfall/resolve';
+import { oracleIdOf, priceDeck, priceEntries, withPrinting, type PricedCard } from '../scryfall/resolve';
 import type { ScryCard } from '../scryfall/types';
 import type { AppContext } from './app';
 import { combobox } from './combobox';
@@ -28,22 +30,30 @@ export function renderDeck(view: HTMLElement, ctx: AppContext, id: string): void
   let sort: SortKey = 'type';
 
   const total = h('span', { class: 'stat-value', 'data-testid': 'deck-total' }, '—');
+  const toBuy = h('span', { class: 'stat-value', 'data-testid': 'deck-to-buy' }, '—');
   const count = h('span', { class: 'stat-value', 'data-testid': 'deck-count' }, '—');
   const note = h('p', { class: 'muted' });
   const adder = h('div', { class: 'stack' });
   const body = h('div', { class: 'stack' });
 
+  const owned = (p: PricedCard) => isOwned(ctx.store, p.entry.card.oracleId, p.typeLine);
+  const summary = () => ({
+    ...deckTotals(priced.map((p) => ({ qty: p.entry.qty, price: p.price }))),
+    toBuy: stillToBuy(priced.map((p) => ({ qty: p.entry.qty, price: p.price, owned: owned(p) }))),
+  });
+
   /** Saves the deck and redraws totals and the table from `priced`. */
-  const commit = (cards: DeckEntry[]) => {
-    const t = deckTotals(priced.map((p) => ({ qty: p.entry.qty, price: p.price })));
-    deck = { ...deck, cards, updatedAt: new Date().toISOString(), summary: t };
+  const commit = (cards: DeckEntry[], extra: Partial<Deck> = {}) => {
+    deck = { ...deck, ...extra, cards, updatedAt: new Date().toISOString(), summary: summary() };
     ctx.saveDeck(deck);
     redraw();
   };
+  const cardsOf = () => priced.filter((x) => !x.isCommander).map((x) => x.entry);
 
   const redraw = () => {
-    const t = deckTotals(priced.map((p) => ({ qty: p.entry.qty, price: p.price })));
+    const t = summary();
     total.textContent = usd(t.total);
+    toBuy.textContent = usd(t.toBuy);
     count.textContent = `${t.count} / ${DECK_SIZE} cards`;
     const failed = priced.filter((p) => p.failed).length;
     note.textContent = failed
@@ -51,7 +61,20 @@ export function renderDeck(view: HTMLElement, ctx: AppContext, id: string): void
       : t.unpriced
         ? `${t.unpriced} ${t.unpriced === 1 ? 'card has' : 'cards have'} no TCGplayer price and ${t.unpriced === 1 ? 'is' : 'are'} left out of the total.`
         : '';
-    body.replaceChildren(table(priced, sort, (key) => ((sort = key), redraw()), remove));
+    body.replaceChildren(
+      table(priced, sort, {
+        onSort: (key) => ((sort = key), redraw()),
+        onRemove: remove,
+        owned,
+        onOwned: (p, value) => {
+          ctx.setOwned(p.entry.card.oracleId, p.typeLine, value);
+          deck = { ...deck, summary: summary() };
+          ctx.saveDeck(deck);
+          redraw();
+        },
+        onPrinting: openPicker,
+      }),
+    );
   };
 
   // ---- Removing -------------------------------------------------------------------------------
@@ -63,7 +86,49 @@ export function renderDeck(view: HTMLElement, ctx: AppContext, id: string): void
     } else {
       priced = priced.filter((x) => x !== p);
     }
-    commit(priced.filter((x) => !x.isCommander).map((x) => x.entry));
+    commit(cardsOf());
+  };
+
+  // ---- Printing picker ------------------------------------------------------------------------
+  const picker = h('dialog', { class: 'picker', 'aria-labelledby': 'picker-h' });
+  const choosePrinting = (p: PricedCard, printingId: string | undefined) => {
+    const next = withPrinting(p, printingId);
+    priced = priced.map((x) => (x === p ? next : x));
+    picker.close();
+    if (p.isCommander) commit(cardsOf(), { commanderPrintingId: printingId });
+    else commit(cardsOf());
+  };
+  const openPicker = (p: PricedCard) => {
+    const name = p.entry.card.name;
+    const fmt = (v: string | null) => (v ? usd(Number(v)) : null);
+    const items = sortPrintings(p.prints).map((c) => {
+      const current = c.id === p.card?.id;
+      const finishes = [
+        fmt(c.prices.usd) && `Nonfoil ${fmt(c.prices.usd)}`,
+        fmt(c.prices.usd_foil) && `Foil ${fmt(c.prices.usd_foil)}`,
+        fmt(c.prices.usd_etched) && `Etched ${fmt(c.prices.usd_etched)}`,
+      ].filter(Boolean);
+      const use = h('button', { type: 'button', class: 'button' }, 'Use this printing');
+      use.addEventListener('click', () => choosePrinting(p, c.id));
+      return h(
+        'li',
+        { class: current ? 'current' : '' },
+        h('div', { class: 'picker-name' }, h('strong', {}, `${c.set.toUpperCase()} #${c.collector_number}`), h('span', { class: 'muted' }, c.set_name)),
+        h('span', { class: 'picker-prices' }, finishes.length ? finishes.join(' · ') : 'No price'),
+        current ? h('span', { class: 'tag' }, 'Current') : use,
+      );
+    });
+    const cheapest = h('button', { type: 'button', class: 'button primary' }, 'Use the cheapest printing');
+    cheapest.addEventListener('click', () => choosePrinting(p, undefined));
+    const close = h('button', { type: 'button', class: 'button' }, 'Close');
+    close.addEventListener('click', () => picker.close());
+    picker.replaceChildren(
+      h('div', { class: 'picker-head' }, h('h3', { id: 'picker-h' }, `Printings of ${name}`), close),
+      h('p', { class: 'muted small' }, isBasicLand(p.typeLine) ? 'The cheapest 175 printings, cheapest first.' : `${p.prints.length} paper printings, cheapest first. Prices are each printing's cheapest finish.`),
+      h('ul', { class: 'picker-list' }, ...items),
+      h('div', { class: 'actions' }, p.entry.printingId ? cheapest : null),
+    );
+    picker.showModal();
   };
 
   // ---- Adding ---------------------------------------------------------------------------------
@@ -77,7 +142,7 @@ export function renderDeck(view: HTMLElement, ctx: AppContext, id: string): void
       const [p] = await priceEntries(ctx.client, [{ entry, isCommander: false }], undefined, new Map([[oid, card]]));
       priced = [...priced, p];
     }
-    commit(priced.filter((x) => !x.isCommander).map((x) => x.entry));
+    commit(cardsOf());
   };
 
   const warningBox = h('div');
@@ -162,12 +227,14 @@ export function renderDeck(view: HTMLElement, ctx: AppContext, id: string): void
         'div',
         { class: 'stats' },
         h('div', { class: 'stat' }, h('span', { class: 'stat-label' }, 'Deck total'), total),
+        h('div', { class: 'stat' }, h('span', { class: 'stat-label' }, 'Still to buy'), toBuy),
         h('div', { class: 'stat' }, h('span', { class: 'stat-label' }, 'Cards'), count),
       ),
       note,
       adder,
       body,
       confirmBox,
+      picker,
     ),
   );
 
@@ -182,7 +249,7 @@ export function renderDeck(view: HTMLElement, ctx: AppContext, id: string): void
   })
     .then((result) => {
       priced = result;
-      deck = { ...deck, summary: deckTotals(priced.map((p) => ({ qty: p.entry.qty, price: p.price }))) };
+      deck = { ...deck, summary: summary() };
       ctx.saveDeck(deck);
       adder.append(search.root, warningBox, status);
       redraw();
@@ -193,7 +260,15 @@ export function renderDeck(view: HTMLElement, ctx: AppContext, id: string): void
     });
 }
 
-function table(priced: PricedCard[], sort: SortKey, onSort: (k: SortKey) => void, onRemove: (p: PricedCard) => void): HTMLElement {
+interface TableHandlers {
+  onSort: (k: SortKey) => void;
+  onRemove: (p: PricedCard) => void;
+  owned: (p: PricedCard) => boolean;
+  onOwned: (p: PricedCard, owned: boolean) => void;
+  onPrinting: (p: PricedCard) => void;
+}
+
+function table(priced: PricedCard[], sort: SortKey, { onSort, onRemove, owned, onOwned, onPrinting }: TableHandlers): HTMLElement {
   const sorted = [...priced].sort((a, b) => {
     if (a.isCommander !== b.isCommander) return a.isCommander ? -1 : 1;
     if (sort === 'price') return (b.price ?? -1) - (a.price ?? -1) || a.entry.card.name.localeCompare(b.entry.card.name);
@@ -218,6 +293,15 @@ function table(priced: PricedCard[], sort: SortKey, onSort: (k: SortKey) => void
     const nameCell = p.url
       ? h('a', { href: p.url, target: '_blank', rel: 'noopener', 'data-testid': 'card-name' }, name)
       : h('span', { 'data-testid': 'card-name' }, name);
+    const own = h('input', { type: 'checkbox', 'aria-label': `Own ${name}`, checked: owned(p) });
+    own.addEventListener('change', () => onOwned(p, own.checked));
+    // Shown in the Printing column on wide screens, and under the card name on phones.
+    const printingControl = () => {
+      if (!p.prints.length) return h('span', {}, printing);
+      const btn = h('button', { type: 'button', class: 'link-button', 'aria-label': `Change printing of ${name}`, title: 'Change printing' }, printing, ' ▾');
+      btn.addEventListener('click', () => onPrinting(p));
+      return btn;
+    };
     let removeCell: HTMLElement | null = null;
     if (!p.isCommander) {
       const btn = h('button', { type: 'button', class: 'icon-button', 'aria-label': `Remove ${name}`, title: p.entry.qty > 1 ? 'Remove one copy' : 'Remove from deck' }, '×');
@@ -227,12 +311,19 @@ function table(priced: PricedCard[], sort: SortKey, onSort: (k: SortKey) => void
     return h(
       'tr',
       {},
-      h('td', { class: 'name' }, nameCell, p.isCommander ? h('span', { class: 'tag' }, 'Commander') : null),
+      h(
+        'td',
+        { class: 'name' },
+        nameCell,
+        p.isCommander ? h('span', { class: 'tag' }, 'Commander') : null,
+        h('div', { class: 'show-narrow sub' }, printingControl(), finish ? h('span', { class: 'tag' }, finish) : null),
+      ),
       h('td', { class: 'type hide-narrow' }, p.isCommander ? 'Commander' : typeGroup(p.typeLine)),
-      h('td', { class: 'printing hide-narrow' }, printing, finish ? h('span', { class: 'tag' }, finish) : null),
+      h('td', { class: 'printing hide-narrow' }, printingControl(), finish ? h('span', { class: 'tag' }, finish) : null),
       h('td', { class: 'num' }, p.entry.qty),
       h('td', { class: 'num' }, p.price != null ? usd(p.price) : p.failed ? "couldn't load" : 'no price'),
-      h('td', { class: 'num' }, p.price == null ? '—' : usd(p.price * p.entry.qty)),
+      h('td', { class: 'num hide-narrow' }, p.price == null ? '—' : usd(p.price * p.entry.qty)),
+      h('td', { class: 'owned' }, own),
       h('td', { class: 'remove' }, removeCell),
     );
   });
@@ -249,7 +340,7 @@ function table(priced: PricedCard[], sort: SortKey, onSort: (k: SortKey) => void
         h(
           'thead',
           {},
-          h('tr', {}, th('name', 'Card'), th('type', 'Type', 'hide-narrow'), th(null, 'Printing', 'hide-narrow'), th(null, 'Qty', 'num'), th('price', 'Price', 'num'), th(null, 'Line total', 'num'), h('th', { scope: 'col' }, h('span', { class: 'visually-hidden' }, 'Remove'))),
+          h('tr', {}, th('name', 'Card'), th('type', 'Type', 'hide-narrow'), th(null, 'Printing', 'hide-narrow'), th(null, 'Qty', 'num'), th('price', 'Price', 'num'), th(null, 'Line total', 'num hide-narrow'), th(null, 'Owned', 'owned'), h('th', { scope: 'col' }, h('span', { class: 'visually-hidden' }, 'Remove'))),
         ),
         h('tbody', {}, ...rows),
       ),

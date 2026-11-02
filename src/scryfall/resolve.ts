@@ -84,15 +84,32 @@ export interface PricedCard {
   price: number | null;
   finish: Finish | null;
   url: string | null;
+  /** Every paper printing found, for the printing picker (basic lands: the cheapest 175). */
+  prints: ScryCard[];
   /** True when Scryfall couldn't be reached for this card's printings; reloading may fix it. */
   failed?: boolean;
+}
+
+/** Prices a card at a chosen printing (or the cheapest when none is chosen), from printings already loaded. */
+export function withPrinting(p: PricedCard, printingId: string | undefined): PricedCard {
+  const entry: DeckEntry = { ...p.entry };
+  if (printingId) entry.printingId = printingId;
+  else delete entry.printingId;
+  const pinned = printingId ? p.prints.find((c) => c.id === printingId) : undefined;
+  const pick = pinned ? { card: pinned, ...(bestPrice(pinned) ?? { price: null, finish: null }) } : cheapestPrinting(p.prints);
+  if (!pick) return { ...p, entry, price: null, finish: null };
+  const finish = pick.finish as Finish | null;
+  return { ...p, entry, card: pick.card, typeLine: typeLineOf(pick.card), price: pick.price as number | null, finish, url: tcgplayerUrl(pick.card, finish ?? 'nonfoil') };
 }
 
 /** Prices every card in a deck at its pinned or cheapest printing. Reports progress per card. */
 export function priceDeck(client: ScryfallClient, deck: Deck, onProgress?: (done: number, total: number) => void): Promise<PricedCard[]> {
   return priceEntries(
     client,
-    [{ entry: { card: deck.commander, qty: 1 }, isCommander: true }, ...deck.cards.map((entry) => ({ entry, isCommander: false }))],
+    [
+      { entry: { card: deck.commander, qty: 1, ...(deck.commanderPrintingId ? { printingId: deck.commanderPrintingId } : {}) }, isCommander: true },
+      ...deck.cards.map((entry) => ({ entry, isCommander: false })),
+    ],
     onProgress,
   );
 }
@@ -131,12 +148,15 @@ export async function priceEntries(
       let finish: Finish | null = null;
 
       let failed = false;
+      let prints: ScryCard[] = [];
       if (known) {
         try {
-          const prints = await printingsOf(entry.card.oracleId);
-          const pinned = entry.printingId
-            ? (prints.find((p) => p.id === entry.printingId) ?? (await cardById(client, entry.printingId)))
-            : null;
+          prints = await printingsOf(entry.card.oracleId);
+          let pinned = entry.printingId ? (prints.find((p) => p.id === entry.printingId) ?? null) : null;
+          if (entry.printingId && !pinned) {
+            pinned = await cardById(client, entry.printingId);
+            if (pinned) prints = [...prints, pinned];
+          }
           if (pinned) {
             chosen = pinned;
             const p = bestPrice(pinned);
@@ -153,7 +173,7 @@ export async function priceEntries(
 
       done += 1;
       onProgress(done, all.length);
-      const priced: PricedCard = { entry, isCommander, card: chosen, typeLine: chosen ? typeLineOf(chosen) : '', price, finish, url: chosen ? tcgplayerUrl(chosen, finish ?? 'nonfoil') : null };
+      const priced: PricedCard = { entry, isCommander, card: chosen, typeLine: chosen ? typeLineOf(chosen) : '', price, finish, url: chosen ? tcgplayerUrl(chosen, finish ?? 'nonfoil') : null, prints };
       if (failed) priced.failed = true;
       return priced;
     }),

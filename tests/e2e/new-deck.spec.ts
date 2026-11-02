@@ -1,24 +1,5 @@
-import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
-import { requestKey, type FixtureMap } from '../support/fixtures';
-
-// Real Scryfall replies for this flow, recorded by tests/unit/record-fixtures.test.ts.
-const map: FixtureMap = JSON.parse(readFileSync(new URL('../fixtures/scryfall-new-deck.json', import.meta.url), 'utf8'));
-
-async function mockScryfall(page: Page) {
-  const misses: string[] = [];
-  await page.route('https://api.scryfall.com/**', async (route) => {
-    const req = route.request();
-    const key = requestKey(req.method(), req.url(), req.postData());
-    const hit = map[key];
-    if (!hit) {
-      misses.push(key);
-      return route.fulfill({ status: 500, json: { object: 'error', details: 'unrecorded' } });
-    }
-    return route.fulfill({ status: hit.status, json: hit.body });
-  });
-  return misses;
-}
+import { mockScryfall } from './helpers';
 
 async function pick(page: Page, label: string, typed: string, option: string) {
   const box = page.getByRole('combobox', { name: label });
