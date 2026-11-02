@@ -2,7 +2,7 @@ import type { Deck } from '../lib/deck';
 import { setOwned as setOwnedIn } from '../lib/owned';
 import { browserStorage, loadStore, saveStore, type Store } from '../lib/storage';
 import { createClient, type ScryfallClient } from '../scryfall/client';
-import { renderDeck } from './deckView';
+import { renderDeck, renderShared } from './deckView';
 import { h } from './dom';
 import { renderHome } from './home';
 import { renderNewDeck } from './newDeck';
@@ -65,6 +65,12 @@ export function startApp(root: HTMLElement): void {
 
   function render() {
     const route = location.hash.replace(/^#/, '') || '/';
+    if (route.startsWith('d=')) {
+      view.replaceChildren();
+      void renderShared(view, ctx, route.slice(2));
+      window.scrollTo(0, 0);
+      return;
+    }
     const deckMatch = route.match(/^\/deck\/([\w-]+)$/);
     view.replaceChildren();
     if (route === '/paste') renderPaste(view, ctx);
