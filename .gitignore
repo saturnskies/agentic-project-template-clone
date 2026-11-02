@@ -26,3 +26,8 @@ node_modules/
 dist/
 test-results/
 playwright-report/
+
+# Android signing keys: never commit
+android/keystore.properties
+*.keystore
+*.jks
