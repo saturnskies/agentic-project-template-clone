@@ -1,0 +1,69 @@
+name: Android APK
+
+# Builds the signed APK. Push a tag like v0.3.0 to publish it as a GitHub Release,
+# or run the workflow by hand to get the APK as a downloadable build artifact only.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write # create the release
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: android-actions/setup-android@v3
+      - run: npm ci
+
+      - name: Restore the signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.SWAPSMITH_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::Missing secret SWAPSMITH_KEYSTORE_BASE64. See docs/android-build.md (Publishing from GitHub)."
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/swapsmith.keystore"
+          echo "SWAPSMITH_KEYSTORE=$RUNNER_TEMP/swapsmith.keystore" >> "$GITHUB_ENV"
+
+      - name: Build the signed APK
+        env:
+          SWAPSMITH_KEYSTORE_PASSWORD: ${{ secrets.SWAPSMITH_KEYSTORE_PASSWORD }}
+          SWAPSMITH_KEY_ALIAS: ${{ secrets.SWAPSMITH_KEY_ALIAS }}
+          SWAPSMITH_KEY_PASSWORD: ${{ secrets.SWAPSMITH_KEY_PASSWORD }}
+        run: |
+          # versionCode must only ever go up. The run number does, and +100 keeps it above the hand-built 0.2.0 (code 2).
+          export SWAPSMITH_VERSION_CODE=$((GITHUB_RUN_NUMBER + 100))
+          if [ "$GITHUB_REF_TYPE" = tag ]; then export SWAPSMITH_VERSION_NAME="${GITHUB_REF_NAME#v}"; else export SWAPSMITH_VERSION_NAME="0.0.0-run$GITHUB_RUN_NUMBER"; fi
+          echo "VERSION_NAME=$SWAPSMITH_VERSION_NAME" >> "$GITHUB_ENV"
+          npm run apk
+          cp android/app/build/outputs/apk/release/app-release.apk "swapsmith-$SWAPSMITH_VERSION_NAME.apk"
+
+      - name: Check the APK is signed with the app's key
+        run: |
+          APKSIGNER=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | tail -1)
+          "$APKSIGNER" verify --print-certs "swapsmith-$VERSION_NAME.apk" | tee certs.txt
+          grep -q 'c7edba6c3fb9f53c595977bb6a985bcf3d3b1e2769c605c69dfe6e21dae3fc3c' certs.txt \
+            || { echo "::error::APK is not signed with the original Swapsmith key; phones could not update to it."; exit 1; }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: swapsmith-apk
+          path: swapsmith-*.apk
+
+      - name: Publish the release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" "swapsmith-$VERSION_NAME.apk" --title "Swapsmith $VERSION_NAME" --generate-notes
