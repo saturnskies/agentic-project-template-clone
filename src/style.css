@@ -194,3 +194,7 @@ dialog.picker::backdrop { background: rgb(0 0 0 / 0.45); }
 .own-label { display: inline-flex; gap: 0.3rem; align-items: center; cursor: pointer; }
 .own-label input { accent-color: var(--accent); }
 .card-tools .icon-button { width: 1.75rem; height: 1.75rem; }
+
+/* Sharing */
+.share-field { width: 100%; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.85rem; }
+.banner.row-between p { flex: 1 1 16rem; }
