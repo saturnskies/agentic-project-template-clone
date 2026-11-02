@@ -8,9 +8,13 @@ const load = (name: string): FixtureMap => JSON.parse(readFileSync(new URL(`../f
 export const recorded: FixtureMap = { ...load('scryfall-e2e.json'), ...load('scryfall-new-deck.json') };
 export const e2eList = readFileSync(new URL('../fixtures/e2e-list.txt', import.meta.url), 'utf8');
 
+// A 1×1 grey PNG standing in for card images, so tests never download from Scryfall's image host.
+const PIXEL = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
+
 /** Answers Scryfall from recorded replies; returns the requests that had no recording. */
 export async function mockScryfall(page: Page): Promise<string[]> {
   const misses: string[] = [];
+  await page.route('https://cards.scryfall.io/**', (route) => route.fulfill({ status: 200, contentType: 'image/png', body: PIXEL }));
   await page.route('https://api.scryfall.com/**', async (route) => {
     const req = route.request();
     const key = requestKey(req.method(), req.url(), req.postData());

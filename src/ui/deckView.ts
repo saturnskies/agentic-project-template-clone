@@ -1,5 +1,6 @@
 import { deckTotals, type Deck, type DeckEntry } from '../lib/deck';
 import { cardWarnings, DECK_SIZE, isBasicLand, warningText } from '../lib/format';
+import { cardImage, compareLines, GROUP_ORDER, groupByType, typeGroup, typeName, type SortKey } from '../lib/groups';
 import { isOwned, stillToBuy } from '../lib/owned';
 import { sortPrintings } from '../lib/price';
 import { autocompleteNames, cardByName } from '../scryfall/cards';
@@ -9,13 +10,6 @@ import type { AppContext } from './app';
 import { combobox } from './combobox';
 import { h, usd } from './dom';
 
-type SortKey = 'type' | 'name' | 'price';
-
-const TYPE_ORDER = ['Creature', 'Planeswalker', 'Instant', 'Sorcery', 'Artifact', 'Enchantment', 'Battle', 'Land'];
-const typeGroup = (typeLine: string) => {
-  const front = typeLine.split(' // ')[0];
-  return TYPE_ORDER.find((t) => front.includes(t)) ?? 'Other';
-};
 const FINISH_LABEL = { nonfoil: '', foil: 'Foil', etched: 'Etched' } as const;
 const SCRYFALL_DOWN = "Couldn't reach Scryfall. Check your connection and try again.";
 
@@ -28,6 +22,17 @@ export function renderDeck(view: HTMLElement, ctx: AppContext, id: string): void
   let deck: Deck = found;
   let priced: PricedCard[] = [];
   let sort: SortKey = 'type';
+
+  const viewButtons = (['list', 'grid'] as const).map((v) => {
+    const btn = h('button', { type: 'button', class: 'segment', 'aria-pressed': String(ctx.store.prefs.view === v) }, v === 'list' ? 'List' : 'Grid');
+    btn.addEventListener('click', () => {
+      ctx.setView(v);
+      viewButtons.forEach((b, i) => b.setAttribute('aria-pressed', String(['list', 'grid'][i] === v)));
+      redraw();
+    });
+    return btn;
+  });
+  const viewSwitch = h('div', { class: 'segmented', role: 'group', 'aria-label': 'View' }, ...viewButtons);
 
   const total = h('span', { class: 'stat-value', 'data-testid': 'deck-total' }, '—');
   const toBuy = h('span', { class: 'stat-value', 'data-testid': 'deck-to-buy' }, '—');
@@ -61,8 +66,9 @@ export function renderDeck(view: HTMLElement, ctx: AppContext, id: string): void
       : t.unpriced
         ? `${t.unpriced} ${t.unpriced === 1 ? 'card has' : 'cards have'} no TCGplayer price and ${t.unpriced === 1 ? 'is' : 'are'} left out of the total.`
         : '';
+    const draw = ctx.store.prefs.view === 'grid' ? grid : table;
     body.replaceChildren(
-      table(priced, sort, {
+      draw(priced, sort, {
         onSort: (key) => ((sort = key), redraw()),
         onRemove: remove,
         owned,
@@ -145,7 +151,7 @@ export function renderDeck(view: HTMLElement, ctx: AppContext, id: string): void
     commit(cardsOf());
   };
 
-  const warningBox = h('div');
+  const warningBox = h('div', { class: 'warning-box' });
   const status = h('p', { class: 'muted small', 'aria-live': 'polite' });
   const search = combobox<string>({
     id: 'add-card',
@@ -251,7 +257,7 @@ export function renderDeck(view: HTMLElement, ctx: AppContext, id: string): void
       priced = result;
       deck = { ...deck, summary: summary() };
       ctx.saveDeck(deck);
-      adder.append(search.root, warningBox, status);
+      adder.append(search.root, warningBox, status, viewSwitch);
       redraw();
     })
     .catch((err: unknown) => {
@@ -268,15 +274,83 @@ interface TableHandlers {
   onPrinting: (p: PricedCard) => void;
 }
 
-function table(priced: PricedCard[], sort: SortKey, { onSort, onRemove, owned, onOwned, onPrinting }: TableHandlers): HTMLElement {
+/** The controls every card gets in both views: link, owned tick, printing button, remove button. */
+function cardControls(p: PricedCard, { onRemove, owned, onOwned, onPrinting }: TableHandlers) {
+  const name = p.entry.card.name;
+  const printing = p.card ? `${p.card.set.toUpperCase()} #${p.card.collector_number}` : '—';
+  const finish = p.finish ? FINISH_LABEL[p.finish] : '';
+  const link = (...children: Array<Node | string>) =>
+    p.url ? h('a', { href: p.url, target: '_blank', rel: 'noopener' }, ...children) : h('span', {}, ...children);
+  const own = () => {
+    const box = h('input', { type: 'checkbox', 'aria-label': `Own ${name}`, checked: owned(p) });
+    box.addEventListener('change', () => onOwned(p, box.checked));
+    return box;
+  };
+  const printingControl = () => {
+    if (!p.prints.length) return h('span', {}, printing);
+    const btn = h('button', { type: 'button', class: 'link-button', 'aria-label': `Change printing of ${name}`, title: 'Change printing' }, printing, ' ▾');
+    btn.addEventListener('click', () => onPrinting(p));
+    return btn;
+  };
+  const finishTag = () => (finish ? h('span', { class: 'tag' }, finish) : null);
+  const remove = () => {
+    if (p.isCommander) return null;
+    const btn = h('button', { type: 'button', class: 'icon-button', 'aria-label': `Remove ${name}`, title: p.entry.qty > 1 ? 'Remove one copy' : 'Remove from deck' }, '×');
+    btn.addEventListener('click', () => onRemove(p));
+    return btn;
+  };
+  const priceText = p.price != null ? usd(p.price) : p.failed ? "couldn't load" : 'no price';
+  return { name, link, own, printingControl, finishTag, remove, priceText };
+}
+
+const asLine = (p: PricedCard) => ({ name: p.entry.card.name, typeLine: p.typeLine, qty: p.entry.qty, price: p.price, isCommander: p.isCommander, p });
+
+/** Card images grouped by type, commander first. */
+function grid(priced: PricedCard[], sort: SortKey, handlers: TableHandlers): HTMLElement {
+  const groups = groupByType(priced.map(asLine), sort === 'price' ? 'price' : 'name');
+  return h(
+    'div',
+    { class: 'stack' },
+    ...groups.map(({ group, count, cards }) =>
+      h(
+        'section',
+        { class: 'grid-group', 'aria-label': group },
+        h('h3', {}, `${group} (${count})`),
+        h(
+          'ul',
+          { class: 'card-grid' },
+          ...cards.map(({ p }) => {
+            const c = cardControls(p, handlers);
+            const src = cardImage(p.card);
+            const art = src
+              ? h('img', { src, alt: c.name, loading: 'lazy', width: 488, height: 680 })
+              : h('div', { class: 'card-missing', role: 'img', 'aria-label': c.name }, c.name);
+            return h(
+              'li',
+              { class: 'card-tile' },
+              h('div', { class: 'card-art' }, c.link(art), p.entry.qty > 1 ? h('span', { class: 'qty-badge' }, `×${p.entry.qty}`) : null),
+              h('div', { class: 'card-meta' }, h('span', { class: 'card-tile-name' }, c.link(c.name)), h('span', { class: 'card-tile-price' }, c.priceText)),
+              h('div', { class: 'card-printing' }, c.printingControl(), c.finishTag()),
+              h('div', { class: 'card-tools' }, h('label', { class: 'own-label' }, c.own(), 'Owned'), c.remove()),
+            );
+          }),
+        ),
+      ),
+    ),
+    h('p', { class: 'muted small' }, 'Card images from Scryfall. Prices are TCGplayer market prices for the cheapest printing. Card names open TCGplayer in a new tab.'),
+  );
+}
+
+function table(priced: PricedCard[], sort: SortKey, handlers: TableHandlers): HTMLElement {
+  const { onSort } = handlers;
+  const byName = compareLines('name');
   const sorted = [...priced].sort((a, b) => {
     if (a.isCommander !== b.isCommander) return a.isCommander ? -1 : 1;
-    if (sort === 'price') return (b.price ?? -1) - (a.price ?? -1) || a.entry.card.name.localeCompare(b.entry.card.name);
     if (sort === 'type') {
-      const d = TYPE_ORDER.indexOf(typeGroup(a.typeLine)) - TYPE_ORDER.indexOf(typeGroup(b.typeLine));
+      const d = GROUP_ORDER.indexOf(typeGroup(a.typeLine)) - GROUP_ORDER.indexOf(typeGroup(b.typeLine));
       if (d) return d;
     }
-    return a.entry.card.name.localeCompare(b.entry.card.name);
+    return compareLines(sort === 'price' ? 'price' : 'name')(asLine(a), asLine(b)) || byName(asLine(a), asLine(b));
   });
 
   const th = (key: SortKey | null, label: string, cls = '') => {
@@ -287,47 +361,29 @@ function table(priced: PricedCard[], sort: SortKey, { onSort, onRemove, owned, o
   };
 
   const rows = sorted.map((p) => {
-    const printing = p.card ? `${p.card.set.toUpperCase()} #${p.card.collector_number}` : '—';
-    const finish = p.finish ? FINISH_LABEL[p.finish] : '';
-    const name = p.entry.card.name;
-    const nameCell = p.url
-      ? h('a', { href: p.url, target: '_blank', rel: 'noopener', 'data-testid': 'card-name' }, name)
-      : h('span', { 'data-testid': 'card-name' }, name);
-    const own = h('input', { type: 'checkbox', 'aria-label': `Own ${name}`, checked: owned(p) });
-    own.addEventListener('change', () => onOwned(p, own.checked));
-    // Shown in the Printing column on wide screens, and under the card name on phones.
-    const printingControl = () => {
-      if (!p.prints.length) return h('span', {}, printing);
-      const btn = h('button', { type: 'button', class: 'link-button', 'aria-label': `Change printing of ${name}`, title: 'Change printing' }, printing, ' ▾');
-      btn.addEventListener('click', () => onPrinting(p));
-      return btn;
-    };
-    let removeCell: HTMLElement | null = null;
-    if (!p.isCommander) {
-      const btn = h('button', { type: 'button', class: 'icon-button', 'aria-label': `Remove ${name}`, title: p.entry.qty > 1 ? 'Remove one copy' : 'Remove from deck' }, '×');
-      btn.addEventListener('click', () => onRemove(p));
-      removeCell = btn;
-    }
+    const c = cardControls(p, handlers);
+    const nameEl = c.link(c.name);
+    nameEl.setAttribute('data-testid', 'card-name');
     return h(
       'tr',
       {},
       h(
         'td',
         { class: 'name' },
-        nameCell,
+        nameEl,
         p.isCommander ? h('span', { class: 'tag' }, 'Commander') : null,
-        h('div', { class: 'show-narrow sub' }, printingControl(), finish ? h('span', { class: 'tag' }, finish) : null),
+        // On phones the Printing column is hidden, so the printing shows under the name.
+        h('div', { class: 'show-narrow sub' }, c.printingControl(), c.finishTag()),
       ),
-      h('td', { class: 'type hide-narrow' }, p.isCommander ? 'Commander' : typeGroup(p.typeLine)),
-      h('td', { class: 'printing hide-narrow' }, printingControl(), finish ? h('span', { class: 'tag' }, finish) : null),
+      h('td', { class: 'type hide-narrow' }, p.isCommander ? 'Commander' : typeName(p.typeLine)),
+      h('td', { class: 'printing hide-narrow' }, c.printingControl(), c.finishTag()),
       h('td', { class: 'num' }, p.entry.qty),
-      h('td', { class: 'num' }, p.price != null ? usd(p.price) : p.failed ? "couldn't load" : 'no price'),
+      h('td', { class: 'num' }, c.priceText),
       h('td', { class: 'num hide-narrow' }, p.price == null ? '—' : usd(p.price * p.entry.qty)),
-      h('td', { class: 'owned' }, own),
-      h('td', { class: 'remove' }, removeCell),
+      h('td', { class: 'owned' }, c.own()),
+      h('td', { class: 'remove' }, c.remove()),
     );
   });
-
   return h(
     'div',
     { class: 'stack' },

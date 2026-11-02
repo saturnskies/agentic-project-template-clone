@@ -170,3 +170,27 @@ dialog.picker::backdrop { background: rgb(0 0 0 / 0.45); }
 .picker-name { display: grid; min-width: 0; }
 .picker-prices { font-variant-numeric: tabular-nums; font-size: 0.9rem; text-align: right; }
 @media (max-width: 40rem) { .picker-list li { grid-template-columns: 1fr; } .picker-prices { text-align: left; } }
+
+/* View switch and card grid */
+.segmented { display: inline-flex; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; justify-self: start; }
+.segment { font: inherit; font-size: 0.9rem; padding: 0.4rem 0.9rem; border: 0; background: var(--panel); color: var(--muted); cursor: pointer; }
+.segment + .segment { border-left: 1px solid var(--line); }
+.segment[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.grid-group { display: grid; gap: 0.6rem; }
+.card-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.9rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 10.5rem), 1fr)); }
+@media (max-width: 40rem) { .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; } }
+.card-tile { display: grid; gap: 0.35rem; align-content: start; min-width: 0; }
+.card-art { position: relative; }
+.card-art img, .card-missing { display: block; width: 100%; height: auto; aspect-ratio: 488 / 680; border-radius: 4.75% / 3.5%; background: var(--tag-bg); }
+.card-missing { display: grid; place-items: center; padding: 0.75rem; text-align: center; color: var(--muted); font-size: 0.9rem; border: 1px solid var(--line); }
+.qty-badge { position: absolute; right: 0.4rem; bottom: 0.4rem; background: var(--ink); color: var(--panel); font-weight: 700; font-size: 0.85rem; padding: 0.1rem 0.45rem; border-radius: 999px; }
+.card-meta { display: flex; justify-content: space-between; gap: 0.5rem; align-items: baseline; min-width: 0; }
+.card-tile-name { font-size: 0.9rem; min-width: 0; overflow-wrap: anywhere; }
+.card-tile-name a { color: var(--ink); text-decoration-color: var(--line); text-underline-offset: 3px; }
+.card-tile-price { font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+.card-printing { font-size: 0.8rem; color: var(--muted); }
+.card-tools { display: flex; gap: 0.6rem; align-items: center; justify-content: space-between; font-size: 0.8rem; color: var(--muted); min-height: 1.75rem; }
+.warning-box:empty { display: none; }
+.own-label { display: inline-flex; gap: 0.3rem; align-items: center; cursor: pointer; }
+.own-label input { accent-color: var(--accent); }
+.card-tools .icon-button { width: 1.75rem; height: 1.75rem; }
