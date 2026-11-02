@@ -51,3 +51,9 @@ export function tcgplayerUrl(card: ScryCard, finish: Finish): string {
   }
   return `https://www.tcgplayer.com/search/magic/product?q=${encodeURIComponent(card.name)}&productLineName=magic`;
 }
+
+/** Printings for the picker: cheapest first (by each printing's cheapest finish), unpriced last. */
+export function sortPrintings(prints: ScryCard[]): ScryCard[] {
+  const key = (c: ScryCard) => bestPrice(c)?.price ?? Infinity;
+  return [...prints].sort((a, b) => (key(a) < key(b) ? -1 : key(a) > key(b) ? 1 : 0));
+}
