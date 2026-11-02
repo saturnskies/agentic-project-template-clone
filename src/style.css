@@ -1,4 +1,9 @@
 /* Layout: one centered column, header band, content, footer credit. */
+@font-face {
+  font-family: 'God Of War';
+  src: url('./fonts/godofwar.ttf') format('truetype');
+  font-display: swap;
+}
 :root {
   --bg: #f3f3f3;
   --panel: #ffffff;
@@ -7,7 +12,7 @@
   --line: #dddddd;
   --accent: #8a0f1a;      /* blood red */
   --accent-ink: #ffffff;
-  --font-display: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'God Of War', ui-sans-serif, system-ui, sans-serif;
   --font-body: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --radius: 10px;
   color-scheme: light;
