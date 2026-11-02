@@ -19,3 +19,4 @@ Only the review changes the template. Never edit the template directly from a pr
 
 | Date | Change | Files | Belongs in | Synced |
 |---|---|---|---|---|
+| 2026-11-02 | New path rule for async UI state (re-find after await, guard concurrent actions, drop stale replies); external-tools rule: partial results from parallel calls, silent truncation; testing rule: retrying assertions can pass on in-between states | `.claude/rules/ui-state.md`, `.claude/rules/external-tools.md`, `.claude/rules/testing.md` | core (ui-state could be a frontend pack) | |
