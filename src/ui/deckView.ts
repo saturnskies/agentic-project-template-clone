@@ -71,9 +71,11 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   });
 
   let panel: { root: HTMLElement; refresh(): void } | null = null;
+  let lastSwap: { removed: PricedCard; index: number; addedOracleId: string; label: string } | null = null;
 
-  /** Saves the deck and redraws totals, the cards and the suggestions from `priced`. */
-  const commit = (cards: DeckEntry[], extra: Partial<Deck> = {}) => {
+  /** Saves the deck and redraws totals, the cards and the suggestions from `priced`. Any edit other than a swap ends the Undo offer. */
+  const commit = (cards: DeckEntry[], extra: Partial<Deck> = {}, opts: { keepUndo?: boolean } = {}) => {
+    if (!opts.keepUndo) lastSwap = null;
     deck = { ...deck, ...extra, cards, updatedAt: new Date().toISOString(), summary: summary() };
     persist(deck);
     redraw();
@@ -103,6 +105,7 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
           deck = { ...deck, summary: summary() };
           persist(deck);
           redraw();
+          panel?.refresh(); // cheaper replacements skip owned cards
         },
         onPrinting: openPicker,
         onKeep: (p, value) => {
@@ -172,37 +175,51 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   };
 
   // ---- Adding ---------------------------------------------------------------------------------
+  /** Prices one new card from the card object already in hand (no lookup by name). */
+  const priceCard = async (card: ScryCard) => {
+    const oid = oracleIdOf(card);
+    const [p] = await priceEntries(ctx.client, [{ entry: { card: { oracleId: oid, name: card.name }, qty: 1 }, isCommander: false }], undefined, new Map([[oid, card]]));
+    return p;
+  };
   const add = async (card: ScryCard) => {
     const oid = oracleIdOf(card);
     const existing = priced.find((p) => !p.isCommander && p.entry.card.oracleId === oid);
     if (existing) {
       existing.entry = { ...existing.entry, qty: existing.entry.qty + 1 };
     } else {
-      const entry: DeckEntry = { card: { oracleId: oid, name: card.name }, qty: 1 };
-      const [p] = await priceEntries(ctx.client, [{ entry, isCommander: false }], undefined, new Map([[oid, card]]));
-      priced = [...priced, p];
+      priced = [...priced, await priceCard(card)];
     }
     commit(cardsOf());
   };
 
   // ---- Swapping (from suggestions) ------------------------------------------------------------
-  let lastSwap: { removed: PricedCard; index: number; addedOracleId: string; label: string } | null = null;
-  /** Replaces a deck card with a suggested card; Undo puts it back. */
-  const swap = async (cut: PricedCard, card: ScryCard) => {
-    const oid = oracleIdOf(card);
-    const [added] = await priceEntries(ctx.client, [{ entry: { card: { oracleId: oid, name: card.name }, qty: 1 }, isCommander: false }], undefined, new Map([[oid, card]]));
-    const index = priced.indexOf(cut);
-    priced = [...priced.filter((x) => x !== cut), added];
-    lastSwap = { removed: cut, index, addedOracleId: oid, label: `${cut.entry.card.name} → ${card.name}` };
-    commit(cardsOf());
+  let swapping = false;
+  /**
+   * Replaces a deck card with a suggested card; Undo puts it back. One swap at a time, and the cut is
+   * found again by Oracle ID after pricing, since the deck may have changed meanwhile.
+   */
+  const swap = async (cutId: string, card: ScryCard) => {
+    if (swapping) return;
+    swapping = true;
+    try {
+      const added = await priceCard(card);
+      const index = priced.findIndex((x) => !x.isCommander && x.entry.card.oracleId === cutId);
+      if (index < 0 || priced.some((x) => x.entry.card.oracleId === added.entry.card.oracleId)) return; // already swapped or added
+      const removed = priced[index];
+      priced = [...priced.slice(0, index), ...priced.slice(index + 1), added];
+      commit(cardsOf(), {}, { keepUndo: true });
+      lastSwap = { removed, index, addedOracleId: added.entry.card.oracleId, label: `${removed.entry.card.name} → ${card.name}` };
+      panel?.refresh();
+    } finally {
+      swapping = false;
+    }
   };
   const undo = () => {
     if (!lastSwap) return;
     const { removed, index, addedOracleId } = lastSwap;
     priced = priced.filter((x) => x.isCommander || x.entry.card.oracleId !== addedOracleId);
     priced.splice(Math.min(index, priced.length), 0, removed);
-    lastSwap = null;
-    commit(cardsOf());
+    commit(cardsOf()); // also ends the Undo offer
   };
 
   const warningBox = h('div', { class: 'warning-box' });
