@@ -42,9 +42,9 @@ Builds the [v1 spec](../specs/2026-11-02-swapsmith-design.md) on the stack in [A
 - [x] E2E: paste the Edgar list, fix "Calastria Highborn", total shown, deck survives reload.
 
 ### 3. Commander-first building
-- [ ] New deck: commander autocomplete (`is:commander`), then the editor.
-- [ ] Add-card autocomplete. Warnings for off-color cards, cards not legal in Commander, and duplicate non-basics.
-- [ ] Unit tests for the warning rules. E2E: build from Edgar and add a card.
+- [x] New deck: commander autocomplete (`is:commander`), then the editor.
+- [x] Add-card autocomplete. Warnings for off-color cards, cards not legal in Commander, and duplicate non-basics.
+- [x] Unit tests for the warning rules. E2E: build from Edgar and add a card.
 
 ### 4. Owned cards and printing picker
 - [ ] Owned ticks, a shared collection across decks, basics owned by default (`UnownedBasics`), and a still-to-buy total.

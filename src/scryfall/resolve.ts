@@ -89,16 +89,26 @@ export interface PricedCard {
 }
 
 /** Prices every card in a deck at its pinned or cheapest printing. Reports progress per card. */
-export async function priceDeck(
+export function priceDeck(client: ScryfallClient, deck: Deck, onProgress?: (done: number, total: number) => void): Promise<PricedCard[]> {
+  return priceEntries(
+    client,
+    [{ entry: { card: deck.commander, qty: 1 }, isCommander: true }, ...deck.cards.map((entry) => ({ entry, isCommander: false }))],
+    onProgress,
+  );
+}
+
+/**
+ * Prices deck entries. `known` holds card objects already fetched (say, a card just added by name),
+ * which saves looking them up again.
+ */
+export async function priceEntries(
   client: ScryfallClient,
-  deck: Deck,
+  all: Array<{ entry: DeckEntry; isCommander: boolean }>,
   onProgress: (done: number, total: number) => void = () => {},
+  known: Map<string, ScryCard> = new Map(),
 ): Promise<PricedCard[]> {
-  const all: Array<{ entry: DeckEntry; isCommander: boolean }> = [
-    { entry: { card: deck.commander, qty: 1 }, isCommander: true },
-    ...deck.cards.map((entry) => ({ entry, isCommander: false })),
-  ];
-  const base = await cardsByOracleId(client, all.map((x) => x.entry.card.oracleId));
+  const missing = all.map((x) => x.entry.card.oracleId).filter((id) => !known.has(id));
+  const base = new Map([...known, ...(await cardsByOracleId(client, missing))]);
   let done = 0;
   onProgress(0, all.length);
 

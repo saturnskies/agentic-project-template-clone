@@ -4,6 +4,7 @@ import { createClient, type ScryfallClient } from '../scryfall/client';
 import { renderDeck } from './deckView';
 import { h } from './dom';
 import { renderHome } from './home';
+import { renderNewDeck } from './newDeck';
 import { renderPaste } from './paste';
 
 /** Shared state and actions every screen gets. */
@@ -52,6 +53,7 @@ export function startApp(root: HTMLElement): void {
     const deckMatch = route.match(/^\/deck\/([\w-]+)$/);
     view.replaceChildren();
     if (route === '/paste') renderPaste(view, ctx);
+    else if (route === '/new') renderNewDeck(view, ctx);
     else if (deckMatch) renderDeck(view, ctx, deckMatch[1]);
     else renderHome(view, ctx);
     window.scrollTo(0, 0);
