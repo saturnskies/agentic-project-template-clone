@@ -142,3 +142,46 @@ test('if one search fails, the rest still give suggestions and a note says what 
   await expect(panel).toContainText("Scryfall didn't answer every search (ramp)", { timeout: 30_000 });
   await expect(panel.getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem').first()).toContainText('Indulgent Aristocrat');
 });
+
+async function openSuggestions(page: import('@playwright/test').Page, view: 'Swaps' | 'Cheaper') {
+  const deck = await seedEdgarDeck(page);
+  await page.goto(`./#/deck/${deck.id}`);
+  await page.getByRole('button', { name: 'Find suggestions' }).click();
+  const panel = page.getByRole('complementary', { name: 'Suggestions' });
+  await panel.getByRole('button', { name: view }).click();
+  return panel;
+}
+
+test('clicking two swaps for the same card at once swaps it only once', async ({ page }) => {
+  await mockScryfall(page, edgarFull);
+  const panel = await openSuggestions(page, 'Cheaper');
+  const group = panel.getByRole('region', { name: 'Cheaper than Minas Tirith' });
+  await expect(group.getByRole('button', { name: /^Swap Minas Tirith for / })).toHaveCount(3);
+  // Both clicks land before either swap finishes.
+  await group.evaluate((el) => el.querySelectorAll<HTMLButtonElement>('button').forEach((b, i) => i < 2 && b.click()));
+  await expect(page.getByRole('row').filter({ hasText: 'Buried Ruin' })).toBeVisible();
+  // Let any second swap finish too, so the checks below see the settled deck, not a moment in between.
+  await page.waitForTimeout(5000);
+
+  await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
+  await expect(page.getByRole('row').filter({ hasText: 'Haven of the Spirit Dragon' })).toHaveCount(0);
+  await expect(page.getByRole('row').filter({ hasText: 'Minas Tirith' })).toHaveCount(0);
+});
+
+test('ticking a card as owned removes its cheaper replacements', async ({ page }) => {
+  await mockScryfall(page, edgarFull);
+  const panel = await openSuggestions(page, 'Cheaper');
+  await expect(panel.getByRole('region', { name: 'Cheaper than Minas Tirith' })).toBeVisible();
+  await page.getByRole('checkbox', { name: 'Own Minas Tirith' }).check();
+  await expect(panel.getByRole('region', { name: 'Cheaper than Minas Tirith' })).toHaveCount(0);
+});
+
+test('the Undo offer goes away once the deck is changed another way', async ({ page }) => {
+  await mockScryfall(page, edgarFull);
+  const panel = await openSuggestions(page, 'Swaps');
+  await panel.getByRole('button', { name: 'Swap Purify for Indulgent Aristocrat' }).click();
+  await expect(panel.getByRole('button', { name: 'Undo' })).toBeVisible();
+  await page.getByRole('button', { name: 'Keep Mortify' }).click();
+  await expect(panel.getByRole('button', { name: 'Undo' })).toHaveCount(0);
+});
+
