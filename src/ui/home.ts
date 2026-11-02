@@ -22,6 +22,7 @@ export function renderHome(view: HTMLElement, ctx: AppContext): void {
                 'span',
                 { class: 'deck-card-meta' },
                 d.summary ? usd(d.summary.total) : 'Not priced yet',
+                d.summary?.toBuy != null ? ` · ${usd(d.summary.toBuy)} to buy` : '',
                 ' · ',
                 `edited ${new Date(d.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`,
               ),
