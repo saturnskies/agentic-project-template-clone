@@ -17,10 +17,12 @@ export interface Deck {
   name: string;
   format: 'commander';
   commander: CardRef;
+  /** A commander printing the user picked; absent means "cheapest". */
+  commanderPrintingId?: string;
   cards: DeckEntry[];
   updatedAt: string;
   /** Last computed totals, shown on the home screen without re-pricing. */
-  summary?: { total: number; unpriced: number; count: number };
+  summary?: { total: number; unpriced: number; count: number; toBuy?: number };
 }
 
 export interface PricedLine {
