@@ -1,4 +1,5 @@
 import { deckTotals, newDeckId, type Deck, type DeckEntry } from '../lib/deck';
+import { deckFileName, deckToText } from '../lib/export';
 import { decodeDeck, encodeDeck, ShareError } from '../lib/share';
 import { cardWarnings, DECK_SIZE, isBasicLand, warningText } from '../lib/format';
 import { cardImage, compareLines, GROUP_ORDER, groupByType, typeGroup, typeName, type SortKey } from '../lib/groups';
@@ -314,6 +315,28 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
     }
   });
 
+  // ---- Exporting ------------------------------------------------------------------------------
+  const exportMsg = h('p', { class: 'muted small', role: 'status' });
+  const copyBtn = h('button', { type: 'button', class: 'button' }, 'Copy deck');
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(deckToText(deck));
+      exportMsg.textContent = 'Deck copied.';
+    } catch {
+      exportMsg.textContent = "Couldn't copy. Use Download .txt instead.";
+    }
+  });
+  const downloadBtn = h('button', { type: 'button', class: 'button' }, 'Download .txt');
+  downloadBtn.addEventListener('click', () => {
+    const url = URL.createObjectURL(new Blob([deckToText(deck)], { type: 'text/plain' }));
+    const a = h('a', { href: url, download: deckFileName(deck) });
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    exportMsg.textContent = 'Deck list downloaded.';
+  });
+
   const save = h('button', { type: 'button', class: 'button primary' }, 'Save to my decks');
   save.addEventListener('click', () => {
     ctx.saveDeck(deck);
@@ -331,8 +354,9 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
         'div',
         { class: 'row-between' },
         h('div', { class: 'deck-head' }, h('h2', {}, deck.name || 'Shared deck'), h('p', { class: 'muted' }, `Commander: ${deck.commander.name}`)),
-        readOnly ? null : shareBtn,
+        h('div', { class: 'actions' }, copyBtn, downloadBtn, readOnly ? null : shareBtn),
       ),
+      exportMsg,
       shareBox,
       h(
         'div',
