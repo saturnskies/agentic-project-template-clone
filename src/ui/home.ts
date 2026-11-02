@@ -6,6 +6,8 @@ import { cardsByOracleId, cardsByPrintingId } from '../scryfall/cards';
 import { backupSection } from './backup';
 import { h, usd } from './dom';
 
+const COLOR_NAMES: Record<string, string> = { W: 'white', U: 'blue', B: 'black', R: 'red', G: 'green', C: 'colorless' };
+
 export function renderHome(view: HTMLElement, ctx: AppContext): void {
   const arts = new Map<string, HTMLImageElement>();
   const decks = [...ctx.store.decks].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
@@ -23,15 +25,19 @@ export function renderHome(view: HTMLElement, ctx: AppContext): void {
               'a',
               { class: 'deck-card', href: `#/deck/${d.id}` },
               deckArt(d.id, arts),
-              h('span', { class: 'deck-card-name' }, d.name),
-              h('span', { class: 'deck-card-commander' }, d.commander.name),
               h(
                 'span',
-                { class: 'deck-card-meta' },
-                d.summary ? usd(d.summary.total) : 'Not priced yet',
-                d.summary?.toBuy != null ? ` · ${usd(d.summary.toBuy)} to buy` : '',
-                ' · ',
-                `edited ${new Date(d.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`,
+                { class: 'deck-card-info' },
+                h('span', { class: 'deck-card-name' }, d.name),
+                h('span', { class: 'deck-card-commander' }, d.commander.name),
+                h(
+                  'span',
+                  { class: 'deck-card-meta' },
+                  d.summary ? usd(d.summary.total) : 'Not priced yet',
+                  d.summary?.toBuy != null ? ` · ${usd(d.summary.toBuy)} to buy` : '',
+                  ' · ',
+                  `edited ${new Date(d.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`,
+                ),
               ),
             ),
           ),
@@ -56,6 +62,15 @@ export function renderHome(view: HTMLElement, ctx: AppContext): void {
     const rest = decks.filter((d) => !d.commanderPrintingId);
     const fill = (d: Deck, card: ScryCard | undefined) => {
       const img = arts.get(d.id);
+      const pips = img?.parentElement?.querySelector('.mana-pips');
+      if (pips && card) {
+        const ids = card.color_identity ?? [];
+        pips.replaceChildren(
+          ...(ids.length ? ids : ['C']).map((c) =>
+            h('span', { class: `mana-pip mana-${c.toLowerCase()}`, title: COLOR_NAMES[c] ?? 'colorless', role: 'img', 'aria-label': COLOR_NAMES[c] ?? 'colorless' }),
+          ),
+        );
+      }
       const src = cardArt(card ?? null);
       if (!img || !src) return;
       img.addEventListener('load', () => img.classList.add('loaded'));
@@ -74,5 +89,5 @@ export function renderHome(view: HTMLElement, ctx: AppContext): void {
 function deckArt(deckId: string, arts: Map<string, HTMLImageElement>): HTMLElement {
   const img = h('img', { class: 'deck-card-art', alt: '', loading: 'lazy' }) as HTMLImageElement;
   arts.set(deckId, img);
-  return h('span', { class: 'deck-card-art-slot' }, img);
+  return h('span', { class: 'deck-card-art-slot' }, img, h('span', { class: 'mana-pips' }));
 }
