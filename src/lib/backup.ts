@@ -1,0 +1,71 @@
+import type { Deck } from './deck';
+import { sanitizeStore, type Store } from './storage';
+
+/** A backup file: the whole store plus a header so we can recognise it and change the format later. */
+export interface BackupFile {
+  app: 'swapsmith';
+  backup: 1;
+  exportedAt: string;
+  store: Store;
+}
+
+export class BackupError extends Error {}
+
+export function makeBackup(store: Store, now = new Date()): string {
+  const file: BackupFile = { app: 'swapsmith', backup: 1, exportedAt: now.toISOString(), store };
+  return JSON.stringify(file, null, 2);
+}
+
+export const backupFileName = (now = new Date()) => `swapsmith-backup-${now.toISOString().slice(0, 10)}.json`;
+
+/** Reads a backup file's text. Throws BackupError if it is not a Swapsmith backup; skips decks that are damaged. */
+export function parseBackup(text: string): Store {
+  let data: unknown;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new BackupError("That file isn't a Swapsmith backup (it isn't valid JSON).");
+  }
+  const file = data as Partial<BackupFile> | null;
+  if (!file || typeof file !== 'object' || file.app !== 'swapsmith' || file.backup !== 1 || !file.store || typeof file.store !== 'object') {
+    throw new BackupError("That file isn't a Swapsmith backup.");
+  }
+  return sanitizeStore(file.store as unknown as Record<string, unknown>);
+}
+
+export interface RestoreResult {
+  store: Store;
+  added: number;
+  updated: number;
+}
+
+/**
+ * Merges a backup into the current store, never deleting anything: decks only in the backup are added,
+ * a deck in both keeps whichever was edited last, and owned cards are combined.
+ */
+export function mergeBackup(current: Store, backup: Store): RestoreResult {
+  const decks: Deck[] = [...current.decks];
+  let added = 0;
+  let updated = 0;
+  for (const incoming of backup.decks) {
+    const i = decks.findIndex((d) => d.id === incoming.id);
+    if (i < 0) {
+      decks.push(incoming);
+      added += 1;
+    } else if (incoming.updatedAt > decks[i].updatedAt) {
+      decks[i] = incoming;
+      updated += 1;
+    }
+  }
+  const union = (a: string[], b: string[]) => [...new Set([...a, ...b])];
+  return {
+    store: {
+      ...current,
+      decks,
+      owned: union(current.owned, backup.owned),
+      unownedBasics: union(current.unownedBasics, backup.unownedBasics),
+    },
+    added,
+    updated,
+  };
+}
