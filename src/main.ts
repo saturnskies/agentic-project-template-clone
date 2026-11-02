@@ -9,7 +9,7 @@ if (!app) throw new Error('Swapsmith: #app element missing');
 app.innerHTML = `
   <header class="site-header">
     <div class="wrap">
-      <h1><a href="#/" class="home-link">Swap<span>smith</span></a></h1>
+      <h1><a href="#/" class="home-link">Swap<span>Smith</span></a></h1>
     </div>
   </header>
   <main class="wrap" id="main"></main>
