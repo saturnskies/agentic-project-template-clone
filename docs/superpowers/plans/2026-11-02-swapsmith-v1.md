@@ -52,8 +52,8 @@ Builds the [v1 spec](../specs/2026-11-02-swapsmith-design.md) on the stack in [A
 - [x] Unit tests for totals with owned cards and basics. E2E: tick owned, pick a printing.
 
 ### 5. Grid view
-- [ ] Card-image grid grouped by type, a view toggle, and the choice remembered.
-- [ ] E2E: toggle the view, and the choice persists.
+- [x] Card-image grid grouped by type, a view toggle, and the choice remembered.
+- [x] E2E: toggle the view, and the choice persists.
 
 ### 6. Share links
 - [ ] `lib/share.ts`: deflate-raw plus base64url. Round-trip unit tests. Owned cards are never included.
