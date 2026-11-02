@@ -92,7 +92,7 @@ describe.runIf(process.env.RECORD === '1')('record Scryfall fixtures', () => {
     const commander = priced.find((p) => p.isCommander)!.card!;
     const profile = deckProfile(priced.map((p) => ({ name: p.entry.card.name, typeLine: p.typeLine, oracleText: rulesText(p.card), isCommander: p.isCommander })), commander.color_identity);
     const { pool } = await candidatePool(client, profile);
-    const roles = await deckRoles(client, priced.filter((c) => !c.isCommander).map((c) => ({ oracleId: c.entry.card.oracleId, name: c.entry.card.name })));
+    const { roles } = await deckRoles(client, priced.filter((c) => !c.isCommander).map((c) => ({ oracleId: c.entry.card.oracleId, name: c.entry.card.name })));
     const scored = scoreSuggestions(pool, { colorIdentity: profile.colorIdentity, oracleIds: new Set(priced.map((p) => p.entry.card.oracleId)) }, new Set());
     const tiers = upgradesByTier(scored, 10);
     const facts = deckCardFacts(priced, roles, pool, { owned: [], unownedBasics: [] });
