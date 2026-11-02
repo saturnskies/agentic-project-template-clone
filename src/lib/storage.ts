@@ -41,16 +41,18 @@ export function loadStore(storage: Storage | null): { store: Store; persistent: 
     return { store: emptyStore(), persistent: true };
   }
 
+  return { store: sanitizeStore(data), persistent: true };
+}
+
+/** Builds a valid Store from untrusted parsed JSON: bad decks and fields are dropped, never thrown on. */
+export function sanitizeStore(data: Record<string, unknown>): Store {
   const prefs = (data.prefs ?? {}) as Record<string, unknown>;
   return {
-    store: {
-      version: 1,
-      decks: Array.isArray(data.decks) ? data.decks.filter(isDeck) : [],
-      owned: strings(data.owned),
-      unownedBasics: strings(data.unownedBasics),
-      prefs: { view: prefs.view === 'grid' ? 'grid' : 'list' },
-    },
-    persistent: true,
+    version: 1,
+    decks: Array.isArray(data.decks) ? data.decks.filter(isDeck) : [],
+    owned: strings(data.owned),
+    unownedBasics: strings(data.unownedBasics),
+    prefs: { view: prefs.view === 'grid' ? 'grid' : 'list' },
   };
 }
 
