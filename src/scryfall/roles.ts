@@ -13,7 +13,9 @@ export const CORE_ROLES: Array<{ label: string; query: string }> = [
 // Scryfall silently drops the end of a query past ~1,000 characters (checked 2026-11-02).
 const MAX_QUERY_CHARS = 900;
 
-const nameQuery = (role: string, names: string[]) => `${role} (${names.map((n) => `!"${n.replace(/"/g, '')}"`).join(' or ')})`;
+// Quotes and backslashes would break the quoted name, so they are dropped.
+const clean = (n: string) => n.replace(/["\\]/g, '').trim();
+const nameQuery = (role: string, names: string[]) => `${role} (${names.map((n) => `!"${clean(n)}"`).join(' or ')})`;
 
 /** Splits names into groups whose query stays within MAX_QUERY_CHARS for the longest role tag. */
 function batches(names: string[]): string[][] {
@@ -33,32 +35,40 @@ function batches(names: string[]): string[][] {
 
 /**
  * Which core roles each deck card fills, by Oracle ID: one search per role per batch of exact names
- * (front faces, since a double-faced card's full name doesn't match `!"…"`).
+ * (front faces, since a double-faced card's full name doesn't match `!"…"`). Searches that fail are
+ * skipped and `complete` is false; only when every search fails does this throw.
  */
-export async function deckRoles(client: ScryfallClient, cards: Array<{ oracleId: string; name: string }>): Promise<Map<string, string[]>> {
+export async function deckRoles(
+  client: ScryfallClient,
+  cards: Array<{ oracleId: string; name: string }>,
+): Promise<{ roles: Map<string, string[]>; complete: boolean }> {
   const out = new Map<string, string[]>(cards.map((c) => [c.oracleId, []]));
-  const byName = new Map(cards.map((c) => [frontFace(c.name).toLowerCase(), c.oracleId]));
-  const groups = batches([...new Set(cards.map((c) => frontFace(c.name)))]);
-  await Promise.all(
+  const byName = new Map(cards.map((c) => [clean(frontFace(c.name)).toLowerCase(), c.oracleId]));
+  const groups = batches([...new Set(cards.map((c) => frontFace(c.name)))].filter((n) => clean(n)));
+  const outcomes = await Promise.all(
     CORE_ROLES.flatMap((role) =>
-      groups.map(async (names) => {
+      groups.map(async (names): Promise<unknown> => {
         let res: ScryList<ScryCard>;
         try {
           res = await client.get<ScryList<ScryCard>>(`/cards/search?${new URLSearchParams({ q: nameQuery(role.query, names) })}`);
         } catch (e) {
-          if (e instanceof ScryfallError && e.status === 404) return; // none of these cards has the role
-          throw e;
+          if (e instanceof ScryfallError && e.status === 404) return null; // none of these cards has the role
+          return e;
         }
         for (const c of res.data) {
           const id = c.oracle_id ?? c.card_faces?.[0]?.oracle_id;
-          const known = (id && out.has(id) ? id : undefined) ?? byName.get(frontFace(c.name).toLowerCase());
+          const known = (id && out.has(id) ? id : undefined) ?? byName.get(clean(frontFace(c.name)).toLowerCase());
           if (known && !out.get(known)!.includes(role.label)) out.get(known)!.push(role.label);
         }
+        return null;
       }),
     ),
   );
+  const errors = outcomes.filter((o) => o !== null);
+  if (outcomes.length && errors.length === outcomes.length) throw errors[0];
+
   // Report roles in a stable order.
   const order = CORE_ROLES.map((r) => r.label);
   for (const [id, roles] of out) out.set(id, roles.sort((a, b) => order.indexOf(a) - order.indexOf(b)));
-  return out;
+  return { roles: out, complete: errors.length === 0 };
 }
