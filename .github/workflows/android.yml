@@ -31,13 +31,19 @@ jobs:
       - name: Restore the signing key
         env:
           KEYSTORE_BASE64: ${{ secrets.SWAPSMITH_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.SWAPSMITH_KEYSTORE_PASSWORD }}
         run: |
           if [ -z "$KEYSTORE_BASE64" ]; then
             echo "::error::Missing secret SWAPSMITH_KEYSTORE_BASE64. See docs/android-build.md (Publishing from GitHub)."
             exit 1
           fi
-          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/swapsmith.keystore"
-          echo "SWAPSMITH_KEYSTORE=$RUNNER_TEMP/swapsmith.keystore" >> "$GITHUB_ENV"
+          KS="$RUNNER_TEMP/swapsmith.keystore"
+          # Pasted secrets often pick up line breaks or spaces; they are not part of the value.
+          printf '%s' "$KEYSTORE_BASE64" | tr -d '[:space:]' | base64 -d > "$KS" \
+            || { echo "::error::SWAPSMITH_KEYSTORE_BASE64 is not valid base64. Recreate it with: base64 -w0 swapsmith-signing.keystore (paste the single line of output)."; exit 1; }
+          keytool -list -keystore "$KS" -storepass "$KEYSTORE_PASSWORD" > /dev/null 2>&1 \
+            || { echo "::error::The decoded file is not a keystore, or SWAPSMITH_KEYSTORE_PASSWORD is wrong."; exit 1; }
+          echo "SWAPSMITH_KEYSTORE=$KS" >> "$GITHUB_ENV"
 
       - name: Build the signed APK
         env:
