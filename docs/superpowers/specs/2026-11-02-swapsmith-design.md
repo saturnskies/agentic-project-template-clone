@@ -1,6 +1,6 @@
 ---
 description: Swapsmith v1 design spec — free static Commander deckbuilder with live TCGplayer prices via Scryfall, owned-card tracking, and rules-based swap/upgrade/cheaper-replacement suggestions
-status: draft
+status: current
 updated: 2026-11-02
 ---
 
@@ -78,11 +78,12 @@ Deck = {
 DeckEntry = { card: CardRef, qty: number, printingId?: string /* user-picked printing; absent = cheapest */ }
 CardRef  = { oracleId: string, name: string }
 Owned    = Set<oracleId>      // one collection across all decks
+UnownedBasics = Set<oracleId> // basic lands are owned by default; unticking one adds it here
 Prefs    = { view: 'grid' | 'list', budgetTier?: 'budget' | 'mid' | 'premium' }
 ```
 
 - **Storage.** Decks, owned cards and preferences go in `localStorage` under one versioned key (`swapsmith:v1`). Cached API responses go in IndexedDB. If storage is blocked, as in some private windows, the app still works for the session and shows a banner saying decks won't be saved.
-- **Owned cards are matched by Oracle ID.** Owning any printing of a card counts as owning it.
+- **Owned cards are matched by Oracle ID.** Owning any printing of a card counts as owning it. Basic lands (type line `Basic Land`, including Wastes and snow basics) count as owned unless unticked.
 
 ### Share links
 
@@ -238,7 +239,7 @@ Each slice works end to end and is gated by its tests. The detailed plan comes n
 7. **Suggestions:** deck profile, candidate pool, upgrades by tier.
 8. **Swap pairs and cheaper replacements:** apply and undo.
 
-## Open questions
+## Decisions after review (2026-11-02)
 
-- **Project name in the repo:** the app is Swapsmith, but the repo is still named `agentic-project-template-clone`, which makes the Pages URL `saturnskies.github.io/agentic-project-template-clone/`. Rename the repo to `swapsmith` before the first deploy?
-- **Basic lands:** count them as owned by default? Most players own plenty.
+- **Repo name:** the repo is renamed `swapsmith` on GitHub, so the site lives at `https://saturnskies.github.io/swapsmith/`. Vite's `base` is `/swapsmith/`.
+- **Basic lands are owned by default.** Unticking one records it in `UnownedBasics`. Still-to-buy totals exclude owned basics.
