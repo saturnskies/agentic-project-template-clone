@@ -14,6 +14,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "234",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3170,
      "color_identity": [
       "B",
       "R",
@@ -46,6 +48,7 @@
      "set_name": "Innistrad: Crimson Vow",
      "collector_number": "236",
      "type_line": "Legendary Creature — Vampire Noble // Legendary Artifact",
+     "edhrec_rank": 3650,
      "color_identity": [
       "B",
       "W"
@@ -67,6 +70,7 @@
       {
        "name": "Edgar, Charmed Groom",
        "type_line": "Legendary Creature — Vampire Noble",
+       "oracle_text": "Other Vampires you control get +1/+1.\nWhen Edgar dies, return it to the battlefield transformed under its owner's control.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/front/6/3/63ba8eef-b834-4031-b0a1-0f8505d53813.jpg?1783924799",
         "normal": "https://cards.scryfall.io/normal/front/6/3/63ba8eef-b834-4031-b0a1-0f8505d53813.jpg?1783924799"
@@ -75,6 +79,7 @@
       {
        "name": "Edgar Markov's Coffin",
        "type_line": "Legendary Artifact",
+       "oracle_text": "At the beginning of your upkeep, create a 1/1 white and black Vampire creature token with lifelink and put a bloodline counter on Edgar Markov's Coffin. Then if there are three or more bloodline counters on it, remove those counters and transform it.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/back/6/3/63ba8eef-b834-4031-b0a1-0f8505d53813.jpg?1783924799",
         "normal": "https://cards.scryfall.io/normal/back/6/3/63ba8eef-b834-4031-b0a1-0f8505d53813.jpg?1783924799"
@@ -91,6 +96,8 @@
      "set_name": "Final Fantasy",
      "collector_number": "51",
      "type_line": "Legendary Creature — Human Artificer Noble",
+     "oracle_text": "When Edgar enters, draw a card for each artifact you control.\nTwo-Headed Coin — The first time you flip one or more coins each turn, those coins come up heads and you win those flips.",
+     "edhrec_rank": 9060,
      "color_identity": [
       "U"
      ],
@@ -121,6 +128,8 @@
      "set_name": "Final Fantasy Commander",
      "collector_number": "80",
      "type_line": "Legendary Creature — Human Artificer Noble",
+     "oracle_text": "Once during each of your turns, you may cast an artifact spell from your graveyard. If you cast a spell this way, that artifact enters tapped.\nTools — Whenever Edgar attacks, it gets +X/+0 until end of turn, where X is the greatest mana value among artifacts you control.",
+     "edhrec_rank": 9364,
      "color_identity": [
       "R",
       "W"
@@ -152,6 +161,8 @@
      "set_name": "Reality Fracture",
      "collector_number": "270",
      "type_line": "Legendary Creature — Vampire Noble",
+     "oracle_text": "Whenever another creature or planeswalker you control dies, you gain 1 life.\n{2}, Sacrifice another creature or planeswalker: Put a +1/+1 counter on Edgar. He gains menace until end of turn. (He can't be blocked except by two or more creatures.)",
+     "edhrec_rank": 20075,
      "color_identity": [
       "B",
       "W"
@@ -183,6 +194,8 @@
      "set_name": "Reality Fracture",
      "collector_number": "257",
      "type_line": "Legendary Creature — Werewolf Noble",
+     "oracle_text": "Flash\nAt the beginning of your end step, if you didn't cast a spell this turn, put two +1/+1 counters on Edgar.\n{4}{G}: Put a +1/+1 counter on each creature you control with a +1/+1 counter on it.",
+     "edhrec_rank": 23022,
      "color_identity": [
       "G"
      ],
@@ -222,6 +235,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "234",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3174,
      "color_identity": [
       "B",
       "R",
@@ -235,8 +250,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "44.43",
-      "usd_foil": "46.65",
+      "usd": "45.01",
+      "usd_foil": "46.47",
       "usd_etched": null
      },
      "tcgplayer_id": 596272,
@@ -264,6 +279,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "428",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3170,
      "color_identity": [
       "B",
       "R",
@@ -296,6 +313,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "328",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3170,
      "color_identity": [
       "B",
       "R",
@@ -328,6 +347,8 @@
      "set_name": "Commander 2017",
      "collector_number": "36",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3170,
      "color_identity": [
       "B",
       "R",
@@ -359,6 +380,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "234",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3170,
      "color_identity": [
       "B",
       "R",
@@ -391,6 +414,8 @@
      "set_name": "Judge Gift Cards 2021",
      "collector_number": "3",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3170,
      "color_identity": [
       "B",
       "R",
@@ -422,6 +447,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "491",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3170,
      "color_identity": [
       "B",
       "R",
@@ -469,6 +496,8 @@
    "set_name": "Star Trek Commander",
    "collector_number": "499",
    "type_line": "Artifact",
+   "oracle_text": "{T}: Add {C}{C}.",
+   "edhrec_rank": 1,
    "color_identity": [],
    "legalities": {
     "commander": "legal"
@@ -505,6 +534,8 @@
      "set_name": "Star Trek Commander",
      "collector_number": "499",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -533,6 +564,8 @@
      "set_name": "Summer Magic / Edgar",
      "collector_number": "274",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -560,6 +593,8 @@
      "set_name": "The Zeta Set",
      "collector_number": "114",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -587,6 +622,8 @@
      "set_name": "The Zeta Set",
      "collector_number": "235",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -614,6 +651,8 @@
      "set_name": "The Zeta Set",
      "collector_number": "356",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -641,6 +680,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "913",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -667,6 +708,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "408z",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -694,6 +737,8 @@
      "set_name": "Final Fantasy Commander",
      "collector_number": "357",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -722,6 +767,8 @@
      "set_name": "Foundations Commander",
      "collector_number": "286",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -749,6 +796,8 @@
      "set_name": "Marvel Super Heroes Commander",
      "collector_number": "211",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -777,6 +826,8 @@
      "set_name": "Marvel Super Heroes Commander",
      "collector_number": "212",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -805,6 +856,8 @@
      "set_name": "Final Fantasy Commander",
      "collector_number": "358",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -833,6 +886,8 @@
      "set_name": "Marvel Super Heroes Commander",
      "collector_number": "214",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -861,6 +916,8 @@
      "set_name": "Aetherdrift Commander",
      "collector_number": "56",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -888,6 +945,8 @@
      "set_name": "Aetherdrift Commander",
      "collector_number": "57",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -915,6 +974,8 @@
      "set_name": "Final Fantasy Commander",
      "collector_number": "356",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -943,6 +1004,8 @@
      "set_name": "Final Fantasy Commander",
      "collector_number": "359",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -971,6 +1034,8 @@
      "set_name": "Reality Fracture Commander",
      "collector_number": "21",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -998,6 +1063,8 @@
      "set_name": "Commander 2013",
      "collector_number": "259",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1025,6 +1092,8 @@
      "set_name": "The Lost Caverns of Ixalan Commander",
      "collector_number": "313",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1052,6 +1121,8 @@
      "set_name": "Commander 2020",
      "collector_number": "252",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1079,6 +1150,8 @@
      "set_name": "Starter Commander Decks",
      "collector_number": "276",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1106,6 +1179,8 @@
      "set_name": "Commander 2015",
      "collector_number": "268",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1133,6 +1208,8 @@
      "set_name": "Commander Anthology Volume II",
      "collector_number": "217",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1160,6 +1237,8 @@
      "set_name": "Commander Anthology",
      "collector_number": "231",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1187,6 +1266,8 @@
      "set_name": "Commander Legends",
      "collector_number": "472",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1214,6 +1295,8 @@
      "set_name": "Marvel Super Heroes Commander",
      "collector_number": "213",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1242,6 +1325,8 @@
      "set_name": "New Capenna Commander",
      "collector_number": "379",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1269,6 +1354,8 @@
      "set_name": "Foundations Commander",
      "collector_number": "2",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1296,6 +1383,8 @@
      "set_name": "Bloomburrow Commander",
      "collector_number": "129",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1323,6 +1412,8 @@
      "set_name": "Midnight Hunt Commander",
      "collector_number": "162",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1350,6 +1441,8 @@
      "set_name": "Commander 2017",
      "collector_number": "223",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1377,6 +1470,8 @@
      "set_name": "Zendikar Rising Commander",
      "collector_number": "120",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1404,6 +1499,8 @@
      "set_name": "Teenage Mutant Ninja Turtles Eternal",
      "collector_number": "59",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1432,6 +1529,8 @@
      "set_name": "Crimson Vow Commander",
      "collector_number": "168",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1459,6 +1558,8 @@
      "set_name": "Commander 2011",
      "collector_number": "261",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1486,6 +1587,8 @@
      "set_name": "Fallout",
      "collector_number": "239",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1514,6 +1617,8 @@
      "set_name": "Secrets of Strixhaven Commander",
      "collector_number": "128",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1541,6 +1646,8 @@
      "set_name": "Commander 2021",
      "collector_number": "263",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1568,6 +1675,8 @@
      "set_name": "Modern Horizons 3 Commander",
      "collector_number": "305",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1596,6 +1705,8 @@
      "set_name": "Commander Legends: Battle for Baldur's Gate",
      "collector_number": "871",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1623,6 +1734,8 @@
      "set_name": "Neon Dynasty Commander",
      "collector_number": "161",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1650,6 +1763,8 @@
      "set_name": "Forgotten Realms Commander",
      "collector_number": "215",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1677,6 +1792,8 @@
      "set_name": "Murders at Karlov Manor Commander",
      "collector_number": "237",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1704,6 +1821,8 @@
      "set_name": "Commander 2014",
      "collector_number": "270",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1731,6 +1850,8 @@
      "set_name": "The List",
      "collector_number": "C21-263",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1758,6 +1879,8 @@
      "set_name": "March of the Machine Commander",
      "collector_number": "381",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1785,6 +1908,8 @@
      "set_name": "The List",
      "collector_number": "CMD-261",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1812,6 +1937,8 @@
      "set_name": "Commander 2016",
      "collector_number": "272",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1839,6 +1966,8 @@
      "set_name": "Kaldheim Commander",
      "collector_number": "104",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1866,6 +1995,8 @@
      "set_name": "Tarkir: Dragonstorm Commander",
      "collector_number": "106",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1893,6 +2024,8 @@
      "set_name": "Doctor Who",
      "collector_number": "245",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1921,6 +2054,8 @@
      "set_name": "Wilds of Eldraine Commander",
      "collector_number": "149",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1948,6 +2083,8 @@
      "set_name": "The List",
      "collector_number": "BLC-129",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1975,6 +2112,8 @@
      "set_name": "Dominaria United Commander",
      "collector_number": "190",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2002,6 +2141,8 @@
      "set_name": "Commander 2019",
      "collector_number": "221",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2029,6 +2170,8 @@
      "set_name": "Commander 2018",
      "collector_number": "222",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2056,6 +2199,8 @@
      "set_name": "Phyrexia: All Will Be One Commander",
      "collector_number": "140",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2083,6 +2228,8 @@
      "set_name": "Commander Masters",
      "collector_number": "410",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2111,6 +2258,8 @@
      "set_name": "Lorwyn Eclipsed Commander",
      "collector_number": "58",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2138,6 +2287,8 @@
      "set_name": "Edge of Eternities Commander",
      "collector_number": "57",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2165,6 +2316,8 @@
      "set_name": "Duskmourn: House of Horror Commander",
      "collector_number": "94",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2192,6 +2345,8 @@
      "set_name": "Outlaws of Thunder Junction Commander",
      "collector_number": "267",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2219,6 +2374,8 @@
      "set_name": "Lorwyn Eclipsed Commander",
      "collector_number": "57",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2246,6 +2403,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "249",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2273,6 +2432,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "250",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2300,6 +2461,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "284",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2327,6 +2490,8 @@
      "set_name": "Mystery Booster 2",
      "collector_number": "233",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2355,6 +2520,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "251",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2382,6 +2549,8 @@
      "set_name": "The List",
      "collector_number": "C18-222",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2409,6 +2578,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "252",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2436,6 +2607,8 @@
      "set_name": "The Brothers' War Commander",
      "collector_number": "160",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2463,6 +2636,8 @@
      "set_name": "MagicFest 2019",
      "collector_number": "7",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2491,6 +2666,8 @@
      "set_name": "Love Your LGS 2022",
      "collector_number": "1",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2518,6 +2695,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2807",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2546,6 +2725,8 @@
      "set_name": "Commander Legends",
      "collector_number": "700",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2574,6 +2755,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "910",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2601,6 +2784,8 @@
      "set_name": "Foundations Promos",
      "collector_number": "1",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2629,6 +2814,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2683",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2657,6 +2844,8 @@
      "set_name": "Avatar: The Last Airbender Eternal",
      "collector_number": "316",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2684,6 +2873,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2063",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2712,6 +2903,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "IFIYW-5",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2740,6 +2933,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2672",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2768,6 +2963,8 @@
      "set_name": "Commander Collection: Green",
      "collector_number": "7",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2796,6 +2993,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1664",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2824,6 +3023,8 @@
      "set_name": "Commander Masters",
      "collector_number": "703",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2852,6 +3053,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2132",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2879,6 +3082,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2467",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2907,6 +3112,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "249★",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2934,6 +3141,8 @@
      "set_name": "Commander Collection: Black",
      "collector_number": "7",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2962,6 +3171,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "249",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2990,6 +3201,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "250★",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3017,6 +3230,8 @@
      "set_name": "Doctor Who",
      "collector_number": "836",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3044,6 +3259,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "251★",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3071,6 +3288,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2539",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3099,6 +3318,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2093",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3127,6 +3348,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "912",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3154,6 +3377,8 @@
      "set_name": "Secret Lair Countdown",
      "collector_number": "19",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3182,6 +3407,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1734",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3210,6 +3437,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1988",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3238,6 +3467,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "252★",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3265,6 +3496,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1993",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3293,6 +3526,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1833",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3320,6 +3555,8 @@
      "set_name": "Secrets of Strixhaven Commander",
      "collector_number": "427",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3347,6 +3584,8 @@
      "set_name": "Fallout",
      "collector_number": "767",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3374,6 +3613,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "IFIYW-10",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3401,6 +3642,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1696",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3429,6 +3672,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2560",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3457,6 +3702,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1011",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3485,6 +3732,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2315",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3513,6 +3762,8 @@
      "set_name": "From the Vault: Relics",
      "collector_number": "12",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3540,6 +3791,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2783",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3568,6 +3821,8 @@
      "set_name": "Fallout",
      "collector_number": "359",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3596,6 +3851,8 @@
      "set_name": "Revised Edition",
      "collector_number": "274",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3623,6 +3880,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1905",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3650,6 +3909,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2330",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3677,6 +3938,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2417",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3704,6 +3967,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1494",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3731,6 +3996,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1074",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3756,6 +4023,7 @@
      "set": "sld",
      "set_name": "Secret Lair Drop",
      "collector_number": "1512",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3774,6 +4042,7 @@
        "name": "Sol Ring",
        "oracle_id": "6ad8011d-3471-4369-9d68-b264cc027487",
        "type_line": "Artifact",
+       "oracle_text": "{T}: Add {C}{C}.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/front/d/7/d74a72a2-d46a-41c2-a400-70571197b020.jpg?1783913152",
         "normal": "https://cards.scryfall.io/normal/front/d/7/d74a72a2-d46a-41c2-a400-70571197b020.jpg?1783913152"
@@ -3783,6 +4052,7 @@
        "name": "Sol Ring",
        "oracle_id": "6ad8011d-3471-4369-9d68-b264cc027487",
        "type_line": "Artifact",
+       "oracle_text": "{T}: Add {C}{C}.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/back/d/7/d74a72a2-d46a-41c2-a400-70571197b020.jpg?1783913152",
         "normal": "https://cards.scryfall.io/normal/back/d/7/d74a72a2-d46a-41c2-a400-70571197b020.jpg?1783913152"
@@ -3799,6 +4069,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1604",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3827,6 +4099,8 @@
      "set_name": "Unlimited Edition",
      "collector_number": "270",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3854,6 +4128,8 @@
      "set_name": "Foreign Black Border",
      "collector_number": "274",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3881,6 +4157,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1494★",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3908,6 +4186,8 @@
      "set_name": "Secret Lair Countdown",
      "collector_number": "46",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3935,6 +4215,8 @@
      "set_name": "Fallout",
      "collector_number": "887",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3962,6 +4244,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "410",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3989,6 +4273,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "409",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4016,6 +4302,8 @@
      "set_name": "Judge Gift Cards 2005",
      "collector_number": "3",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4043,6 +4331,8 @@
      "set_name": "Limited Edition Beta",
      "collector_number": "270",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4070,6 +4360,8 @@
      "set_name": "Limited Edition Alpha",
      "collector_number": "269",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4097,6 +4389,8 @@
      "set_name": "Kaladesh Inventions",
      "collector_number": "24",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4124,6 +4418,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "408",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4151,6 +4447,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "409z",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4178,6 +4476,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "410z",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4239,6 +4539,8 @@
    "set_name": "Foundations",
    "collector_number": "227",
    "type_line": "Creature — Elf Druid",
+   "oracle_text": "{T}: Add {G}.",
+   "edhrec_rank": 55,
    "color_identity": [
     "G"
    ],
@@ -4277,6 +4579,8 @@
      "set_name": "Summer Magic / Edgar",
      "collector_number": "211",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4306,6 +4610,8 @@
      "set_name": "The Zeta Set",
      "collector_number": "81",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4335,6 +4641,8 @@
      "set_name": "The Zeta Set",
      "collector_number": "202",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4364,6 +4672,8 @@
      "set_name": "The Zeta Set",
      "collector_number": "323",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4393,6 +4703,8 @@
      "set_name": "Foundations Commander",
      "collector_number": "213",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4422,6 +4734,8 @@
      "set_name": "Duel Decks: Elves vs. Goblins",
      "collector_number": "9",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4451,6 +4765,8 @@
      "set_name": "Foundations",
      "collector_number": "227",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4481,6 +4797,8 @@
      "set_name": "Magic 2010",
      "collector_number": "189",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4511,6 +4829,8 @@
      "set_name": "The List",
      "collector_number": "GNT-46",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4540,6 +4860,8 @@
      "set_name": "Magic 2011",
      "collector_number": "184",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4570,6 +4892,8 @@
      "set_name": "Commander 2014",
      "collector_number": "204",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4599,6 +4923,8 @@
      "set_name": "Dominaria",
      "collector_number": "168",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4629,6 +4955,8 @@
      "set_name": "Eternal Masters",
      "collector_number": "175",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4659,6 +4987,8 @@
      "set_name": "Magic 2012",
      "collector_number": "182",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4689,6 +5019,8 @@
      "set_name": "Tenth Edition",
      "collector_number": "274",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4719,6 +5051,8 @@
      "set_name": "Classic Sixth Edition",
      "collector_number": "239",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4748,6 +5082,8 @@
      "set_name": "Anthologies",
      "collector_number": "59",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4777,6 +5113,8 @@
      "set_name": "Core Set 2019",
      "collector_number": "314",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4806,6 +5144,8 @@
      "set_name": "Ninth Edition",
      "collector_number": "253",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4835,6 +5175,8 @@
      "set_name": "Fifth Edition",
      "collector_number": "313",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4864,6 +5206,8 @@
      "set_name": "Foundations Jumpstart",
      "collector_number": "149",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4893,6 +5237,8 @@
      "set_name": "The List",
      "collector_number": "M19-314",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4922,6 +5268,8 @@
      "set_name": "Seventh Edition",
      "collector_number": "253",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4951,6 +5299,8 @@
      "set_name": "Duel Decks Anthology: Elves vs. Goblins",
      "collector_number": "9",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -4980,6 +5330,8 @@
      "set_name": "Commander Anthology",
      "collector_number": "125",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5009,6 +5361,8 @@
      "set_name": "Revised Edition",
      "collector_number": "211",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5038,6 +5392,8 @@
      "set_name": "Game Night: Free-for-All",
      "collector_number": "101",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5067,6 +5423,8 @@
      "set_name": "Fourth Edition",
      "collector_number": "261",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5096,6 +5454,8 @@
      "set_name": "Battle Royale Box Set",
      "collector_number": "39",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5125,6 +5485,8 @@
      "set_name": "Game Night",
      "collector_number": "46",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5154,6 +5516,8 @@
      "set_name": "MagicFest 2026",
      "collector_number": "8",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5183,6 +5547,8 @@
      "set_name": "Beatdown Box Set",
      "collector_number": "58",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5212,6 +5578,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1553",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5242,6 +5610,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "800",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5272,6 +5642,8 @@
      "set_name": "Dominaria United Promos",
      "collector_number": "1★",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5301,6 +5673,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "7167",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5330,6 +5704,8 @@
      "set_name": "Unlimited Edition",
      "collector_number": "211",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5359,6 +5735,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1129",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5389,6 +5767,8 @@
      "set_name": "Dominaria Promos",
      "collector_number": "168",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5418,6 +5798,8 @@
      "set_name": "Fourth Edition Foreign Black Border",
      "collector_number": "261",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5447,6 +5829,8 @@
      "set_name": "Secret Lair Countdown",
      "collector_number": "12",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5477,6 +5861,8 @@
      "set_name": "Ninth Edition",
      "collector_number": "253★",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5506,6 +5892,8 @@
      "set_name": "Foreign Black Border",
      "collector_number": "211",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5535,6 +5923,8 @@
      "set_name": "DCI Promos",
      "collector_number": "9",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5564,6 +5954,8 @@
      "set_name": "Friday Night Magic 2000",
      "collector_number": "11",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5593,6 +5985,8 @@
      "set_name": "Secret Lair Countdown",
      "collector_number": "39",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5622,6 +6016,8 @@
      "set_name": "30th Anniversary History Promos",
      "collector_number": "5★",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5651,6 +6047,8 @@
      "set_name": "Limited Edition Beta",
      "collector_number": "211",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5680,6 +6078,8 @@
      "set_name": "30th Anniversary History Promos",
      "collector_number": "5",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5709,6 +6109,8 @@
      "set_name": "Seventh Edition",
      "collector_number": "253★",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5738,6 +6140,8 @@
      "set_name": "Foundations",
      "collector_number": "429",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5767,6 +6171,8 @@
      "set_name": "Limited Edition Alpha",
      "collector_number": "210",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5796,6 +6202,8 @@
      "set_name": "Foundations",
      "collector_number": "439",
      "type_line": "Creature — Elf Druid",
+     "oracle_text": "{T}: Add {G}.",
+     "edhrec_rank": 55,
      "color_identity": [
       "G"
      ],
@@ -5827,13 +6235,15 @@
    "not_found": [],
    "data": [
     {
-     "id": "a577ba08-0aa8-45be-aa83-d5078770127c",
+     "id": "9a3c8eb0-7a55-4897-8324-f3d08c707c4d",
      "oracle_id": "41e2790d-49f5-4e98-b8d9-04179f47f13a",
      "name": "Edgar Markov",
      "set": "inr",
      "set_name": "Innistrad Remastered",
-     "collector_number": "234",
+     "collector_number": "428",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3174,
      "color_identity": [
       "B",
       "R",
@@ -5847,14 +6257,14 @@
       "foil"
      ],
      "prices": {
-      "usd": "44.43",
-      "usd_foil": "46.65",
+      "usd": "30.20",
+      "usd_foil": "34.89",
       "usd_etched": null
      },
-     "tcgplayer_id": 596272,
+     "tcgplayer_id": 596294,
      "image_uris": {
-      "small": "https://cards.scryfall.io/small/front/a/5/a577ba08-0aa8-45be-aa83-d5078770127c.jpg?1783908078",
-      "normal": "https://cards.scryfall.io/normal/front/a/5/a577ba08-0aa8-45be-aa83-d5078770127c.jpg?1783908078"
+      "small": "https://cards.scryfall.io/small/front/9/a/9a3c8eb0-7a55-4897-8324-f3d08c707c4d.jpg?1783907998",
+      "normal": "https://cards.scryfall.io/normal/front/9/a/9a3c8eb0-7a55-4897-8324-f3d08c707c4d.jpg?1783907998"
      },
      "object": "card"
     },
@@ -5866,6 +6276,8 @@
      "set_name": "Star Trek Commander",
      "collector_number": "499",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -5904,6 +6316,8 @@
      "set_name": "Star Trek Commander",
      "collector_number": "499",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -5932,6 +6346,8 @@
      "set_name": "Summer Magic / Edgar",
      "collector_number": "274",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -5959,6 +6375,8 @@
      "set_name": "The Zeta Set",
      "collector_number": "114",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -5986,6 +6404,8 @@
      "set_name": "The Zeta Set",
      "collector_number": "235",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6013,6 +6433,8 @@
      "set_name": "The Zeta Set",
      "collector_number": "356",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6040,6 +6462,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "913",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6066,6 +6490,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "408z",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6093,6 +6519,8 @@
      "set_name": "Final Fantasy Commander",
      "collector_number": "357",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6121,6 +6549,8 @@
      "set_name": "Foundations Commander",
      "collector_number": "286",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6148,6 +6578,8 @@
      "set_name": "Marvel Super Heroes Commander",
      "collector_number": "211",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6176,6 +6608,8 @@
      "set_name": "Marvel Super Heroes Commander",
      "collector_number": "212",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6204,6 +6638,8 @@
      "set_name": "Final Fantasy Commander",
      "collector_number": "358",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6232,6 +6668,8 @@
      "set_name": "Marvel Super Heroes Commander",
      "collector_number": "214",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6260,6 +6698,8 @@
      "set_name": "Aetherdrift Commander",
      "collector_number": "56",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6287,6 +6727,8 @@
      "set_name": "Aetherdrift Commander",
      "collector_number": "57",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6314,6 +6756,8 @@
      "set_name": "Final Fantasy Commander",
      "collector_number": "356",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6342,6 +6786,8 @@
      "set_name": "Final Fantasy Commander",
      "collector_number": "359",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6370,6 +6816,8 @@
      "set_name": "Reality Fracture Commander",
      "collector_number": "21",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6397,6 +6845,8 @@
      "set_name": "Commander 2013",
      "collector_number": "259",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6424,6 +6874,8 @@
      "set_name": "The Lost Caverns of Ixalan Commander",
      "collector_number": "313",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6451,6 +6903,8 @@
      "set_name": "Commander 2020",
      "collector_number": "252",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6478,6 +6932,8 @@
      "set_name": "Starter Commander Decks",
      "collector_number": "276",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6505,6 +6961,8 @@
      "set_name": "Commander 2015",
      "collector_number": "268",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6532,6 +6990,8 @@
      "set_name": "Commander Anthology Volume II",
      "collector_number": "217",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6559,6 +7019,8 @@
      "set_name": "Commander Anthology",
      "collector_number": "231",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6586,6 +7048,8 @@
      "set_name": "Commander Legends",
      "collector_number": "472",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6613,6 +7077,8 @@
      "set_name": "Marvel Super Heroes Commander",
      "collector_number": "213",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6641,6 +7107,8 @@
      "set_name": "New Capenna Commander",
      "collector_number": "379",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6668,6 +7136,8 @@
      "set_name": "Foundations Commander",
      "collector_number": "2",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6695,6 +7165,8 @@
      "set_name": "Bloomburrow Commander",
      "collector_number": "129",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6722,6 +7194,8 @@
      "set_name": "Midnight Hunt Commander",
      "collector_number": "162",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6749,6 +7223,8 @@
      "set_name": "Commander 2017",
      "collector_number": "223",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6776,6 +7252,8 @@
      "set_name": "Zendikar Rising Commander",
      "collector_number": "120",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6803,6 +7281,8 @@
      "set_name": "Teenage Mutant Ninja Turtles Eternal",
      "collector_number": "59",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6831,6 +7311,8 @@
      "set_name": "Crimson Vow Commander",
      "collector_number": "168",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6858,6 +7340,8 @@
      "set_name": "Commander 2011",
      "collector_number": "261",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6885,6 +7369,8 @@
      "set_name": "Fallout",
      "collector_number": "239",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6913,6 +7399,8 @@
      "set_name": "Secrets of Strixhaven Commander",
      "collector_number": "128",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6940,6 +7428,8 @@
      "set_name": "Commander 2021",
      "collector_number": "263",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6967,6 +7457,8 @@
      "set_name": "Modern Horizons 3 Commander",
      "collector_number": "305",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -6995,6 +7487,8 @@
      "set_name": "Commander Legends: Battle for Baldur's Gate",
      "collector_number": "871",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7022,6 +7516,8 @@
      "set_name": "Neon Dynasty Commander",
      "collector_number": "161",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7049,6 +7545,8 @@
      "set_name": "Forgotten Realms Commander",
      "collector_number": "215",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7076,6 +7574,8 @@
      "set_name": "Murders at Karlov Manor Commander",
      "collector_number": "237",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7103,6 +7603,8 @@
      "set_name": "Commander 2014",
      "collector_number": "270",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7130,6 +7632,8 @@
      "set_name": "The List",
      "collector_number": "C21-263",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7157,6 +7661,8 @@
      "set_name": "March of the Machine Commander",
      "collector_number": "381",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7184,6 +7690,8 @@
      "set_name": "The List",
      "collector_number": "CMD-261",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7211,6 +7719,8 @@
      "set_name": "Commander 2016",
      "collector_number": "272",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7238,6 +7748,8 @@
      "set_name": "Kaldheim Commander",
      "collector_number": "104",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7265,6 +7777,8 @@
      "set_name": "Tarkir: Dragonstorm Commander",
      "collector_number": "106",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7292,6 +7806,8 @@
      "set_name": "Doctor Who",
      "collector_number": "245",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7320,6 +7836,8 @@
      "set_name": "Wilds of Eldraine Commander",
      "collector_number": "149",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7347,6 +7865,8 @@
      "set_name": "The List",
      "collector_number": "BLC-129",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7374,6 +7894,8 @@
      "set_name": "Dominaria United Commander",
      "collector_number": "190",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7401,6 +7923,8 @@
      "set_name": "Commander 2019",
      "collector_number": "221",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7428,6 +7952,8 @@
      "set_name": "Commander 2018",
      "collector_number": "222",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7455,6 +7981,8 @@
      "set_name": "Phyrexia: All Will Be One Commander",
      "collector_number": "140",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7482,6 +8010,8 @@
      "set_name": "Commander Masters",
      "collector_number": "410",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7510,6 +8040,8 @@
      "set_name": "Lorwyn Eclipsed Commander",
      "collector_number": "58",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7537,6 +8069,8 @@
      "set_name": "Edge of Eternities Commander",
      "collector_number": "57",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7564,6 +8098,8 @@
      "set_name": "Duskmourn: House of Horror Commander",
      "collector_number": "94",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7591,6 +8127,8 @@
      "set_name": "Outlaws of Thunder Junction Commander",
      "collector_number": "267",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7618,6 +8156,8 @@
      "set_name": "Lorwyn Eclipsed Commander",
      "collector_number": "57",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7645,6 +8185,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "249",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7672,6 +8214,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "250",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7699,6 +8243,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "284",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7726,6 +8272,8 @@
      "set_name": "Mystery Booster 2",
      "collector_number": "233",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7754,6 +8302,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "251",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7781,6 +8331,8 @@
      "set_name": "The List",
      "collector_number": "C18-222",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7808,6 +8360,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "252",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7835,6 +8389,8 @@
      "set_name": "The Brothers' War Commander",
      "collector_number": "160",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7862,6 +8418,8 @@
      "set_name": "MagicFest 2019",
      "collector_number": "7",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7890,6 +8448,8 @@
      "set_name": "Love Your LGS 2022",
      "collector_number": "1",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7917,6 +8477,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2807",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7945,6 +8507,8 @@
      "set_name": "Commander Legends",
      "collector_number": "700",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -7973,6 +8537,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "910",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8000,6 +8566,8 @@
      "set_name": "Foundations Promos",
      "collector_number": "1",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8028,6 +8596,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2683",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8056,6 +8626,8 @@
      "set_name": "Avatar: The Last Airbender Eternal",
      "collector_number": "316",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8083,6 +8655,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2063",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8111,6 +8685,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "IFIYW-5",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8139,6 +8715,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2672",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8167,6 +8745,8 @@
      "set_name": "Commander Collection: Green",
      "collector_number": "7",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8195,6 +8775,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1664",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8223,6 +8805,8 @@
      "set_name": "Commander Masters",
      "collector_number": "703",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8251,6 +8835,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2132",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8278,6 +8864,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2467",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8306,6 +8894,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "249★",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8333,6 +8923,8 @@
      "set_name": "Commander Collection: Black",
      "collector_number": "7",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8361,6 +8953,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "249",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8389,6 +8983,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "250★",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8416,6 +9012,8 @@
      "set_name": "Doctor Who",
      "collector_number": "836",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8443,6 +9041,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "251★",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8470,6 +9070,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2539",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8498,6 +9100,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2093",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8526,6 +9130,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "912",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8553,6 +9159,8 @@
      "set_name": "Secret Lair Countdown",
      "collector_number": "19",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8581,6 +9189,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1734",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8609,6 +9219,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1988",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8637,6 +9249,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "252★",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8664,6 +9278,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1993",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8692,6 +9308,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1833",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8719,6 +9337,8 @@
      "set_name": "Secrets of Strixhaven Commander",
      "collector_number": "427",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8746,6 +9366,8 @@
      "set_name": "Fallout",
      "collector_number": "767",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8773,6 +9395,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "IFIYW-10",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8800,6 +9424,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1696",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8828,6 +9454,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2560",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8856,6 +9484,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1011",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8884,6 +9514,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2315",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8912,6 +9544,8 @@
      "set_name": "From the Vault: Relics",
      "collector_number": "12",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8939,6 +9573,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2783",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -8967,6 +9603,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "428",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3170,
      "color_identity": [
       "B",
       "R",
@@ -8999,6 +9637,8 @@
      "set_name": "Fallout",
      "collector_number": "359",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9027,6 +9667,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "328",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3170,
      "color_identity": [
       "B",
       "R",
@@ -9059,6 +9701,8 @@
      "set_name": "Revised Edition",
      "collector_number": "274",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9086,6 +9730,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1905",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9113,6 +9759,8 @@
      "set_name": "Commander 2017",
      "collector_number": "36",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3170,
      "color_identity": [
       "B",
       "R",
@@ -9144,6 +9792,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2330",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9171,6 +9821,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "234",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3170,
      "color_identity": [
       "B",
       "R",
@@ -9203,6 +9855,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2417",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9230,6 +9884,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1494",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9257,6 +9913,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1074",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9282,6 +9940,7 @@
      "set": "sld",
      "set_name": "Secret Lair Drop",
      "collector_number": "1512",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9300,6 +9959,7 @@
        "name": "Sol Ring",
        "oracle_id": "6ad8011d-3471-4369-9d68-b264cc027487",
        "type_line": "Artifact",
+       "oracle_text": "{T}: Add {C}{C}.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/front/d/7/d74a72a2-d46a-41c2-a400-70571197b020.jpg?1783913152",
         "normal": "https://cards.scryfall.io/normal/front/d/7/d74a72a2-d46a-41c2-a400-70571197b020.jpg?1783913152"
@@ -9309,6 +9969,7 @@
        "name": "Sol Ring",
        "oracle_id": "6ad8011d-3471-4369-9d68-b264cc027487",
        "type_line": "Artifact",
+       "oracle_text": "{T}: Add {C}{C}.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/back/d/7/d74a72a2-d46a-41c2-a400-70571197b020.jpg?1783913152",
         "normal": "https://cards.scryfall.io/normal/back/d/7/d74a72a2-d46a-41c2-a400-70571197b020.jpg?1783913152"
@@ -9325,6 +9986,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1604",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9353,6 +10016,8 @@
      "set_name": "Judge Gift Cards 2021",
      "collector_number": "3",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3170,
      "color_identity": [
       "B",
       "R",
@@ -9384,6 +10049,8 @@
      "set_name": "Unlimited Edition",
      "collector_number": "270",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9411,6 +10078,8 @@
      "set_name": "Foreign Black Border",
      "collector_number": "274",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9438,6 +10107,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1494★",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9465,6 +10136,8 @@
      "set_name": "Secret Lair Countdown",
      "collector_number": "46",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9492,6 +10165,8 @@
      "set_name": "Fallout",
      "collector_number": "887",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9519,6 +10194,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "410",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9546,6 +10223,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "409",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9573,6 +10252,8 @@
      "set_name": "Judge Gift Cards 2005",
      "collector_number": "3",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9600,6 +10281,8 @@
      "set_name": "Limited Edition Beta",
      "collector_number": "270",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9627,6 +10310,8 @@
      "set_name": "Limited Edition Alpha",
      "collector_number": "269",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9654,6 +10339,8 @@
      "set_name": "Kaladesh Inventions",
      "collector_number": "24",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9681,6 +10368,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "408",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9708,6 +10397,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "409z",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -9735,6 +10426,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "491",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3170,
      "color_identity": [
       "B",
       "R",
@@ -9766,6 +10459,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "410z",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"

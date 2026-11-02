@@ -20,6 +20,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "234",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3174,
      "color_identity": [
       "B",
       "R",
@@ -33,8 +35,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "44.43",
-      "usd_foil": "46.65",
+      "usd": "45.01",
+      "usd_foil": "46.47",
       "usd_etched": null
      },
      "tcgplayer_id": 596272,
@@ -52,6 +54,7 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "98",
      "type_line": "Creature — Vampire // Creature — Vampire",
+     "edhrec_rank": 2550,
      "color_identity": [
       "B"
      ],
@@ -63,7 +66,7 @@
       "foil"
      ],
      "prices": {
-      "usd": "9.25",
+      "usd": "8.68",
       "usd_foil": "9.55",
       "usd_etched": null
      },
@@ -72,6 +75,7 @@
       {
        "name": "Bloodline Keeper",
        "type_line": "Creature — Vampire",
+       "oracle_text": "Flying\n{T}: Create a 2/2 black Vampire creature token with flying.\n{B}: Transform this creature. Activate only if you control five or more Vampires.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/front/6/0/60658907-dd63-478d-a66a-123e4e9d2a00.jpg?1783908156",
         "normal": "https://cards.scryfall.io/normal/front/6/0/60658907-dd63-478d-a66a-123e4e9d2a00.jpg?1783908156"
@@ -80,6 +84,7 @@
       {
        "name": "Lord of Lineage",
        "type_line": "Creature — Vampire",
+       "oracle_text": "Flying\nOther Vampire creatures you control get +2/+2.\n{T}: Create a 2/2 black Vampire creature token with flying.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/back/6/0/60658907-dd63-478d-a66a-123e4e9d2a00.jpg?1783908156",
         "normal": "https://cards.scryfall.io/normal/back/6/0/60658907-dd63-478d-a66a-123e4e9d2a00.jpg?1783908156"
@@ -96,6 +101,8 @@
      "set_name": "Star Trek Commander",
      "collector_number": "499",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -124,6 +131,8 @@
      "set_name": "Foundations",
      "collector_number": "757",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1755,
      "color_identity": [
       "B"
      ],
@@ -153,6 +162,7 @@
      "set_name": "Marvel: Darkhold Destiny",
      "collector_number": "296",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -188,6 +198,8 @@
    "set_name": "Foundations",
    "collector_number": "753",
    "type_line": "Creature — Vampire Shaman",
+   "oracle_text": "Whenever this creature or another Vampire you control dies, you may pay {B}. If you do, target player loses 2 life and you gain 2 life.",
+   "edhrec_rank": 11823,
    "color_identity": [
     "B"
    ],
@@ -233,6 +245,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "234",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3174,
      "color_identity": [
       "B",
       "R",
@@ -246,8 +260,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "44.43",
-      "usd_foil": "46.65",
+      "usd": "45.01",
+      "usd_foil": "46.47",
       "usd_etched": null
      },
      "tcgplayer_id": 596272,
@@ -258,13 +272,14 @@
      "object": "card"
     },
     {
-     "id": "60658907-dd63-478d-a66a-123e4e9d2a00",
+     "id": "668e8344-e6a5-4e85-bd8d-033d995917ae",
      "oracle_id": "434e82b5-abd4-41ac-a5b1-2dd01c667374",
      "name": "Bloodline Keeper // Lord of Lineage",
      "set": "inr",
      "set_name": "Innistrad Remastered",
-     "collector_number": "98",
+     "collector_number": "461",
      "type_line": "Creature — Vampire // Creature — Vampire",
+     "edhrec_rank": 2550,
      "color_identity": [
       "B"
      ],
@@ -276,26 +291,28 @@
       "foil"
      ],
      "prices": {
-      "usd": "9.25",
-      "usd_foil": "9.55",
+      "usd": "5.62",
+      "usd_foil": "7.21",
       "usd_etched": null
      },
-     "tcgplayer_id": 609687,
+     "tcgplayer_id": 609686,
      "card_faces": [
       {
        "name": "Bloodline Keeper",
        "type_line": "Creature — Vampire",
+       "oracle_text": "Flying\n{T}: Create a 2/2 black Vampire creature token with flying.\n{B}: Transform this creature. Activate only if you control five or more Vampires.",
        "image_uris": {
-        "small": "https://cards.scryfall.io/small/front/6/0/60658907-dd63-478d-a66a-123e4e9d2a00.jpg?1783908156",
-        "normal": "https://cards.scryfall.io/normal/front/6/0/60658907-dd63-478d-a66a-123e4e9d2a00.jpg?1783908156"
+        "small": "https://cards.scryfall.io/small/front/6/6/668e8344-e6a5-4e85-bd8d-033d995917ae.jpg?1783907985",
+        "normal": "https://cards.scryfall.io/normal/front/6/6/668e8344-e6a5-4e85-bd8d-033d995917ae.jpg?1783907985"
        }
       },
       {
        "name": "Lord of Lineage",
        "type_line": "Creature — Vampire",
+       "oracle_text": "Flying\nOther Vampire creatures you control get +2/+2.\n{T}: Create a 2/2 black Vampire creature token with flying.",
        "image_uris": {
-        "small": "https://cards.scryfall.io/small/back/6/0/60658907-dd63-478d-a66a-123e4e9d2a00.jpg?1783908156",
-        "normal": "https://cards.scryfall.io/normal/back/6/0/60658907-dd63-478d-a66a-123e4e9d2a00.jpg?1783908156"
+        "small": "https://cards.scryfall.io/small/back/6/6/668e8344-e6a5-4e85-bd8d-033d995917ae.jpg?1783907985",
+        "normal": "https://cards.scryfall.io/normal/back/6/6/668e8344-e6a5-4e85-bd8d-033d995917ae.jpg?1783907985"
        }
       }
      ],
@@ -309,6 +326,8 @@
      "set_name": "Foundations",
      "collector_number": "753",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Whenever this creature or another Vampire you control dies, you may pay {B}. If you do, target player loses 2 life and you gain 2 life.",
+     "edhrec_rank": 11822,
      "color_identity": [
       "B"
      ],
@@ -338,6 +357,8 @@
      "set_name": "Star Trek Commander",
      "collector_number": "499",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -366,6 +387,8 @@
      "set_name": "Foundations",
      "collector_number": "757",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1755,
      "color_identity": [
       "B"
      ],
@@ -395,6 +418,7 @@
      "set_name": "Marvel: Darkhold Destiny",
      "collector_number": "296",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -435,6 +459,8 @@
      "set_name": "Star Trek Commander",
      "collector_number": "499",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -463,6 +489,8 @@
      "set_name": "Summer Magic / Edgar",
      "collector_number": "274",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -490,6 +518,8 @@
      "set_name": "The Zeta Set",
      "collector_number": "114",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -517,6 +547,8 @@
      "set_name": "The Zeta Set",
      "collector_number": "235",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -544,6 +576,8 @@
      "set_name": "The Zeta Set",
      "collector_number": "356",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -571,6 +605,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "913",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -597,6 +633,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "408z",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -624,6 +662,8 @@
      "set_name": "Commander 2013",
      "collector_number": "97",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -653,6 +693,8 @@
      "set_name": "Commander 2011",
      "collector_number": "106",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -682,6 +724,8 @@
      "set_name": "Explorers of Ixalan",
      "collector_number": "23",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -711,6 +755,8 @@
      "set_name": "Foundations",
      "collector_number": "757",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -740,6 +786,8 @@
      "set_name": "Duel Decks: Sorin vs. Tibalt",
      "collector_number": "12",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -769,6 +817,8 @@
      "set_name": "Magic 2013",
      "collector_number": "112",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -799,6 +849,8 @@
      "set_name": "Starter Commander Decks",
      "collector_number": "115",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -828,6 +880,8 @@
      "set_name": "Foundations",
      "collector_number": "186",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -858,6 +912,8 @@
      "set_name": "The List",
      "collector_number": "M13-112",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -887,6 +943,8 @@
      "set_name": "Foundations",
      "collector_number": "607",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Whenever this creature or another Vampire you control dies, you may pay {B}. If you do, target player loses 2 life and you gain 2 life.",
+     "edhrec_rank": 11823,
      "color_identity": [
       "B"
      ],
@@ -916,6 +974,8 @@
      "set_name": "Foundations",
      "collector_number": "753",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Whenever this creature or another Vampire you control dies, you may pay {B}. If you do, target player loses 2 life and you gain 2 life.",
+     "edhrec_rank": 11823,
      "color_identity": [
       "B"
      ],
@@ -945,6 +1005,8 @@
      "set_name": "Commander 2017",
      "collector_number": "129",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -974,6 +1036,8 @@
      "set_name": "Modern Masters 2017",
      "collector_number": "87",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -1004,6 +1068,8 @@
      "set_name": "The List",
      "collector_number": "ZEN-116",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -1033,6 +1099,8 @@
      "set_name": "The List",
      "collector_number": "E02-23",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -1062,6 +1130,8 @@
      "set_name": "Duel Decks: Zendikar vs. Eldrazi",
      "collector_number": "58",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -1091,6 +1161,8 @@
      "set_name": "Foundations Jumpstart",
      "collector_number": "503",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -1120,6 +1192,8 @@
      "set_name": "Crimson Vow Commander",
      "collector_number": "140",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -1149,6 +1223,8 @@
      "set_name": "Commander 2021",
      "collector_number": "157",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -1178,6 +1254,8 @@
      "set_name": "Zendikar",
      "collector_number": "116",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -1208,6 +1286,8 @@
      "set_name": "Archenemy: Nicol Bolas",
      "collector_number": "38",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -1237,6 +1317,8 @@
      "set_name": "Commander 2020",
      "collector_number": "140",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -1266,6 +1348,8 @@
      "set_name": "Worldwake",
      "collector_number": "59",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Whenever this creature or another Vampire you control dies, you may pay {B}. If you do, target player loses 2 life and you gain 2 life.",
+     "edhrec_rank": 11823,
      "color_identity": [
       "B"
      ],
@@ -1296,6 +1380,8 @@
      "set_name": "Final Fantasy Commander",
      "collector_number": "357",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1324,6 +1410,8 @@
      "set_name": "Foundations Commander",
      "collector_number": "286",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1351,6 +1439,8 @@
      "set_name": "Marvel Super Heroes Commander",
      "collector_number": "211",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1379,6 +1469,8 @@
      "set_name": "Marvel Super Heroes Commander",
      "collector_number": "212",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1407,6 +1499,8 @@
      "set_name": "Final Fantasy Commander",
      "collector_number": "358",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1435,6 +1529,8 @@
      "set_name": "Marvel Super Heroes Commander",
      "collector_number": "214",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1463,6 +1559,8 @@
      "set_name": "Aetherdrift Commander",
      "collector_number": "56",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1490,6 +1588,8 @@
      "set_name": "Aetherdrift Commander",
      "collector_number": "57",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1517,6 +1617,8 @@
      "set_name": "Final Fantasy Commander",
      "collector_number": "356",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1545,6 +1647,8 @@
      "set_name": "Final Fantasy Commander",
      "collector_number": "359",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1573,6 +1677,8 @@
      "set_name": "Reality Fracture Commander",
      "collector_number": "21",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1600,6 +1706,8 @@
      "set_name": "Commander 2013",
      "collector_number": "259",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1627,6 +1735,8 @@
      "set_name": "The Lost Caverns of Ixalan Commander",
      "collector_number": "313",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1654,6 +1764,8 @@
      "set_name": "Commander 2020",
      "collector_number": "252",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1681,6 +1793,8 @@
      "set_name": "Starter Commander Decks",
      "collector_number": "276",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1708,6 +1822,8 @@
      "set_name": "Commander 2015",
      "collector_number": "268",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1735,6 +1851,8 @@
      "set_name": "Commander Anthology Volume II",
      "collector_number": "217",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1762,6 +1880,8 @@
      "set_name": "Commander Anthology",
      "collector_number": "231",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1789,6 +1909,8 @@
      "set_name": "Commander Legends",
      "collector_number": "472",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1816,6 +1938,8 @@
      "set_name": "Marvel Super Heroes Commander",
      "collector_number": "213",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1844,6 +1968,8 @@
      "set_name": "New Capenna Commander",
      "collector_number": "379",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1871,6 +1997,8 @@
      "set_name": "Foundations Commander",
      "collector_number": "2",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1898,6 +2026,8 @@
      "set_name": "Bloomburrow Commander",
      "collector_number": "129",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1925,6 +2055,8 @@
      "set_name": "Midnight Hunt Commander",
      "collector_number": "162",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1952,6 +2084,8 @@
      "set_name": "Commander 2017",
      "collector_number": "223",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1979,6 +2113,8 @@
      "set_name": "Zendikar Rising Commander",
      "collector_number": "120",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2006,6 +2142,8 @@
      "set_name": "Teenage Mutant Ninja Turtles Eternal",
      "collector_number": "59",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2034,6 +2172,8 @@
      "set_name": "Crimson Vow Commander",
      "collector_number": "168",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2061,6 +2201,8 @@
      "set_name": "Commander 2011",
      "collector_number": "261",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2088,6 +2230,8 @@
      "set_name": "Fallout",
      "collector_number": "239",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2116,6 +2260,8 @@
      "set_name": "Secrets of Strixhaven Commander",
      "collector_number": "128",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2143,6 +2289,8 @@
      "set_name": "Commander 2021",
      "collector_number": "263",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2170,6 +2318,8 @@
      "set_name": "Modern Horizons 3 Commander",
      "collector_number": "305",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2198,6 +2348,8 @@
      "set_name": "Commander Legends: Battle for Baldur's Gate",
      "collector_number": "871",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2225,6 +2377,8 @@
      "set_name": "Neon Dynasty Commander",
      "collector_number": "161",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2252,6 +2406,8 @@
      "set_name": "Forgotten Realms Commander",
      "collector_number": "215",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2279,6 +2435,8 @@
      "set_name": "Murders at Karlov Manor Commander",
      "collector_number": "237",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2306,6 +2464,8 @@
      "set_name": "Commander 2014",
      "collector_number": "270",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2333,6 +2493,8 @@
      "set_name": "The List",
      "collector_number": "C21-263",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2360,6 +2522,8 @@
      "set_name": "March of the Machine Commander",
      "collector_number": "381",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2387,6 +2551,8 @@
      "set_name": "The List",
      "collector_number": "CMD-261",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2414,6 +2580,8 @@
      "set_name": "Commander 2016",
      "collector_number": "272",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2441,6 +2609,8 @@
      "set_name": "Kaldheim Commander",
      "collector_number": "104",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2468,6 +2638,8 @@
      "set_name": "Tarkir: Dragonstorm Commander",
      "collector_number": "106",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2495,6 +2667,8 @@
      "set_name": "Doctor Who",
      "collector_number": "245",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2523,6 +2697,8 @@
      "set_name": "Wilds of Eldraine Commander",
      "collector_number": "149",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2550,6 +2726,8 @@
      "set_name": "The List",
      "collector_number": "BLC-129",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2577,6 +2755,8 @@
      "set_name": "Dominaria United Commander",
      "collector_number": "190",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2604,6 +2784,8 @@
      "set_name": "Commander 2019",
      "collector_number": "221",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2631,6 +2813,8 @@
      "set_name": "Commander 2018",
      "collector_number": "222",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2658,6 +2842,8 @@
      "set_name": "Phyrexia: All Will Be One Commander",
      "collector_number": "140",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2685,6 +2871,8 @@
      "set_name": "Commander Masters",
      "collector_number": "410",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2713,6 +2901,8 @@
      "set_name": "Lorwyn Eclipsed Commander",
      "collector_number": "58",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2740,6 +2930,8 @@
      "set_name": "Edge of Eternities Commander",
      "collector_number": "57",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2767,6 +2959,8 @@
      "set_name": "Duskmourn: House of Horror Commander",
      "collector_number": "94",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2794,6 +2988,8 @@
      "set_name": "Outlaws of Thunder Junction Commander",
      "collector_number": "267",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2821,6 +3017,8 @@
      "set_name": "Lorwyn Eclipsed Commander",
      "collector_number": "57",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2848,6 +3046,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "249",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2875,6 +3075,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "250",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2902,6 +3104,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "284",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2929,6 +3133,8 @@
      "set_name": "Mystery Booster 2",
      "collector_number": "233",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2957,6 +3163,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "251",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -2984,6 +3192,8 @@
      "set_name": "The List",
      "collector_number": "C18-222",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3011,6 +3221,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "252",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3038,6 +3250,8 @@
      "set_name": "The Brothers' War Commander",
      "collector_number": "160",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3065,6 +3279,8 @@
      "set_name": "MagicFest 2019",
      "collector_number": "7",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3093,6 +3309,8 @@
      "set_name": "The List",
      "collector_number": "WWK-59",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Whenever this creature or another Vampire you control dies, you may pay {B}. If you do, target player loses 2 life and you gain 2 life.",
+     "edhrec_rank": 11823,
      "color_identity": [
       "B"
      ],
@@ -3122,6 +3340,7 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "327",
      "type_line": "Creature — Vampire // Creature — Vampire",
+     "edhrec_rank": 2549,
      "color_identity": [
       "B"
      ],
@@ -3142,6 +3361,7 @@
       {
        "name": "Bloodline Keeper",
        "type_line": "Creature — Vampire",
+       "oracle_text": "Flying\n{T}: Create a 2/2 black Vampire creature token with flying.\n{B}: Transform this creature. Activate only if you control five or more Vampires.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/front/b/8/b8a289a6-a310-48c2-8162-792d6d3c4fa9.jpg?1783908039",
         "normal": "https://cards.scryfall.io/normal/front/b/8/b8a289a6-a310-48c2-8162-792d6d3c4fa9.jpg?1783908039"
@@ -3150,6 +3370,7 @@
       {
        "name": "Lord of Lineage",
        "type_line": "Creature — Vampire",
+       "oracle_text": "Flying\nOther Vampire creatures you control get +2/+2.\n{T}: Create a 2/2 black Vampire creature token with flying.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/back/b/8/b8a289a6-a310-48c2-8162-792d6d3c4fa9.jpg?1783908039",
         "normal": "https://cards.scryfall.io/normal/back/b/8/b8a289a6-a310-48c2-8162-792d6d3c4fa9.jpg?1783908039"
@@ -3166,6 +3387,7 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "461",
      "type_line": "Creature — Vampire // Creature — Vampire",
+     "edhrec_rank": 2549,
      "color_identity": [
       "B"
      ],
@@ -3186,6 +3408,7 @@
       {
        "name": "Bloodline Keeper",
        "type_line": "Creature — Vampire",
+       "oracle_text": "Flying\n{T}: Create a 2/2 black Vampire creature token with flying.\n{B}: Transform this creature. Activate only if you control five or more Vampires.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/front/6/6/668e8344-e6a5-4e85-bd8d-033d995917ae.jpg?1783907985",
         "normal": "https://cards.scryfall.io/normal/front/6/6/668e8344-e6a5-4e85-bd8d-033d995917ae.jpg?1783907985"
@@ -3194,6 +3417,7 @@
       {
        "name": "Lord of Lineage",
        "type_line": "Creature — Vampire",
+       "oracle_text": "Flying\nOther Vampire creatures you control get +2/+2.\n{T}: Create a 2/2 black Vampire creature token with flying.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/back/6/6/668e8344-e6a5-4e85-bd8d-033d995917ae.jpg?1783907985",
         "normal": "https://cards.scryfall.io/normal/back/6/6/668e8344-e6a5-4e85-bd8d-033d995917ae.jpg?1783907985"
@@ -3210,6 +3434,8 @@
      "set_name": "DCI Promos",
      "collector_number": "33",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1754,
      "color_identity": [
       "B"
      ],
@@ -3239,6 +3465,8 @@
      "set_name": "Love Your LGS 2022",
      "collector_number": "1",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3266,6 +3494,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2807",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3294,6 +3524,8 @@
      "set_name": "Commander Legends",
      "collector_number": "700",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3322,6 +3554,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "910",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3349,6 +3583,8 @@
      "set_name": "Foundations Promos",
      "collector_number": "1",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3377,6 +3613,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2683",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3405,6 +3643,8 @@
      "set_name": "Avatar: The Last Airbender Eternal",
      "collector_number": "316",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3432,6 +3672,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2063",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3460,6 +3702,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "IFIYW-5",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3488,6 +3732,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2672",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3516,6 +3762,7 @@
      "set_name": "Innistrad",
      "collector_number": "90",
      "type_line": "Creature — Vampire // Creature — Vampire",
+     "edhrec_rank": 2549,
      "color_identity": [
       "B"
      ],
@@ -3536,6 +3783,7 @@
       {
        "name": "Bloodline Keeper",
        "type_line": "Creature — Vampire",
+       "oracle_text": "Flying\n{T}: Create a 2/2 black Vampire creature token with flying.\n{B}: Transform this creature. Activate only if you control five or more Vampires.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/front/1/3/13896468-e3d0-4bcb-b09e-b5c187aecb03.jpg?1783940965",
         "normal": "https://cards.scryfall.io/normal/front/1/3/13896468-e3d0-4bcb-b09e-b5c187aecb03.jpg?1783940965"
@@ -3544,6 +3792,7 @@
       {
        "name": "Lord of Lineage",
        "type_line": "Creature — Vampire",
+       "oracle_text": "Flying\nOther Vampire creatures you control get +2/+2.\n{T}: Create a 2/2 black Vampire creature token with flying.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/back/1/3/13896468-e3d0-4bcb-b09e-b5c187aecb03.jpg?1783940965",
         "normal": "https://cards.scryfall.io/normal/back/1/3/13896468-e3d0-4bcb-b09e-b5c187aecb03.jpg?1783940965"
@@ -3560,6 +3809,7 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1210",
      "type_line": "Creature — Vampire // Creature — Vampire",
+     "edhrec_rank": 2549,
      "color_identity": [
       "B"
      ],
@@ -3579,6 +3829,7 @@
       {
        "name": "Bloodline Keeper",
        "type_line": "Creature — Vampire",
+       "oracle_text": "Flying\n{T}: Create a 2/2 black Vampire creature token with flying.\n{B}: Transform this creature. Activate only if you control five or more Vampires.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/front/e/7/e71df56a-c27f-4983-a2c7-c2412a0345b0.jpg?1783916535",
         "normal": "https://cards.scryfall.io/normal/front/e/7/e71df56a-c27f-4983-a2c7-c2412a0345b0.jpg?1783916535"
@@ -3587,6 +3838,7 @@
       {
        "name": "Lord of Lineage",
        "type_line": "Creature — Vampire",
+       "oracle_text": "Flying\nOther Vampire creatures you control get +2/+2.\n{T}: Create a 2/2 black Vampire creature token with flying.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/back/e/7/e71df56a-c27f-4983-a2c7-c2412a0345b0.jpg?1783916535",
         "normal": "https://cards.scryfall.io/normal/back/e/7/e71df56a-c27f-4983-a2c7-c2412a0345b0.jpg?1783916535"
@@ -3603,6 +3855,7 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "98",
      "type_line": "Creature — Vampire // Creature — Vampire",
+     "edhrec_rank": 2549,
      "color_identity": [
       "B"
      ],
@@ -3623,6 +3876,7 @@
       {
        "name": "Bloodline Keeper",
        "type_line": "Creature — Vampire",
+       "oracle_text": "Flying\n{T}: Create a 2/2 black Vampire creature token with flying.\n{B}: Transform this creature. Activate only if you control five or more Vampires.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/front/6/0/60658907-dd63-478d-a66a-123e4e9d2a00.jpg?1783908156",
         "normal": "https://cards.scryfall.io/normal/front/6/0/60658907-dd63-478d-a66a-123e4e9d2a00.jpg?1783908156"
@@ -3631,6 +3885,7 @@
       {
        "name": "Lord of Lineage",
        "type_line": "Creature — Vampire",
+       "oracle_text": "Flying\nOther Vampire creatures you control get +2/+2.\n{T}: Create a 2/2 black Vampire creature token with flying.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/back/6/0/60658907-dd63-478d-a66a-123e4e9d2a00.jpg?1783908156",
         "normal": "https://cards.scryfall.io/normal/back/6/0/60658907-dd63-478d-a66a-123e4e9d2a00.jpg?1783908156"
@@ -3647,6 +3902,8 @@
      "set_name": "Commander Collection: Green",
      "collector_number": "7",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3675,6 +3932,7 @@
      "set_name": "From the Vault: Transform",
      "collector_number": "4",
      "type_line": "Creature — Vampire // Creature — Vampire",
+     "edhrec_rank": 2549,
      "color_identity": [
       "B"
      ],
@@ -3694,6 +3952,7 @@
       {
        "name": "Bloodline Keeper",
        "type_line": "Creature — Vampire",
+       "oracle_text": "Flying\n{T}: Create a 2/2 black Vampire creature token with flying.\n{B}: Transform this creature. Activate only if you control five or more Vampires.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/front/3/2/3216d161-a43d-4a55-a14b-098061805409.jpg?1783935481",
         "normal": "https://cards.scryfall.io/normal/front/3/2/3216d161-a43d-4a55-a14b-098061805409.jpg?1783935481"
@@ -3702,6 +3961,7 @@
       {
        "name": "Lord of Lineage",
        "type_line": "Creature — Vampire",
+       "oracle_text": "Flying\nOther Vampire creatures you control get +2/+2.\n{T}: Create a 2/2 black Vampire creature token with flying.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/back/3/2/3216d161-a43d-4a55-a14b-098061805409.jpg?1783935481",
         "normal": "https://cards.scryfall.io/normal/back/3/2/3216d161-a43d-4a55-a14b-098061805409.jpg?1783935481"
@@ -3718,6 +3978,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1664",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3746,6 +4008,8 @@
      "set_name": "Commander Masters",
      "collector_number": "703",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3774,6 +4038,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2132",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3801,6 +4067,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2467",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3829,6 +4097,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "249★",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3856,6 +4126,8 @@
      "set_name": "Commander Collection: Black",
      "collector_number": "7",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3884,6 +4156,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "249",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3912,6 +4186,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "250★",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3939,6 +4215,8 @@
      "set_name": "Doctor Who",
      "collector_number": "836",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3966,6 +4244,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "251★",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -3993,6 +4273,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2539",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4021,6 +4303,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2093",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4049,6 +4333,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "912",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4076,6 +4362,8 @@
      "set_name": "Secret Lair Countdown",
      "collector_number": "19",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4104,6 +4392,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1734",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4132,6 +4422,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1988",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4160,6 +4452,8 @@
      "set_name": "Warhammer 40,000 Commander",
      "collector_number": "252★",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4187,6 +4481,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1993",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4215,6 +4511,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1833",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4242,6 +4540,8 @@
      "set_name": "Secrets of Strixhaven Commander",
      "collector_number": "427",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4269,6 +4569,8 @@
      "set_name": "Fallout",
      "collector_number": "767",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4296,6 +4598,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "IFIYW-10",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4323,6 +4627,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1696",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4351,6 +4657,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2560",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4379,6 +4687,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1011",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4407,6 +4717,7 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1157",
      "type_line": "Creature — Vampire // Creature — Vampire",
+     "edhrec_rank": 2549,
      "color_identity": [
       "B"
      ],
@@ -4426,6 +4737,7 @@
       {
        "name": "Bloodline Keeper",
        "type_line": "Creature — Vampire",
+       "oracle_text": "Flying\n{T}: Create a 2/2 black Vampire creature token with flying.\n{B}: Transform this creature. Activate only if you control five or more Vampires.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/front/3/8/3847d9b6-dc35-43b4-a352-662f92a4e7d7.jpg?1783916537",
         "normal": "https://cards.scryfall.io/normal/front/3/8/3847d9b6-dc35-43b4-a352-662f92a4e7d7.jpg?1783916537"
@@ -4434,6 +4746,7 @@
       {
        "name": "Lord of Lineage",
        "type_line": "Creature — Vampire",
+       "oracle_text": "Flying\nOther Vampire creatures you control get +2/+2.\n{T}: Create a 2/2 black Vampire creature token with flying.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/back/3/8/3847d9b6-dc35-43b4-a352-662f92a4e7d7.jpg?1783916537",
         "normal": "https://cards.scryfall.io/normal/back/3/8/3847d9b6-dc35-43b4-a352-662f92a4e7d7.jpg?1783916537"
@@ -4450,6 +4763,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2315",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4478,6 +4793,8 @@
      "set_name": "From the Vault: Relics",
      "collector_number": "12",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4505,6 +4822,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2783",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4533,6 +4852,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "428",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3170,
      "color_identity": [
       "B",
       "R",
@@ -4565,6 +4886,8 @@
      "set_name": "Fallout",
      "collector_number": "359",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4593,6 +4916,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "328",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3170,
      "color_identity": [
       "B",
       "R",
@@ -4625,6 +4950,8 @@
      "set_name": "Revised Edition",
      "collector_number": "274",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4652,6 +4979,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1905",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4679,6 +5008,8 @@
      "set_name": "Commander 2017",
      "collector_number": "36",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3170,
      "color_identity": [
       "B",
       "R",
@@ -4710,6 +5041,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2330",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4737,6 +5070,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "234",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3170,
      "color_identity": [
       "B",
       "R",
@@ -4769,6 +5104,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2417",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4796,6 +5133,8 @@
      "set_name": "DCI Promos",
      "collector_number": "39",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Whenever this creature or another Vampire you control dies, you may pay {B}. If you do, target player loses 2 life and you gain 2 life.",
+     "edhrec_rank": 11823,
      "color_identity": [
       "B"
      ],
@@ -4825,6 +5164,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1494",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4852,6 +5193,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1074",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4877,6 +5220,7 @@
      "set": "sld",
      "set_name": "Secret Lair Drop",
      "collector_number": "1512",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4895,6 +5239,7 @@
        "name": "Sol Ring",
        "oracle_id": "6ad8011d-3471-4369-9d68-b264cc027487",
        "type_line": "Artifact",
+       "oracle_text": "{T}: Add {C}{C}.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/front/d/7/d74a72a2-d46a-41c2-a400-70571197b020.jpg?1783913152",
         "normal": "https://cards.scryfall.io/normal/front/d/7/d74a72a2-d46a-41c2-a400-70571197b020.jpg?1783913152"
@@ -4904,6 +5249,7 @@
        "name": "Sol Ring",
        "oracle_id": "6ad8011d-3471-4369-9d68-b264cc027487",
        "type_line": "Artifact",
+       "oracle_text": "{T}: Add {C}{C}.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/back/d/7/d74a72a2-d46a-41c2-a400-70571197b020.jpg?1783913152",
         "normal": "https://cards.scryfall.io/normal/back/d/7/d74a72a2-d46a-41c2-a400-70571197b020.jpg?1783913152"
@@ -4920,6 +5266,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1604",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -4948,6 +5296,8 @@
      "set_name": "Judge Gift Cards 2021",
      "collector_number": "3",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3170,
      "color_identity": [
       "B",
       "R",
@@ -4979,6 +5329,8 @@
      "set_name": "Unlimited Edition",
      "collector_number": "270",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -5006,6 +5358,8 @@
      "set_name": "Foreign Black Border",
      "collector_number": "274",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -5033,6 +5387,8 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "1494★",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -5060,6 +5416,8 @@
      "set_name": "Secret Lair Countdown",
      "collector_number": "46",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -5087,6 +5445,8 @@
      "set_name": "Fallout",
      "collector_number": "887",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -5114,6 +5474,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "410",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -5141,6 +5503,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "409",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -5168,6 +5532,8 @@
      "set_name": "Judge Gift Cards 2005",
      "collector_number": "3",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -5195,6 +5561,8 @@
      "set_name": "Limited Edition Beta",
      "collector_number": "270",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -5222,6 +5590,8 @@
      "set_name": "Limited Edition Alpha",
      "collector_number": "269",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -5249,6 +5619,8 @@
      "set_name": "Kaladesh Inventions",
      "collector_number": "24",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -5276,6 +5648,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "408",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -5303,6 +5677,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "409z",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -5330,6 +5706,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "491",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3170,
      "color_identity": [
       "B",
       "R",
@@ -5361,6 +5739,8 @@
      "set_name": "Tales of Middle-earth Commander",
      "collector_number": "410z",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -5399,6 +5779,7 @@
      "set_name": "Marvel: Darkhold Destiny",
      "collector_number": "296",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -5429,6 +5810,7 @@
      "set_name": "Star Trek",
      "collector_number": "321",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -5459,6 +5841,7 @@
      "set_name": "Star Trek",
      "collector_number": "322",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -5489,6 +5872,7 @@
      "set_name": "Star Trek",
      "collector_number": "563",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -5518,6 +5902,7 @@
      "set_name": "Star Trek",
      "collector_number": "564",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -5547,6 +5932,7 @@
      "set_name": "Game Night",
      "collector_number": "63",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -5576,6 +5962,7 @@
      "set_name": "Summer Magic / Edgar",
      "collector_number": "298",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -5605,6 +5992,7 @@
      "set_name": "Summer Magic / Edgar",
      "collector_number": "300",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -5634,6 +6022,7 @@
      "set_name": "Star Trek",
      "collector_number": "484",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -5663,6 +6052,7 @@
      "set_name": "Secret Lair Drop",
      "collector_number": "2756",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -5692,6 +6082,7 @@
      "set_name": "The List",
      "collector_number": "MKM-282",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -5720,6 +6111,7 @@
      "set_name": "The List",
      "collector_number": "LCI-398",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -5748,6 +6140,7 @@
      "set_name": "Salvat 2011",
      "collector_number": "213",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -5777,6 +6170,7 @@
      "set_name": "Salvat 2011",
      "collector_number": "214",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -5806,6 +6200,7 @@
      "set_name": "Salvat 2011",
      "collector_number": "215",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -5835,6 +6230,7 @@
      "set_name": "Salvat 2011",
      "collector_number": "216",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -5864,6 +6260,7 @@
      "set_name": "Hachette UK",
      "collector_number": "8",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -5892,6 +6289,7 @@
      "set_name": "Hachette UK",
      "collector_number": "9",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -5920,6 +6318,7 @@
      "set_name": "Hachette UK",
      "collector_number": "10",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -5948,6 +6347,7 @@
      "set_name": "Hachette UK",
      "collector_number": "11",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -5976,6 +6376,7 @@
      "set_name": "Hachette UK",
      "collector_number": "12",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6004,6 +6405,7 @@
      "set_name": "Hachette UK",
      "collector_number": "20",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6032,6 +6434,7 @@
      "set_name": "Hachette UK",
      "collector_number": "21",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6060,6 +6463,7 @@
      "set_name": "Hachette UK",
      "collector_number": "22",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6088,6 +6492,7 @@
      "set_name": "Hachette UK",
      "collector_number": "23",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6116,6 +6521,7 @@
      "set_name": "Hachette UK",
      "collector_number": "24",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6144,6 +6550,7 @@
      "set_name": "Hachette UK",
      "collector_number": "32",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6172,6 +6579,7 @@
      "set_name": "Hachette UK",
      "collector_number": "33",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6200,6 +6608,7 @@
      "set_name": "Hachette UK",
      "collector_number": "34",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6228,6 +6637,7 @@
      "set_name": "Hachette UK",
      "collector_number": "35",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6256,6 +6666,7 @@
      "set_name": "Hachette UK",
      "collector_number": "36",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6284,6 +6695,7 @@
      "set_name": "Hachette UK",
      "collector_number": "45",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6312,6 +6724,7 @@
      "set_name": "Hachette UK",
      "collector_number": "46",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6340,6 +6753,7 @@
      "set_name": "Hachette UK",
      "collector_number": "47",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6368,6 +6782,7 @@
      "set_name": "Hachette UK",
      "collector_number": "48",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6396,6 +6811,7 @@
      "set_name": "Hachette UK",
      "collector_number": "56",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6424,6 +6840,7 @@
      "set_name": "Hachette UK",
      "collector_number": "57",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6452,6 +6869,7 @@
      "set_name": "Hachette UK",
      "collector_number": "58",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6480,6 +6898,7 @@
      "set_name": "Hachette UK",
      "collector_number": "59",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6508,6 +6927,7 @@
      "set_name": "Hachette UK",
      "collector_number": "60",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6536,6 +6956,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A8",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6565,6 +6986,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F8",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6594,6 +7016,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A9",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6623,6 +7046,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F9",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6652,6 +7076,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A10",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6681,6 +7106,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F10",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6710,6 +7136,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A11",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6739,6 +7166,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "E11",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6768,6 +7196,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F11",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6797,6 +7226,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A12",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6826,6 +7256,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "E12",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6855,6 +7286,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F12",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6884,6 +7316,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A20",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6913,6 +7346,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F20",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6942,6 +7376,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A21",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -6971,6 +7406,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F21",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7000,6 +7436,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A22",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7029,6 +7466,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "E22",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7058,6 +7496,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F22",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7087,6 +7526,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A23",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7116,6 +7556,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "E23",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7145,6 +7586,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F23",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7174,6 +7616,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A24",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7203,6 +7646,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "E24",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7232,6 +7676,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F24",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7261,6 +7706,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A32",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7290,6 +7736,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F32",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7319,6 +7766,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A33",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7348,6 +7796,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "D33",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7377,6 +7826,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F33",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7406,6 +7856,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A34",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7435,6 +7886,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "D34",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7464,6 +7916,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F34",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7493,6 +7946,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A35",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7522,6 +7976,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "D35",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7551,6 +8006,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "E35",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7580,6 +8036,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F35",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7609,6 +8066,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A36",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7638,6 +8096,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "D36",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7667,6 +8126,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "E36",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7696,6 +8156,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F36",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7725,6 +8186,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A45",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7754,6 +8216,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "D45",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7783,6 +8246,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F45",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7812,6 +8276,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A46",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7841,6 +8306,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "D46",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7870,6 +8336,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F46",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7899,6 +8366,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A47",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7928,6 +8396,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "E47",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7957,6 +8426,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F47",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -7986,6 +8456,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A48",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8015,6 +8486,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "E48",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8044,6 +8516,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F48",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8073,6 +8546,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A56",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8102,6 +8576,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "D56",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8131,6 +8606,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F56",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8160,6 +8636,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A57",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8189,6 +8666,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F57",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8218,6 +8696,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A58",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8247,6 +8726,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F58",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8276,6 +8756,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A59",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8305,6 +8786,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "E59",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8334,6 +8816,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F59",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8363,6 +8846,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "A60",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8392,6 +8876,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "E60",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8421,6 +8906,7 @@
      "set_name": "Salvat 2005",
      "collector_number": "F60",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8450,6 +8936,7 @@
      "set_name": "Rivals Quick Start Set",
      "collector_number": "57",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8478,6 +8965,7 @@
      "set_name": "Rivals Quick Start Set",
      "collector_number": "58",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8506,6 +8994,7 @@
      "set_name": "Rivals Quick Start Set",
      "collector_number": "59",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8534,6 +9023,7 @@
      "set_name": "Duel Decks: Blessed vs. Cursed",
      "collector_number": "74",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8563,6 +9053,7 @@
      "set_name": "Dragons of Tarkir",
      "collector_number": "257",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8593,6 +9084,7 @@
      "set_name": "Magic 2015",
      "collector_number": "259",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8623,6 +9115,7 @@
      "set_name": "Streets of New Capenna",
      "collector_number": "267",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8653,6 +9146,7 @@
      "set_name": "Core Set 2021",
      "collector_number": "268",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8683,6 +9177,7 @@
      "set_name": "Theros Beyond Death",
      "collector_number": "282",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8713,6 +9208,7 @@
      "set_name": "Throne of Eldraine",
      "collector_number": "259",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8743,6 +9239,7 @@
      "set_name": "Core Set 2019",
      "collector_number": "269",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8773,6 +9270,7 @@
      "set_name": "Core Set 2019",
      "collector_number": "271",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8803,6 +9301,7 @@
      "set_name": "Dominaria",
      "collector_number": "259",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8833,6 +9332,7 @@
      "set_name": "Ixalan",
      "collector_number": "271",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8863,6 +9363,7 @@
      "set_name": "Hour of Devastation",
      "collector_number": "194",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8893,6 +9394,7 @@
      "set_name": "Amonkhet",
      "collector_number": "261",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8923,6 +9425,7 @@
      "set_name": "Duel Decks: Nissa vs. Ob Nixilis",
      "collector_number": "66",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8952,6 +9455,7 @@
      "set_name": "Duel Decks: Nissa vs. Ob Nixilis",
      "collector_number": "70",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -8981,6 +9485,7 @@
      "set_name": "Fate Reforged",
      "collector_number": "180",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9011,6 +9516,7 @@
      "set_name": "Return to Ravnica",
      "collector_number": "261",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9041,6 +9547,7 @@
      "set_name": "Return to Ravnica",
      "collector_number": "262",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9071,6 +9578,7 @@
      "set_name": "Return to Ravnica",
      "collector_number": "263",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9101,6 +9609,7 @@
      "set_name": "Return to Ravnica",
      "collector_number": "264",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9131,6 +9640,7 @@
      "set_name": "Duel Decks: Izzet vs. Golgari",
      "collector_number": "84",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9160,6 +9670,7 @@
      "set_name": "Duel Decks: Izzet vs. Golgari",
      "collector_number": "86",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9189,6 +9700,7 @@
      "set_name": "Starter Commander Decks",
      "collector_number": "344",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9218,6 +9730,7 @@
      "set_name": "The Hobbit",
      "collector_number": "191",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9248,6 +9761,7 @@
      "set_name": "Edge of Eternities",
      "collector_number": "271",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9278,6 +9792,7 @@
      "set_name": "Aetherdrift",
      "collector_number": "284",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9308,6 +9823,7 @@
      "set_name": "Commander 2019",
      "collector_number": "294",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9337,6 +9853,7 @@
      "set_name": "Dominaria",
      "collector_number": "258",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9367,6 +9884,7 @@
      "set_name": "Ixalan",
      "collector_number": "270",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9397,6 +9915,7 @@
      "set_name": "Duel Decks: Nissa vs. Ob Nixilis",
      "collector_number": "69",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9426,6 +9945,7 @@
      "set_name": "Shadows over Innistrad",
      "collector_number": "289",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9456,6 +9976,7 @@
      "set_name": "Shadows over Innistrad",
      "collector_number": "291",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9486,6 +10007,7 @@
      "set_name": "Battle for Zendikar",
      "collector_number": "260a",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9515,6 +10037,7 @@
      "set_name": "Magic Origins",
      "collector_number": "263",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9545,6 +10068,7 @@
      "set_name": "Magic Origins",
      "collector_number": "264",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9575,6 +10099,7 @@
      "set_name": "Dragons of Tarkir",
      "collector_number": "256",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9605,6 +10130,7 @@
      "set_name": "Dragons of Tarkir",
      "collector_number": "258",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9635,6 +10161,7 @@
      "set_name": "Fate Reforged",
      "collector_number": "181",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9665,6 +10192,7 @@
      "set_name": "Commander 2014",
      "collector_number": "326",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9694,6 +10222,7 @@
      "set_name": "Khans of Tarkir",
      "collector_number": "258",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9724,6 +10253,7 @@
      "set_name": "Commander 2013",
      "collector_number": "348",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9753,6 +10283,7 @@
      "set_name": "Theros",
      "collector_number": "238",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9783,6 +10314,7 @@
      "set_name": "Theros",
      "collector_number": "240",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9813,6 +10345,7 @@
      "set_name": "Magic 2014",
      "collector_number": "239",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9843,6 +10376,7 @@
      "set_name": "Return to Ravnica",
      "collector_number": "260",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9873,6 +10407,7 @@
      "set_name": "Magic 2012",
      "collector_number": "238",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9903,6 +10438,7 @@
      "set_name": "Magic 2012",
      "collector_number": "240",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9933,6 +10469,7 @@
      "set_name": "Game Night: Free-for-All",
      "collector_number": "129",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9962,6 +10499,7 @@
      "set_name": "Adventures in the Forgotten Realms",
      "collector_number": "270",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -9992,6 +10530,7 @@
      "set_name": "Adventures in the Forgotten Realms",
      "collector_number": "273",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10022,6 +10561,7 @@
      "set_name": "Strixhaven: School of Mages",
      "collector_number": "371",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10052,6 +10592,7 @@
      "set_name": "Core Set 2020",
      "collector_number": "271",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10082,6 +10623,7 @@
      "set_name": "Commander 2015",
      "collector_number": "331",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10111,6 +10653,7 @@
      "set_name": "Magic Origins",
      "collector_number": "261",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10141,6 +10684,7 @@
      "set_name": "Magic 2014",
      "collector_number": "241",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10171,6 +10715,7 @@
      "set_name": "Time Spiral",
      "collector_number": "293",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10201,6 +10746,7 @@
      "set_name": "Foundations Jumpstart",
      "collector_number": "88",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10230,6 +10776,7 @@
      "set_name": "The Lord of the Rings: Tales of Middle-earth",
      "collector_number": "266",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10260,6 +10807,7 @@
      "set_name": "Aetherdrift",
      "collector_number": "283",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10290,6 +10838,7 @@
      "set_name": "The Brothers' War",
      "collector_number": "273",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10320,6 +10869,7 @@
      "set_name": "Core Set 2021",
      "collector_number": "267",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10350,6 +10900,7 @@
      "set_name": "Theros Beyond Death",
      "collector_number": "283",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10380,6 +10931,7 @@
      "set_name": "Throne of Eldraine",
      "collector_number": "258",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10410,6 +10962,7 @@
      "set_name": "War of the Spark",
      "collector_number": "256",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10440,6 +10993,7 @@
      "set_name": "Core Set 2019",
      "collector_number": "270",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10470,6 +11024,7 @@
      "set_name": "Commander Anthology Volume II",
      "collector_number": "299",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10510,6 +11065,7 @@
      "set_name": "Duel Decks: Blessed vs. Cursed",
      "collector_number": "74",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10539,6 +11095,7 @@
      "set_name": "Dragons of Tarkir",
      "collector_number": "257",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10569,6 +11126,7 @@
      "set_name": "Magic 2015",
      "collector_number": "259",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10599,6 +11157,7 @@
      "set_name": "Streets of New Capenna",
      "collector_number": "267",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10629,6 +11188,7 @@
      "set_name": "Core Set 2021",
      "collector_number": "268",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10659,6 +11219,7 @@
      "set_name": "Theros Beyond Death",
      "collector_number": "282",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10689,6 +11250,7 @@
      "set_name": "Throne of Eldraine",
      "collector_number": "259",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10719,6 +11281,7 @@
      "set_name": "Core Set 2019",
      "collector_number": "269",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10749,6 +11312,7 @@
      "set_name": "Core Set 2019",
      "collector_number": "271",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10779,6 +11343,7 @@
      "set_name": "Dominaria",
      "collector_number": "259",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10809,6 +11374,7 @@
      "set_name": "Ixalan",
      "collector_number": "271",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10839,6 +11405,7 @@
      "set_name": "Hour of Devastation",
      "collector_number": "194",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10869,6 +11436,7 @@
      "set_name": "Amonkhet",
      "collector_number": "261",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10899,6 +11467,7 @@
      "set_name": "Duel Decks: Nissa vs. Ob Nixilis",
      "collector_number": "66",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10928,6 +11497,7 @@
      "set_name": "Duel Decks: Nissa vs. Ob Nixilis",
      "collector_number": "70",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10957,6 +11527,7 @@
      "set_name": "Fate Reforged",
      "collector_number": "180",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -10987,6 +11558,7 @@
      "set_name": "Return to Ravnica",
      "collector_number": "261",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11017,6 +11589,7 @@
      "set_name": "Return to Ravnica",
      "collector_number": "262",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11047,6 +11620,7 @@
      "set_name": "Return to Ravnica",
      "collector_number": "263",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11077,6 +11651,7 @@
      "set_name": "Return to Ravnica",
      "collector_number": "264",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11107,6 +11682,7 @@
      "set_name": "Duel Decks: Izzet vs. Golgari",
      "collector_number": "84",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11136,6 +11712,7 @@
      "set_name": "Duel Decks: Izzet vs. Golgari",
      "collector_number": "86",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11165,6 +11742,7 @@
      "set_name": "Starter Commander Decks",
      "collector_number": "344",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11194,6 +11772,7 @@
      "set_name": "The Hobbit",
      "collector_number": "191",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11224,6 +11803,7 @@
      "set_name": "Edge of Eternities",
      "collector_number": "271",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11254,6 +11834,7 @@
      "set_name": "Aetherdrift",
      "collector_number": "284",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11284,6 +11865,7 @@
      "set_name": "Commander 2019",
      "collector_number": "294",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11313,6 +11895,7 @@
      "set_name": "Dominaria",
      "collector_number": "258",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11343,6 +11926,7 @@
      "set_name": "Ixalan",
      "collector_number": "270",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11373,6 +11957,7 @@
      "set_name": "Duel Decks: Nissa vs. Ob Nixilis",
      "collector_number": "69",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11402,6 +11987,7 @@
      "set_name": "Shadows over Innistrad",
      "collector_number": "289",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11432,6 +12018,7 @@
      "set_name": "Shadows over Innistrad",
      "collector_number": "291",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11462,6 +12049,7 @@
      "set_name": "Battle for Zendikar",
      "collector_number": "260a",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11491,6 +12079,7 @@
      "set_name": "Magic Origins",
      "collector_number": "263",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11521,6 +12110,7 @@
      "set_name": "Magic Origins",
      "collector_number": "264",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11551,6 +12141,7 @@
      "set_name": "Dragons of Tarkir",
      "collector_number": "256",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11581,6 +12172,7 @@
      "set_name": "Dragons of Tarkir",
      "collector_number": "258",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11611,6 +12203,7 @@
      "set_name": "Fate Reforged",
      "collector_number": "181",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11641,6 +12234,7 @@
      "set_name": "Commander 2014",
      "collector_number": "326",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11670,6 +12264,7 @@
      "set_name": "Khans of Tarkir",
      "collector_number": "258",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11700,6 +12295,7 @@
      "set_name": "Commander 2013",
      "collector_number": "348",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11729,6 +12325,7 @@
      "set_name": "Theros",
      "collector_number": "238",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11759,6 +12356,7 @@
      "set_name": "Theros",
      "collector_number": "240",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11789,6 +12387,7 @@
      "set_name": "Magic 2014",
      "collector_number": "239",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11819,6 +12418,7 @@
      "set_name": "Return to Ravnica",
      "collector_number": "260",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11849,6 +12449,7 @@
      "set_name": "Magic 2012",
      "collector_number": "238",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11879,6 +12480,7 @@
      "set_name": "Magic 2012",
      "collector_number": "240",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11909,6 +12511,7 @@
      "set_name": "Game Night: Free-for-All",
      "collector_number": "129",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11938,6 +12541,7 @@
      "set_name": "Adventures in the Forgotten Realms",
      "collector_number": "270",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11968,6 +12572,7 @@
      "set_name": "Adventures in the Forgotten Realms",
      "collector_number": "273",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -11998,6 +12603,7 @@
      "set_name": "Strixhaven: School of Mages",
      "collector_number": "371",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12028,6 +12634,7 @@
      "set_name": "Core Set 2020",
      "collector_number": "271",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12058,6 +12665,7 @@
      "set_name": "Commander 2015",
      "collector_number": "331",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12087,6 +12695,7 @@
      "set_name": "Magic Origins",
      "collector_number": "261",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12117,6 +12726,7 @@
      "set_name": "Magic 2014",
      "collector_number": "241",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12147,6 +12757,7 @@
      "set_name": "Time Spiral",
      "collector_number": "293",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12177,6 +12788,7 @@
      "set_name": "Foundations Jumpstart",
      "collector_number": "88",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12206,6 +12818,7 @@
      "set_name": "The Lord of the Rings: Tales of Middle-earth",
      "collector_number": "266",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12236,6 +12849,7 @@
      "set_name": "Aetherdrift",
      "collector_number": "283",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12266,6 +12880,7 @@
      "set_name": "The Brothers' War",
      "collector_number": "273",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12296,6 +12911,7 @@
      "set_name": "Core Set 2021",
      "collector_number": "267",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12326,6 +12942,7 @@
      "set_name": "Theros Beyond Death",
      "collector_number": "283",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12356,6 +12973,7 @@
      "set_name": "Throne of Eldraine",
      "collector_number": "258",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12386,6 +13004,7 @@
      "set_name": "War of the Spark",
      "collector_number": "256",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12416,6 +13035,7 @@
      "set_name": "Core Set 2019",
      "collector_number": "270",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12446,6 +13066,7 @@
      "set_name": "Commander Anthology Volume II",
      "collector_number": "299",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12475,6 +13096,7 @@
      "set_name": "Dominaria",
      "collector_number": "260",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12505,6 +13127,7 @@
      "set_name": "Dominaria",
      "collector_number": "261",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12535,6 +13158,7 @@
      "set_name": "Ixalan",
      "collector_number": "269",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12565,6 +13189,7 @@
      "set_name": "Commander Anthology",
      "collector_number": "297",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12594,6 +13219,7 @@
      "set_name": "Kaladesh",
      "collector_number": "257",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12624,6 +13250,7 @@
      "set_name": "Shadows over Innistrad",
      "collector_number": "290",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12654,6 +13281,7 @@
      "set_name": "Commander 2014",
      "collector_number": "328",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12683,6 +13311,7 @@
      "set_name": "Duel Decks: Speed vs. Cunning",
      "collector_number": "39",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12712,6 +13341,7 @@
      "set_name": "Commander 2013",
      "collector_number": "345",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12741,6 +13371,7 @@
      "set_name": "Theros",
      "collector_number": "239",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12771,6 +13402,7 @@
      "set_name": "Duel Decks: Sorin vs. Tibalt",
      "collector_number": "35",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12800,6 +13432,7 @@
      "set_name": "Duel Decks: Sorin vs. Tibalt",
      "collector_number": "37",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12829,6 +13462,7 @@
      "set_name": "Duel Decks: Sorin vs. Tibalt",
      "collector_number": "78",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12858,6 +13492,7 @@
      "set_name": "Avacyn Restored",
      "collector_number": "236",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12888,6 +13523,7 @@
      "set_name": "Avacyn Restored",
      "collector_number": "237",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12918,6 +13554,7 @@
      "set_name": "Duel Decks: Garruk vs. Liliana",
      "collector_number": "62",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12947,6 +13584,7 @@
      "set_name": "Foundations Jumpstart",
      "collector_number": "87",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -12976,6 +13614,7 @@
      "set_name": "Assassin's Creed",
      "collector_number": "304",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13005,6 +13644,7 @@
      "set_name": "Starter Commander Decks",
      "collector_number": "343",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13034,6 +13674,7 @@
      "set_name": "Jumpstart 2022",
      "collector_number": "104",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13063,6 +13704,7 @@
      "set_name": "Reality Fracture",
      "collector_number": "286",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13093,6 +13735,7 @@
      "set_name": "Lorwyn Eclipsed",
      "collector_number": "271",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13123,6 +13766,7 @@
      "set_name": "Foundations",
      "collector_number": "276",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13153,6 +13797,7 @@
      "set_name": "Commander 2019",
      "collector_number": "295",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13182,6 +13827,7 @@
      "set_name": "War of the Spark",
      "collector_number": "257",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13212,6 +13858,7 @@
      "set_name": "Commander 2017",
      "collector_number": "302",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13241,6 +13888,7 @@
      "set_name": "Amonkhet",
      "collector_number": "263",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13271,6 +13919,7 @@
      "set_name": "Duel Decks: Speed vs. Cunning",
      "collector_number": "40",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13300,6 +13949,7 @@
      "set_name": "Duel Decks: Izzet vs. Golgari",
      "collector_number": "85",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13329,6 +13979,7 @@
      "set_name": "Magic 2013",
      "collector_number": "240",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13359,6 +14010,7 @@
      "set_name": "Battle Royale Box Set",
      "collector_number": "134",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13388,6 +14040,7 @@
      "set_name": "Marvel Super Heroes",
      "collector_number": "291",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13418,6 +14071,7 @@
      "set_name": "Throne of Eldraine",
      "collector_number": "260",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13448,6 +14102,7 @@
      "set_name": "Commander Anthology Volume II",
      "collector_number": "296",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13477,6 +14132,7 @@
      "set_name": "Ixalan",
      "collector_number": "268",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13507,6 +14163,7 @@
      "set_name": "Magic Origins",
      "collector_number": "262",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13537,6 +14194,7 @@
      "set_name": "Commander 2014",
      "collector_number": "327",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13566,6 +14224,7 @@
      "set_name": "Magic 2015",
      "collector_number": "258",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13596,6 +14255,7 @@
      "set_name": "Magic 2015",
      "collector_number": "260",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13626,6 +14286,7 @@
      "set_name": "Magic 2015",
      "collector_number": "261",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13656,6 +14317,7 @@
      "set_name": "Duel Decks: Jace vs. Vraska",
      "collector_number": "81",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13685,6 +14347,7 @@
      "set_name": "Magic 2011",
      "collector_number": "240",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13715,6 +14378,7 @@
      "set_name": "Tenth Edition",
      "collector_number": "374",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13745,6 +14409,7 @@
      "set_name": "The Lord of the Rings: Tales of Middle-earth",
      "collector_number": "267",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13775,6 +14440,7 @@
      "set_name": "Game Night: Free-for-All",
      "collector_number": "128",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13804,6 +14470,7 @@
      "set_name": "Aetherdrift",
      "collector_number": "285",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13834,6 +14501,7 @@
      "set_name": "Commander Masters",
      "collector_number": "792",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13863,6 +14531,7 @@
      "set_name": "Commander Legends: Battle for Baldur's Gate",
      "collector_number": "461",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13893,6 +14562,7 @@
      "set_name": "Modern Horizons 2",
      "collector_number": "486",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13925,6 +14595,7 @@
      "set_name": "Ikoria: Lair of Behemoths",
      "collector_number": "267",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13955,6 +14626,7 @@
      "set_name": "Commander 2018",
      "collector_number": "301",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -13984,6 +14656,7 @@
      "set_name": "Hour of Devastation",
      "collector_number": "195",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14014,6 +14687,7 @@
      "set_name": "Amonkhet",
      "collector_number": "262",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14044,6 +14718,7 @@
      "set_name": "Duel Decks Anthology: Divine vs. Demonic",
      "collector_number": "60",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14073,6 +14748,7 @@
      "set_name": "Khans of Tarkir",
      "collector_number": "259",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14103,6 +14779,7 @@
      "set_name": "Commander 2013",
      "collector_number": "346",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14132,6 +14809,7 @@
      "set_name": "Theros",
      "collector_number": "241",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14162,6 +14840,7 @@
      "set_name": "Magic 2014",
      "collector_number": "238",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14192,6 +14871,7 @@
      "set_name": "Duel Decks: Garruk vs. Liliana",
      "collector_number": "60",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14221,6 +14901,7 @@
      "set_name": "Zendikar",
      "collector_number": "238a",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14250,6 +14931,7 @@
      "set_name": "Avatar: The Last Airbender",
      "collector_number": "284",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14280,6 +14962,7 @@
      "set_name": "Tarkir: Dragonstorm",
      "collector_number": "281",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14310,6 +14993,7 @@
      "set_name": "Tarkir: Dragonstorm",
      "collector_number": "282",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14340,6 +15024,7 @@
      "set_name": "Duskmourn: House of Horror",
      "collector_number": "282",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14370,6 +15055,7 @@
      "set_name": "Bloomburrow",
      "collector_number": "373",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14400,6 +15086,7 @@
      "set_name": "Modern Horizons 3",
      "collector_number": "315",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14430,6 +15117,7 @@
      "set_name": "The Lost Caverns of Ixalan",
      "collector_number": "398",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14460,6 +15148,7 @@
      "set_name": "Wilds of Eldraine",
      "collector_number": "272",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14490,6 +15179,7 @@
      "set_name": "Dominaria United",
      "collector_number": "268",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14520,6 +15210,7 @@
      "set_name": "War of the Spark",
      "collector_number": "258",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14550,6 +15241,7 @@
      "set_name": "Kaladesh",
      "collector_number": "258",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14580,6 +15272,7 @@
      "set_name": "Duel Decks: Nissa vs. Ob Nixilis",
      "collector_number": "67",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14609,6 +15302,7 @@
      "set_name": "Duel Decks: Izzet vs. Golgari",
      "collector_number": "83",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14638,6 +15332,7 @@
      "set_name": "Magic 2013",
      "collector_number": "238",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14668,6 +15363,7 @@
      "set_name": "Scars of Mirrodin",
      "collector_number": "239",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14698,6 +15394,7 @@
      "set_name": "Magic 2011",
      "collector_number": "239",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14728,6 +15425,7 @@
      "set_name": "Starter Commander Decks",
      "collector_number": "342",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14757,6 +15455,7 @@
      "set_name": "Jumpstart 2022",
      "collector_number": "106",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14786,6 +15485,7 @@
      "set_name": "Reality Fracture",
      "collector_number": "285",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14816,6 +15516,7 @@
      "set_name": "Secrets of Strixhaven",
      "collector_number": "277",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14846,6 +15547,7 @@
      "set_name": "Edge of Eternities",
      "collector_number": "272",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14876,6 +15578,7 @@
      "set_name": "The Lost Caverns of Ixalan",
      "collector_number": "397",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14906,6 +15609,7 @@
      "set_name": "Commander Masters",
      "collector_number": "791",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14935,6 +15639,7 @@
      "set_name": "The Brothers' War",
      "collector_number": "272",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14965,6 +15670,7 @@
      "set_name": "Modern Horizons 2",
      "collector_number": "485",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -14997,6 +15703,7 @@
      "set_name": "Core Set 2020",
      "collector_number": "272",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15027,6 +15734,7 @@
      "set_name": "Commander Anthology",
      "collector_number": "301",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15056,6 +15764,7 @@
      "set_name": "Commander Anthology",
      "collector_number": "304",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15085,6 +15794,7 @@
      "set_name": "Commander 2015",
      "collector_number": "333",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15114,6 +15824,7 @@
      "set_name": "Duel Decks: Zendikar vs. Eldrazi",
      "collector_number": "71",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15143,6 +15854,7 @@
      "set_name": "Magic 2014",
      "collector_number": "240",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15173,6 +15885,7 @@
      "set_name": "Duel Decks: Sorin vs. Tibalt",
      "collector_number": "36",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15202,6 +15915,7 @@
      "set_name": "Commander 2011",
      "collector_number": "310",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15231,6 +15945,7 @@
      "set_name": "Duel Decks: Garruk vs. Liliana",
      "collector_number": "61",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15260,6 +15975,7 @@
      "set_name": "Duel Decks: Garruk vs. Liliana",
      "collector_number": "63",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15289,6 +16005,7 @@
      "set_name": "Planechase",
      "collector_number": "154",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15318,6 +16035,7 @@
      "set_name": "Duel Decks: Divine vs. Demonic",
      "collector_number": "59",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15347,6 +16065,7 @@
      "set_name": "Duel Decks: Divine vs. Demonic",
      "collector_number": "61",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15376,6 +16095,7 @@
      "set_name": "Duel Decks: Divine vs. Demonic",
      "collector_number": "62",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15405,6 +16125,7 @@
      "set_name": "Foundations Jumpstart",
      "collector_number": "89",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15434,6 +16155,7 @@
      "set_name": "Game Night: Free-for-All",
      "collector_number": "130",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15463,6 +16185,7 @@
      "set_name": "Marvel Super Heroes",
      "collector_number": "292",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15493,6 +16216,7 @@
      "set_name": "Bloomburrow",
      "collector_number": "374",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15523,6 +16247,7 @@
      "set_name": "March of the Machine",
      "collector_number": "279",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15553,6 +16278,7 @@
      "set_name": "Innistrad: Crimson Vow",
      "collector_number": "400",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15583,6 +16309,7 @@
      "set_name": "Strixhaven: School of Mages",
      "collector_number": "370",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15613,6 +16340,7 @@
      "set_name": "Ikoria: Lair of Behemoths",
      "collector_number": "268",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15643,6 +16371,7 @@
      "set_name": "Commander 2019",
      "collector_number": "296",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -15672,6 +16401,7 @@
      "set_name": "Duel Decks: Blessed vs. Cursed",
      "collector_number": "76",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],

@@ -9,6 +9,7 @@ import { oracleIdOf, priceDeck, priceEntries, withPrinting, type PricedCard } fr
 import type { ScryCard } from '../scryfall/types';
 import type { AppContext } from './app';
 import { combobox } from './combobox';
+import { suggestionsPanel } from './suggestions';
 import { h, usd } from './dom';
 
 const FINISH_LABEL = { nonfoil: '', foil: 'Foil', etched: 'Etched' } as const;
@@ -246,6 +247,9 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   });
   confirmBox.append(del);
 
+  // On wide screens the upgrades panel sits beside the cards; on phones it follows them.
+  const columns = h('div', { class: 'deck-columns' }, body);
+
   // ---- Sharing --------------------------------------------------------------------------------
   const shareBox = h('div', { class: 'stack' });
   const shareBtn = h('button', { type: 'button', class: 'button' }, 'Share');
@@ -292,7 +296,7 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
       ),
       note,
       adder,
-      body,
+      columns,
       readOnly ? null : confirmBox,
       picker,
     ),
@@ -312,7 +316,11 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
       deck = { ...deck, summary: summary() };
       persist(deck);
       if (readOnly) adder.append(viewSwitch);
-      else adder.append(search.root, warningBox, status, viewSwitch);
+      else {
+        adder.append(search.root, warningBox, status, viewSwitch);
+        columns.classList.add('with-panel');
+        columns.append(suggestionsPanel(ctx, () => priced, add));
+      }
       redraw();
     })
     .catch((err: unknown) => {

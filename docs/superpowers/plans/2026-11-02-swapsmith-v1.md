@@ -61,10 +61,10 @@ Builds the [v1 spec](../specs/2026-11-02-swapsmith-design.md) on the stack in [A
 - [x] E2E: copy a link, open it in a fresh context, save it.
 
 ### 7. Suggestions: profile, pool and upgrades
-- [ ] `lib/profile.ts`: color identity, tribe and themes. `scryfall/roles.ts`: role lookup by `otag:`.
-- [ ] Candidate pool, the scoring formula, and upgrade tiers.
-- [ ] Unit tests: never banned, off-color or in-deck cards. Tier boundaries. Owned cards get the bonus.
-- [ ] E2E: the suggestions panel shows three tiers for the Edgar deck.
+- [x] `lib/profile.ts`: color identity, tribe and themes. (Deck role lookup by `otag:` moves to slice 8, where cuts need it.)
+- [x] Candidate pool, the scoring formula, and upgrade tiers.
+- [x] Unit tests: never banned, off-color or in-deck cards. Tier boundaries. Owned cards get the bonus.
+- [x] E2E: the suggestions panel shows three tiers for the Edgar deck.
 
 ### 8. Swap pairs and cheaper replacements
 - [ ] Swap pairs with role-matched cuts and the spec's never-cut rules. Apply and Undo.

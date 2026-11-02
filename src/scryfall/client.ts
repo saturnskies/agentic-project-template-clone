@@ -24,6 +24,8 @@ export interface ClientOptions {
   maxRetries?: number;
   /** Most requests open at once; start times are also spaced by spacingMs. */
   maxInFlight?: number;
+  /** A request with no answer after this long is abandoned and retried like a dropped connection. */
+  timeoutMs?: number;
   now?: () => number;
   sleep?: (ms: number) => Promise<void>;
 }
@@ -50,6 +52,7 @@ export function createClient(opts: ClientOptions = {}): ScryfallClient {
   const ttlMs = opts.ttlMs ?? DAY_MS;
   const maxRetries = opts.maxRetries ?? 3;
   const maxInFlight = opts.maxInFlight ?? 4;
+  const timeoutMs = opts.timeoutMs ?? 20_000;
   const now = opts.now ?? (() => Date.now());
   const sleep = opts.sleep ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)));
 
@@ -97,10 +100,18 @@ export function createClient(opts: ClientOptions = {}): ScryfallClient {
     for (let attempt = 0; ; attempt += 1) {
       let res: Response;
       try {
-        res = await throttled(path, () => doFetch(SCRYFALL_BASE + path, init));
+        res = await throttled(path, async () => {
+          const abort = new AbortController();
+          const timer = setTimeout(() => abort.abort(), timeoutMs);
+          try {
+            return await doFetch(SCRYFALL_BASE + path, { ...init, signal: abort.signal });
+          } finally {
+            clearTimeout(timer);
+          }
+        });
       } catch (e) {
-        // A dropped connection (or a reply the browser blocks, such as a rate-limit page without CORS
-        // headers) shows up as a TypeError with no status: back off and retry like a 429.
+        // A dropped connection, a request that timed out, or a reply the browser blocks (such as a
+        // rate-limit page without CORS headers) has no status: back off and retry like a 429.
         if (attempt < maxRetries) {
           await sleep(1000 * 2 ** attempt);
           continue;

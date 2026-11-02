@@ -160,29 +160,37 @@ All rules are pure functions over card data, so unit tests can cover them withou
   | +1/+1 counters | `\+1/\+1 counter` |
   | graveyard | `from your graveyard` |
 
-- **Card roles:** looked up through Scryfall tags. Run `otag:<role> (!"A" or !"B" …)` over the deck's names in batches of about 20 names, for each role in the verified list above. The results are cached.
+- **Card roles:** looked up through Scryfall tags. Run `otag:<role> (!"A" or !"B" …)` over the deck's names in batches that keep each query under 900 characters. Built in step 8, which needs roles for matching cuts; upgrades don't need the deck's own roles.
 
 ### Candidate pool
 
-For each detected tribe, theme and role, run a search with these rules:
+Built when the user clicks **Find upgrades**, not on every deck open, since it costs one search per line below. Run one search for each:
+- the detected tribe (`t:<tribe>`)
+- each detected theme (its oracle-text query)
+- four core roles: `otag:ramp`, `otag:card-advantage`, `otag:removal` and `otag:board-wipe`
 
-- `f:commander id<=<CI> -is:digital game:paper order:edhrec`, plus the theme's filter: `t:<tribe>`, the theme's oracle text, or `otag:<role>`.
-- Keep the first 2 pages, about 350 cards, per search.
-- Remove cards already in the deck.
-- Collect the results into one pool, cached for 24 hours.
+Theme-specific roles such as sacrifice outlets or lifegain come through the theme searches, which keeps a deck to about 8 searches (5.5 s live on 2026-11-02).
+
+Rules for every search:
+- `f:commander id<=<CI> game:paper prefer:usd-low order:edhrec`, plus the filter above. `prefer:usd-low` makes Scryfall return each card's cheapest printing, so suggestions are priced and tiered without a lookup per card.
+- Keep the first page, up to 175 of the most-played cards.
+- Remove cards already in the deck, and defensively re-check legality and color identity.
+- Collect the results into one pool. Search replies are cached for 24 hours like every request.
 
 ### Score for a candidate
 
-`score = popularity + 0.5 × (number of themes, tribe and roles matched) + 0.3 if owned`
+`score = popularity + 0.5 × (tribe and theme matches) + 0.25 × (role matches) + 0.3 if owned`
 
-- `popularity` = `1 − edhrec_rank / max_rank`, from 0 to 1.
+- `popularity` = `1 − edhrec_rank / max_rank`, from 0 to 1, where `max_rank` is the worst rank in the pool.
 - Cards with no `edhrec_rank` get popularity 0.
+- **Why roles weigh less:** with every match at 0.5, Dusk // Dawn (one theme, three roles) topped the Edgar deck's Budget list, above Indulgent Aristocrat (tribe plus three themes). Changed 2026-11-02; a unit test keeps this case.
 
 ### 1. Upgrades by price tier
 
 - **Tiers** are set on the cheapest printing's price: Budget is under $3, Mid is $3–$15, Premium is over $15. The boundaries are constants in one module.
 - **Each tier** shows the top 10 by score.
-- **Reasons** look like: "Vampire · death-trigger payoff · top 3% in Commander · $0.40 · owned".
+- **Reasons** list the matched tribe and themes, then roles, then the EDHREC rank, then "owned". For example: "Vampire · sacrifice · lifegain · +1/+1 counters · EDHREC #2588". The price shows beside the name.
+- **Where it shows:** a panel beside the cards on wide screens (70 rem and up), below them on phones. Each suggestion links to TCGplayer and has an **Add** button.
 
 ### 2. Swap pairs
 

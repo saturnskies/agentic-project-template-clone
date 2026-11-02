@@ -9,6 +9,9 @@ export interface ScryCard {
   set_name: string;
   collector_number: string;
   type_line?: string;
+  oracle_text?: string;
+  /** Popularity across all Commander decks on EDHREC; 1 is the most played card. */
+  edhrec_rank?: number;
   color_identity: string[];
   legalities: { commander?: string };
   finishes: string[];
@@ -17,7 +20,7 @@ export interface ScryCard {
   tcgplayer_etched_id?: number;
   purchase_uris?: { tcgplayer?: string };
   image_uris?: { small?: string; normal?: string };
-  card_faces?: Array<{ name: string; oracle_id?: string; type_line?: string; image_uris?: { small?: string; normal?: string } }>;
+  card_faces?: Array<{ name: string; oracle_id?: string; type_line?: string; oracle_text?: string; image_uris?: { small?: string; normal?: string } }>;
 }
 
 export interface ScryList<T> {
