@@ -8,7 +8,9 @@ This file provides guidance to Claude Code when working in this repository.
 
 Projects made from [agentic-project-template](https://github.com/adolladivinity/agentic-project-template) log workflow improvements in `docs/template-sync.md`.
 
-Stack: _not decided yet_ — update this section and the commands below once chosen.
+This project is **Swapsmith**, a free static Commander deckbuilder with live TCGplayer prices and rules-based swap suggestions ([spec](docs/superpowers/specs/2026-11-02-swapsmith-design.md), [plan](docs/superpowers/plans/2026-11-02-swapsmith-v1.md)).
+
+Stack: TypeScript + Vite static site, no UI framework; Scryfall API called from the browser; Vitest + Playwright; GitHub Pages ([ADR-001](docs/decisions/ADR-001-swapsmith-stack-and-hosting.md)).
 
 ## Essential Commands
 
@@ -16,15 +18,20 @@ Any developer should be able to say "run the tests" and have it work on the firs
 
 | Task | Command |
 |------|---------|
-| Install | `TODO` |
-| Dev server | `TODO` (run as a background task so logs stay visible) |
-| Test (all) | `TODO` |
-| Test (single file) | `TODO` |
-| Lint / typecheck | `TODO` |
-| Format | `TODO` (also auto-run by the PostToolUse hook) |
+| Install | `npm ci` (CI also runs `npx playwright install --with-deps chromium`) |
+| Dev server | `npm run dev` → http://localhost:5173/swapsmith/ (run as a background task so logs stay visible) |
+| Test (all) | `npm run check` (typecheck, unit, e2e); live Scryfall test: `SCRYFALL_LIVE=1 npm test` |
+| Test (single file) | `npx vitest run tests/unit/<file>.test.ts` · `npx playwright test tests/e2e/<file>.spec.ts` |
+| Lint / typecheck | `npm run typecheck` |
+| Format | none yet (no formatter chosen) |
 | Docs index | `tools/doc-index.sh` (rebuild `docs/INDEX.md`); `tools/doc-index.sh --check` fails on a missing header or stale index |
 
 ## Architecture
+
+- `src/scryfall/` — the only code that calls Scryfall: queued ~100 ms apart, 429 retry, 24 h IndexedDB cache. Scryfall rejects Node's default User-Agent; browsers are fine
+- `src/lib/` — pure logic (parser, pricing, suggestions, share links), unit-tested in `tests/unit/`
+- `src/ui/` — screens; `tests/e2e/` drives them with Scryfall answered from `tests/fixtures/` (real captured replies)
+- `.github/workflows/pages.yml` — CI on every push/PR; deploys `dist/` to Pages from `main` only
 
 <!-- TODO: Key directories and what lives where. Prefer an ASCII diagram for data flow. -->
 
