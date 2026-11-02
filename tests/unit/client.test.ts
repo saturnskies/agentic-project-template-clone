@@ -100,6 +100,22 @@ describe('Scryfall client', () => {
     expect(calls).toBe(3);
   });
 
+  it('gives up on a request that never answers, and retries it', async () => {
+    let calls = 0;
+    const hanging = ((_url: string, init?: RequestInit) => {
+      calls += 1;
+      if (calls === 1) {
+        // Never answers; only the client's timeout (an abort) ends it.
+        return new Promise<Response>((_, reject) => init?.signal?.addEventListener('abort', () => reject(new DOMException('aborted', 'AbortError'))));
+      }
+      return Promise.resolve(json({ ok: true })());
+    }) as typeof fetch;
+    const client = createClient({ fetch: hanging, cache: memoryCache(), sleep: async () => {}, spacingMs: 0, heavySpacingMs: 0, timeoutMs: 30 });
+
+    await expect(client.get('/x')).resolves.toEqual({ ok: true });
+    expect(calls).toBe(2);
+  });
+
   it('keeps at most maxInFlight requests open at once', async () => {
     const clock = fakeClock();
     let open = 0;
