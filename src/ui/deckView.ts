@@ -1,4 +1,5 @@
-import { deckTotals, type Deck, type DeckEntry } from '../lib/deck';
+import { deckTotals, newDeckId, type Deck, type DeckEntry } from '../lib/deck';
+import { decodeDeck, encodeDeck, ShareError } from '../lib/share';
 import { cardWarnings, DECK_SIZE, isBasicLand, warningText } from '../lib/format';
 import { cardImage, compareLines, GROUP_ORDER, groupByType, typeGroup, typeName, type SortKey } from '../lib/groups';
 import { isOwned, stillToBuy } from '../lib/owned';
@@ -19,7 +20,28 @@ export function renderDeck(view: HTMLElement, ctx: AppContext, id: string): void
     view.append(h('section', { class: 'stack' }, h('h2', {}, 'Deck not found'), h('p', {}, 'It may have been deleted, or saved in a different browser.'), h('a', { class: 'button', href: '#/' }, 'Back to your decks')));
     return;
   }
-  let deck: Deck = found;
+  renderDeckPage(view, ctx, found, false);
+}
+
+/** A deck someone shared by link (`#d=<code>`): read-only, with a button to save a copy. */
+export async function renderShared(view: HTMLElement, ctx: AppContext, code: string): Promise<void> {
+  try {
+    const shared = await decodeDeck(code);
+    renderDeckPage(view, ctx, { ...shared, id: newDeckId(), format: 'commander', updatedAt: new Date().toISOString() }, true);
+  } catch (e) {
+    const why = e instanceof ShareError ? e.message : 'This share link could not be opened.';
+    view.append(
+      h('section', { class: 'stack' }, h('h2', {}, "Couldn't open this shared deck"), h('p', { role: 'alert' }, why, ' Ask for the link again, or check that it was copied in full.'), h('a', { class: 'button', href: '#/' }, 'Go to your decks')),
+    );
+  }
+}
+
+function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnly: boolean): void {
+  let deck: Deck = start;
+  /** Saves the deck, except for a shared deck that hasn't been saved to this browser. */
+  const persist = (d: Deck) => {
+    if (!readOnly) ctx.saveDeck(d);
+  };
   let priced: PricedCard[] = [];
   let sort: SortKey = 'type';
 
@@ -50,7 +72,7 @@ export function renderDeck(view: HTMLElement, ctx: AppContext, id: string): void
   /** Saves the deck and redraws totals and the table from `priced`. */
   const commit = (cards: DeckEntry[], extra: Partial<Deck> = {}) => {
     deck = { ...deck, ...extra, cards, updatedAt: new Date().toISOString(), summary: summary() };
-    ctx.saveDeck(deck);
+    persist(deck);
     redraw();
   };
   const cardsOf = () => priced.filter((x) => !x.isCommander).map((x) => x.entry);
@@ -75,10 +97,11 @@ export function renderDeck(view: HTMLElement, ctx: AppContext, id: string): void
         onOwned: (p, value) => {
           ctx.setOwned(p.entry.card.oracleId, p.typeLine, value);
           deck = { ...deck, summary: summary() };
-          ctx.saveDeck(deck);
+          persist(deck);
           redraw();
         },
         onPrinting: openPicker,
+        readOnly,
       }),
     );
   };
@@ -223,12 +246,43 @@ export function renderDeck(view: HTMLElement, ctx: AppContext, id: string): void
   });
   confirmBox.append(del);
 
+  // ---- Sharing --------------------------------------------------------------------------------
+  const shareBox = h('div', { class: 'stack' });
+  const shareBtn = h('button', { type: 'button', class: 'button' }, 'Share');
+  shareBtn.addEventListener('click', async () => {
+    const link = `${location.origin}${location.pathname}#d=${await encodeDeck(deck)}`;
+    const field = h('input', { type: 'text', readonly: true, value: link, 'aria-label': 'Share link', class: 'share-field' });
+    const msg = h('p', { class: 'muted small', role: 'status' });
+    shareBox.replaceChildren(field, msg);
+    try {
+      await navigator.clipboard.writeText(link);
+      msg.textContent = 'Link copied. Anyone with it can see this deck and save a copy. Your owned cards are not included.';
+    } catch {
+      field.select();
+      msg.textContent = 'Copy the link above. Anyone with it can see this deck and save a copy. Your owned cards are not included.';
+    }
+  });
+
+  const save = h('button', { type: 'button', class: 'button primary' }, 'Save to my decks');
+  save.addEventListener('click', () => {
+    ctx.saveDeck(deck);
+    ctx.go(`#/deck/${deck.id}`);
+  });
+  const sharedBanner = h('div', { class: 'banner row-between' }, h('p', {}, 'A shared deck. Save it to change it or track your cards.'), save);
+
   view.append(
     h(
       'section',
       { class: 'stack' },
       h('a', { href: '#/', class: 'back' }, '← Your decks'),
-      h('div', { class: 'deck-head' }, h('h2', {}, deck.name), h('p', { class: 'muted' }, `Commander: ${deck.commander.name}`)),
+      readOnly ? sharedBanner : null,
+      h(
+        'div',
+        { class: 'row-between' },
+        h('div', { class: 'deck-head' }, h('h2', {}, deck.name || 'Shared deck'), h('p', { class: 'muted' }, `Commander: ${deck.commander.name}`)),
+        readOnly ? null : shareBtn,
+      ),
+      shareBox,
       h(
         'div',
         { class: 'stats' },
@@ -239,7 +293,7 @@ export function renderDeck(view: HTMLElement, ctx: AppContext, id: string): void
       note,
       adder,
       body,
-      confirmBox,
+      readOnly ? null : confirmBox,
       picker,
     ),
   );
@@ -256,8 +310,9 @@ export function renderDeck(view: HTMLElement, ctx: AppContext, id: string): void
     .then((result) => {
       priced = result;
       deck = { ...deck, summary: summary() };
-      ctx.saveDeck(deck);
-      adder.append(search.root, warningBox, status, viewSwitch);
+      persist(deck);
+      if (readOnly) adder.append(viewSwitch);
+      else adder.append(search.root, warningBox, status, viewSwitch);
       redraw();
     })
     .catch((err: unknown) => {
@@ -272,29 +327,32 @@ interface TableHandlers {
   owned: (p: PricedCard) => boolean;
   onOwned: (p: PricedCard, owned: boolean) => void;
   onPrinting: (p: PricedCard) => void;
+  /** A shared deck: no owned ticks, removing or changing printings. */
+  readOnly?: boolean;
 }
 
 /** The controls every card gets in both views: link, owned tick, printing button, remove button. */
-function cardControls(p: PricedCard, { onRemove, owned, onOwned, onPrinting }: TableHandlers) {
+function cardControls(p: PricedCard, { onRemove, owned, onOwned, onPrinting, readOnly }: TableHandlers) {
   const name = p.entry.card.name;
   const printing = p.card ? `${p.card.set.toUpperCase()} #${p.card.collector_number}` : '—';
   const finish = p.finish ? FINISH_LABEL[p.finish] : '';
   const link = (...children: Array<Node | string>) =>
     p.url ? h('a', { href: p.url, target: '_blank', rel: 'noopener' }, ...children) : h('span', {}, ...children);
   const own = () => {
+    if (readOnly) return null;
     const box = h('input', { type: 'checkbox', 'aria-label': `Own ${name}`, checked: owned(p) });
     box.addEventListener('change', () => onOwned(p, box.checked));
     return box;
   };
   const printingControl = () => {
-    if (!p.prints.length) return h('span', {}, printing);
+    if (readOnly || !p.prints.length) return h('span', {}, printing);
     const btn = h('button', { type: 'button', class: 'link-button', 'aria-label': `Change printing of ${name}`, title: 'Change printing' }, printing, ' ▾');
     btn.addEventListener('click', () => onPrinting(p));
     return btn;
   };
   const finishTag = () => (finish ? h('span', { class: 'tag' }, finish) : null);
   const remove = () => {
-    if (p.isCommander) return null;
+    if (readOnly || p.isCommander) return null;
     const btn = h('button', { type: 'button', class: 'icon-button', 'aria-label': `Remove ${name}`, title: p.entry.qty > 1 ? 'Remove one copy' : 'Remove from deck' }, '×');
     btn.addEventListener('click', () => onRemove(p));
     return btn;
@@ -331,7 +389,7 @@ function grid(priced: PricedCard[], sort: SortKey, handlers: TableHandlers): HTM
               h('div', { class: 'card-art' }, c.link(art), p.entry.qty > 1 ? h('span', { class: 'qty-badge' }, `×${p.entry.qty}`) : null),
               h('div', { class: 'card-meta' }, h('span', { class: 'card-tile-name' }, c.link(c.name)), h('span', { class: 'card-tile-price' }, c.priceText)),
               h('div', { class: 'card-printing' }, c.printingControl(), c.finishTag()),
-              h('div', { class: 'card-tools' }, h('label', { class: 'own-label' }, c.own(), 'Owned'), c.remove()),
+              handlers.readOnly ? null : h('div', { class: 'card-tools' }, h('label', { class: 'own-label' }, c.own(), 'Owned'), c.remove()),
             );
           }),
         ),
@@ -380,8 +438,8 @@ function table(priced: PricedCard[], sort: SortKey, handlers: TableHandlers): HT
       h('td', { class: 'num' }, p.entry.qty),
       h('td', { class: 'num' }, c.priceText),
       h('td', { class: 'num hide-narrow' }, p.price == null ? '—' : usd(p.price * p.entry.qty)),
-      h('td', { class: 'owned' }, c.own()),
-      h('td', { class: 'remove' }, c.remove()),
+      handlers.readOnly ? null : h('td', { class: 'owned' }, c.own()),
+      handlers.readOnly ? null : h('td', { class: 'remove' }, c.remove()),
     );
   });
   return h(
@@ -396,7 +454,7 @@ function table(priced: PricedCard[], sort: SortKey, handlers: TableHandlers): HT
         h(
           'thead',
           {},
-          h('tr', {}, th('name', 'Card'), th('type', 'Type', 'hide-narrow'), th(null, 'Printing', 'hide-narrow'), th(null, 'Qty', 'num'), th('price', 'Price', 'num'), th(null, 'Line total', 'num hide-narrow'), th(null, 'Owned', 'owned'), h('th', { scope: 'col' }, h('span', { class: 'visually-hidden' }, 'Remove'))),
+          h('tr', {}, th('name', 'Card'), th('type', 'Type', 'hide-narrow'), th(null, 'Printing', 'hide-narrow'), th(null, 'Qty', 'num'), th('price', 'Price', 'num'), th(null, 'Line total', 'num hide-narrow'), handlers.readOnly ? null : th(null, 'Owned', 'owned'), handlers.readOnly ? null : h('th', { scope: 'col' }, h('span', { class: 'visually-hidden' }, 'Remove'))),
         ),
         h('tbody', {}, ...rows),
       ),
