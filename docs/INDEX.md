@@ -15,6 +15,7 @@ Status: **current** = in force or in progress; **draft** = proposed, not approve
 
 - [ADR-001-swapsmith-stack-and-hosting.md](decisions/ADR-001-swapsmith-stack-and-hosting.md) — current, 2026-11-02 — Chooses a static Vite + TypeScript site with no framework, Scryfall called from the browser, and GitHub Pages hosting for Swapsmith
 - [ADR-002-installable-pwa.md](decisions/ADR-002-installable-pwa.md) — current, 2026-11-02 — Makes Swapsmith an installable PWA (manifest, small service worker, generated icons) on the existing /swapsmith/ GitHub Pages origin, as the base for an APK later
+- [ADR-003-android-apk-capacitor.md](decisions/ADR-003-android-apk-capacitor.md) — current, 2026-11-02 — Builds the Android APK with Capacitor, bundling the built site, with debug-signed builds for sideloading and no Play Store release yet
 - [README.md](decisions/README.md) — current, 2026-10-29 — How to write ADRs: naming, front matter, status rules, never rewrite accepted ADRs
 
 ## docs/research/
