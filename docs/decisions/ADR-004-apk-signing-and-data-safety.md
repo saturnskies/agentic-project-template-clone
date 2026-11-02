@@ -16,7 +16,7 @@ Decks, owned cards and preferences live in the app's own storage on the phone ([
 - **The key file lives outside the repo.** `*.keystore`, `*.jks` and `android/keystore.properties` are gitignored. The owner keeps a copy somewhere safe; losing it means a one-time reinstall.
 - **Backup and restore in the app.** The home screen can write all decks, owned cards and the view setting to a JSON file (share sheet in the app, download in a browser) and restore from one. Restore only merges: decks missing locally are added, a deck in both keeps the later edit, owned cards are combined, nothing is deleted. A file that is not a Swapsmith backup is rejected before anything changes.
 - **Storage rules:** the package name `io.github.saturnskies.swapsmith` and the storage key `swapsmith:v1` do not change. A change to the stored shape needs a migration that reads the old data.
-- **`versionCode` goes up by one for every build handed out** (in `android/app/build.gradle`).
+- **Releases come from CI.** `.github/workflows/android.yml` builds on a `v*` tag, signs with the key held in repository secrets, refuses to publish an APK that is not signed with the original certificate, and attaches it to a GitHub Release. `versionCode` is the workflow run number plus 100, so it only goes up; local builds use a lower default and must not be handed out.
 
 ## Alternatives Considered
 
