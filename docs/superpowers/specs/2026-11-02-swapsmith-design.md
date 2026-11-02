@@ -195,16 +195,19 @@ Rules for every search:
 ### 2. Swap pairs
 
 - **Adds:** the top 10 overall candidates, filtered by a budget tier if one is set.
-- **The paired cut** comes from the deck with the lowest keep score: `popularity + 0.5 × matches`.
+- **The paired cut** comes from the deck with the lowest keep score: `popularity + 0.5 × (tribe and theme matches) + 0.25 × roles`, the same scale as suggestion scores. Popularity is normalised by the worst EDHREC rank in the deck.
+- **Only improvements:** an add is skipped when its score is no better than the cut's keep score, so a swap never offers a downgrade.
 - **Cut preference:** a card that shares a role with the add, so a removal spell replaces a removal spell. If none shares a role, the lowest keep score overall.
-- **Never cut:** the commander, basic lands, cards the user has pinned as "keep" (a toggle on each card), or a card already used in another pair.
+- **Never cut:** the commander, basic lands, cards the user has pinned with **Keep** (a toggle on each card, saved with the deck but not in share links), or a card already used in another pair.
 - **Lands:** a land is only cut for a land.
 - **Apply:** one click swaps the two cards. **Undo** reverts the last apply.
+- **Deck roles** come from `otag:<role> (!"A" or !"B" …)` searches over the deck's own names (front faces), batched under the query cap: 4 roles × 2 batches for a 100-card deck. They load after the pool, so upgrades show first. If they fail, swaps and replacements use the roles seen in the pool searches and say matching is approximate.
+- **Lists update locally:** after Find suggestions, adding, swapping, undoing or toggling Keep recomputes every list with no new requests.
 
 ### 3. Cheaper replacements
 
-- **Which cards get them:** every deck card whose cheapest price is at least $5 and that the user doesn't own. The threshold is a constant.
-- **What's offered:** the 3 highest-scoring cards that share at least one role with it, are within the color identity, are legal, and cost under half its price.
+- **Which cards get them:** every deck card whose cheapest price is at least $5 and that the user doesn't own, except the commander and cards marked Keep. The threshold is a constant.
+- **What's offered:** the 3 highest-scoring cards that share at least one role with it, are within the color identity, are legal, cost under half its price, and match it as land or nonland.
 - **Display:** "Save $X.XX", plus a **Swap** button.
 
 ### Guarantees across all three
@@ -212,7 +215,9 @@ Rules for every search:
 - Never suggest a card that is banned in Commander, outside the color identity, or already in the deck.
 - Always link to TCGplayer.
 
-**Known limit:** EDHREC rank measures a card's popularity across all of Commander, not in decks with this particular commander. Suggestions are on-theme and popular, but they won't know combos.
+**Known limits:**
+- Scryfall's functional tags are broad: "ramp" includes Path to Exile and "card draw" includes Sun Titan. Role matching is a good start, not a judgment of fit.
+- EDHREC rank measures a card's popularity across all of Commander, not in decks with this particular commander. Suggestions are on-theme and popular, but they won't know combos.
 
 ## Errors and empty states
 
