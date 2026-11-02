@@ -1,16 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
     <linearGradient id="b" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#d11a2a"/>
-      <stop offset="1" stop-color="#6e0a14"/>
+      <stop offset="0" stop-color="#b3121f"/>
+      <stop offset="1" stop-color="#6a0912"/>
     </linearGradient>
   </defs>
-  <rect width="512" height="512" rx="96" fill="#14100f"/>
-  <path d="M40 168C96 164 128 128 184 128H468V236H376C352 236 342 258 338 280C336 304 348 322 376 340V396H136V340C164 322 176 304 174 280C170 258 158 236 128 236C84 236 54 204 40 168Z" fill="url(#b)"/>
-  <path d="M184 128H468V146H184Z" fill="#ff5a66" opacity=".35"/>
-  <!-- emblem placeholder: swap arrows (replace with the logo you have rights to use) -->
-  <g fill="none" stroke="#14100f" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M214 170h200m-22-18 22 18-22 18"/>
-    <path d="M414 208H214m22-18-22 18 22 18" transform="translate(0 -4)"/>
+  <rect width="512" height="512" rx="96" fill="#2b2b2e"/>
+  <g transform="translate(-58 -574) scale(.76)">
+    <path d="M100 960H330V935H725V980C620 982 545 1020 528 1075C520 1140 540 1190 552 1218H580V1250H303V1218H330C355 1180 360 1130 350 1090C345 1070 338 1058 322 1048C220 1035 140 1000 100 960Z" fill="url(#b)"/>
+    <circle cx="441.0" cy="983.0" r="27" fill="#f6f1d0" stroke="#bdb58a" stroke-width="5"/>
+    <circle cx="500.0" cy="1025.8" r="27" fill="#1f78c4" stroke="#0b4a82" stroke-width="5"/>
+    <circle cx="477.4" cy="1095.2" r="27" fill="#2a2420" stroke="#0d0b0a" stroke-width="5"/>
+    <circle cx="404.6" cy="1095.2" r="27" fill="#ff4a3a" stroke="#a11414" stroke-width="5"/>
+    <circle cx="382.0" cy="1025.8" r="27" fill="#2f9a52" stroke="#17622f" stroke-width="5"/>
   </g>
 </svg>
