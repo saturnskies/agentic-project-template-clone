@@ -1,0 +1,22 @@
+# Claude Code — personal, never shared
+.claude/settings.local.json
+.claude/hooks/config/*.local.json
+.claude/hooks/.state/
+CLAUDE.local.md
+
+# Personal learning workspaces created by /teach
+learning/
+
+# Ralph loop runtime state (the example file is committed)
+ralph/state.json
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

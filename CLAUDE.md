@@ -1,0 +1,102 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code when working in this repository.
+
+## Project Overview
+
+<!-- TODO: One paragraph — what this project is, who uses it, and the main moving parts. -->
+
+Projects made from [agentic-project-template](https://github.com/adolladivinity/agentic-project-template) log workflow improvements in `docs/template-sync.md`.
+
+Stack: _not decided yet_ — update this section and the commands below once chosen.
+
+## Essential Commands
+
+Any developer should be able to say "run the tests" and have it work on the first try. Keep these accurate.
+
+| Task | Command |
+|------|---------|
+| Install | `TODO` |
+| Dev server | `TODO` (run as a background task so logs stay visible) |
+| Test (all) | `TODO` |
+| Test (single file) | `TODO` |
+| Lint / typecheck | `TODO` |
+| Format | `TODO` (also auto-run by the PostToolUse hook) |
+| Docs index | `tools/doc-index.sh` (rebuild `docs/INDEX.md`); `tools/doc-index.sh --check` fails on a missing header or stale index |
+
+## Architecture
+
+<!-- TODO: Key directories and what lives where. Prefer an ASCII diagram for data flow. -->
+
+## Where Things Live
+
+**Find docs through [`docs/INDEX.md`](docs/INDEX.md)** — one line per doc (status, date, what it answers), generated from each doc's front matter. Read it instead of listing folders; open only the docs a task needs.
+
+- `docs/decisions/` — ADRs; read before re-deciding anything already decided
+- `docs/superpowers/` — specs and plans for features in progress
+- `docs/research/` — cited research notes
+- `docs/toolbox.md` — tools usable today by need; check before adding a library, MCP, or extension
+- `docs/tool-watchlist.md` — vetted but not set up, ruled out, and where to search when the toolbox has nothing
+- `docs/template-sync.md` — workflow improvements to send back to the template; `/go` adds rows
+- `.mcp.json` — project MCP servers (Lightpanda, Playwright, Context7, DeepWiki); browse through the `browsing` skill
+- `packs/` — optional packs (e.g. `packs/codex/`); each README says how to enable it
+- `tutorial/` — human setup guide for new machines and new users; keep it in sync when tools or setup steps change
+
+## Workflow
+
+The **Superpowers** plugin is this project's backbone (brainstorm → plan → TDD → review → finish). Don't add competing planner, reviewer, or TDD skills.
+
+- Plans and specs live in `docs/superpowers/` (plan mode writes there too)
+- Plans are **vertical slices** (each task touches every layer end-to-end), and every task is gated by tests
+- Verification means: run the commands above, then exercise the changed behavior as a user would; run dev servers as background tasks and read their logs
+- Reviews prioritize: correctness → security → missing/weakened tests → drift from the plan
+- Finish with `/go` (verify → review → simplify → PR). Keep PRs small; squash merge
+
+## Model and Effort Routing
+
+Pass `model` and `effort` on every Agent call using this table; agents with a `model:` line in their frontmatter keep it. Subagents default to Sonnet (`CLAUDE_CODE_SUBAGENT_MODEL`).
+
+| Task type | Model | Effort |
+|---|---|---|
+| Lookups: file search, link checks, summarizing one page, gathering research pages, yes/no screenshot checks | haiku | low |
+| Reading/research digests, docs-only review, runbooks, mechanical edits | sonnet | medium |
+| Code review, test writing, multi-file refactors | sonnet | high |
+| Security, architecture | opus | high |
+
+Test gates and commits are shell scripts (run the tests, then `git commit` only if they pass), not agents: an agent costs tokens every turn for steps that never need judgment. Agent cost is mostly re-reading context each turn, so a tight scope and few turns save more than a cheaper model. Docs-only and idea-discussion work gets no review agents (see `/go` tiers). One new session per task: `/clear` between unrelated tasks.
+
+**Orchestrator protocol** for multi-step plans run through agents:
+
+- The main session only briefs, reads short reports, and decides; workers do the reading and writing
+- Agents run in the background (`run_in_background`) and are never polled; wait for the completion notice
+- A cheap gate (a script or a haiku agent) reruns the tests after each worker instead of trusting the worker's summary
+- The plan carries an execution-routing table: each piece of work, who does it, model, effort
+- After each run, `/retro` on the measurements (tokens, wall time, green on the first try, reruns) moves routing one notch at a time: green first try → one notch lower next time; a rerun → one notch higher; a mechanical bug caught in review → a new test or check, not a reminder
+
+**At the start of each session**, after the user's first request, suggest the main-session effort in one line using the effort table in [`tutorial/tips.md`](tutorial/tips.md#choosing-model-and-effort) (e.g. "Suggested: `/effort medium` — docs work"). Claude can't change the main session's effort itself. When a request is unrelated to the session so far, suggest `/clear` before starting it.
+
+## Conventions
+
+- Finish migrations; never leave two patterns for the same thing side by side. When a convention changes, grep `.claude/` agents and skills for templates still teaching the old one
+- Every doc under `docs/` and `tutorial/` starts with front matter: `description`, `status` (`current` | `draft` | `done` | `superseded` + `superseded_by`), `updated`. Run `tools/doc-index.sh` after adding or changing one; `/go` runs `--check`
+- One home per fact: link to the doc that owns it instead of copying it. Never cite a `superseded` doc as current
+- Before stating project state (what's done, what's next, which branch), confirm it against `git log`/`git status` or the plan's checkboxes; memory notes can be stale
+- Path-specific rules live in `.claude/rules/` and load only when matching files are touched
+- When the user repeats a multi-step request, suggest turning it into a skill or command in `.claude/`
+- Never edit the template repo from a project session; log the change in `docs/template-sync.md` instead
+
+## Git
+
+<important if="committing or staging changes">
+- Commit as soon as a task is complete — at least hourly during long work
+- Create separate commits per file, each with a message specific to that file's change
+</important>
+
+## Gotchas
+
+- Scripted file edits on Windows: Python text mode rewrites LF as CRLF and can double carriage returns; read and write bytes or use `newline=""`, or prefer the Edit tool. Backslashes in a heredoc'd Python string get unescaped twice (`\1` became a control character), so sed or regex text goes through the Edit tool. `git ls-files --eol | grep i/crlf` finds files stored with the wrong endings.
+- Saved tool output: when a Bash or agent result says it was saved to a file, Grep it or Read a slice with offset/limit; never open it whole. Whatever is read stays in context and is re-sent every later turn.
+- Measure your own transcripts before adopting someone else's token fix: a guard that sounds useful may fire once a session here.
+- Git Bash rewrites `branch:path` arguments (`git show main:docs/x.md`) into Windows paths; set `MSYS_NO_PATHCONV=1` for those commands.
+
+<!-- Add Claude's recurring mistakes here as you find them. This is the highest-signal section. -->

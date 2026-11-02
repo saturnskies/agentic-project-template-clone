@@ -1,0 +1,37 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@0.0.70",
+        "--headless"
+      ]
+    },
+    "lightpanda": {
+      "command": "wsl.exe",
+      "args": [
+        "-d",
+        "Ubuntu",
+        "--exec",
+        "sh",
+        "-c",
+        "LIGHTPANDA_DISABLE_TELEMETRY=true exec \"$HOME/.local/bin/lightpanda\" mcp"
+      ]
+    },
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@2.1.8"
+      ]
+    },
+    "deepwiki": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "deepwiki-mcp@0.0.6"
+      ]
+    }
+  }
+}

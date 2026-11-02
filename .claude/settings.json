@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "respectGitignore": true,
+  "env": {
+    "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
+    "BASH_MAX_OUTPUT_LENGTH": "15000",
+    "MAX_MCP_OUTPUT_TOKENS": "15000"
+  },
+  "attribution": {
+    "commit": "Co-Authored-By: Claude <noreply@anthropic.com>",
+    "pr": "Generated with [Claude Code](https://claude.ai/code)"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(git branch *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git fetch *)",
+      "Bash(git switch *)",
+      "Bash(git stash *)",
+      "Bash(ls *)",
+      "Bash(cd *)",
+      "Bash(pwd)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(which *)",
+      "Bash(jq *)",
+      "Bash(node .claude/hooks/*)",
+      "Bash(npm run *)",
+      "Bash(npm test)",
+      "Bash(npm test *)",
+      "Bash(npm ls *)",
+      "Bash(npm view *)",
+      "Bash(npm outdated *)",
+      "Bash(uv run *)",
+      "Bash(py -m pytest *)",
+      "Bash(python -m pytest *)",
+      "Bash(gh pr view *)",
+      "Bash(gh pr list *)",
+      "Bash(gh pr status *)",
+      "Bash(tools/doc-index.sh)",
+      "Bash(tools/doc-index.sh *)",
+      "WebSearch"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(curl * | sh)",
+      "Bash(curl * | bash)",
+      "Bash(wget * | sh)",
+      "Bash(wget * | bash)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean *)",
+      "Bash(rm *)",
+      "Bash(rmdir *)",
+      "Bash(npm install)",
+      "Bash(npm install *)",
+      "Bash(npm i)",
+      "Bash(npm i *)",
+      "Bash(npm ci *)",
+      "Bash(npm uninstall *)",
+      "Bash(npm update *)",
+      "Bash(npm publish *)",
+      "Bash(pip install *)",
+      "Bash(pip uninstall *)",
+      "Bash(uv add *)",
+      "Bash(uv remove *)",
+      "Bash(uv pip install *)",
+      "Bash(docker *)",
+      "Bash(curl *)",
+      "Bash(wget *)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/stop-verify.js\" --baseline",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/format.js\"",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/stop-verify.js\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
+  "plansDirectory": "./docs/superpowers/plans",
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true
+  }
+}
