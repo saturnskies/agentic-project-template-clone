@@ -17,6 +17,7 @@ Status: **current** = in force or in progress; **draft** = proposed, not approve
 
 ## docs/research/
 
+- [edgar-markov-deck-pricing-opus.md](research/edgar-markov-deck-pricing-opus.md) — current, 2026-11-02 — TCGplayer price guide for the Edgar Markov Vampires Commander deck (cheapest printings, spot-checked) plus budget/mid/premium upgrades; Opus re-check of the Sonnet guide
 - [edgar-markov-deck-pricing.md](research/edgar-markov-deck-pricing.md) — current, 2026-11-02 — TCGplayer-based price guide for the Edgar Markov Commander deck, with upgrade options by price tier
 
 ## tutorial/
