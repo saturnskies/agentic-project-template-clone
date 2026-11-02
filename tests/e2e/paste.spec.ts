@@ -1,42 +1,5 @@
-import { readFileSync } from 'node:fs';
-import { expect, test, type Page } from '@playwright/test';
-import { requestKey, type FixtureMap } from '../support/fixtures';
-
-const map: FixtureMap = JSON.parse(readFileSync(new URL('../fixtures/scryfall-e2e.json', import.meta.url), 'utf8'));
-const list = readFileSync(new URL('../fixtures/e2e-list.txt', import.meta.url), 'utf8');
-
-/** Answers Scryfall from recorded replies; anything unrecorded fails the test. */
-async function mockScryfall(page: Page) {
-  const misses: string[] = [];
-  await page.route('https://api.scryfall.com/**', async (route) => {
-    const req = route.request();
-    const key = requestKey(req.method(), req.url(), req.postData());
-    const hit = map[key];
-    if (!hit) {
-      misses.push(key);
-      return route.fulfill({ status: 500, json: { object: 'error', details: 'unrecorded' } });
-    }
-    return route.fulfill({ status: hit.status, json: hit.body });
-  });
-  return misses;
-}
-
-async function pasteAndFix(page: Page) {
-  await page.goto('./');
-  await page.getByRole('link', { name: 'Paste a list' }).click();
-  await page.getByLabel('Deck name').fill('Edgar test');
-  await page.getByLabel('Decklist').fill(list);
-  await page.getByRole('button', { name: 'Price this deck' }).click();
-
-  await expect(page.getByText('2 cards need attention')).toBeVisible();
-  await page.getByRole('button', { name: 'Use Kalastria Highborn' }).click();
-  const emmerstorm = page.getByRole('listitem').filter({ hasText: 'Emmerstorm Predator' });
-  await expect(emmerstorm).toContainText('No close match');
-  await emmerstorm.getByRole('button', { name: 'Remove' }).click();
-
-  await expect(page.getByText('Commander: Edgar Markov')).toBeVisible();
-  await page.getByRole('button', { name: 'Create deck' }).click();
-}
+import { expect, test } from '@playwright/test';
+import { mockScryfall, pasteAndFix } from './helpers';
 
 test('paste a list, fix a typo, and see every card priced with TCGplayer links', async ({ page }) => {
   const misses = await mockScryfall(page);
