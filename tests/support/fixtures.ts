@@ -28,7 +28,7 @@ export function fixtureFetch(map: FixtureMap): typeof fetch & { misses: string[]
 }
 
 const CARD_KEYS = [
-  'id', 'oracle_id', 'name', 'flavor_name', 'set', 'set_name', 'collector_number', 'type_line', 'color_identity', 'legalities',
+  'id', 'oracle_id', 'name', 'flavor_name', 'set', 'set_name', 'collector_number', 'type_line', 'oracle_text', 'edhrec_rank', 'color_identity', 'legalities',
   'finishes', 'prices', 'tcgplayer_id', 'tcgplayer_etched_id', 'image_uris', 'card_faces', 'object',
 ];
 
@@ -43,7 +43,7 @@ export function trim(body: unknown): unknown {
   const img = (u: unknown) => (u && typeof u === 'object' ? { small: (u as Record<string, string>).small, normal: (u as Record<string, string>).normal } : undefined);
   if (out.image_uris) out.image_uris = img(out.image_uris);
   if (Array.isArray(out.card_faces)) {
-    out.card_faces = (out.card_faces as Array<Record<string, unknown>>).map((f) => ({ name: f.name, oracle_id: f.oracle_id, type_line: f.type_line, ...(f.image_uris ? { image_uris: img(f.image_uris) } : {}) }));
+    out.card_faces = (out.card_faces as Array<Record<string, unknown>>).map((f) => ({ name: f.name, oracle_id: f.oracle_id, type_line: f.type_line, oracle_text: f.oracle_text, ...(f.image_uris ? { image_uris: img(f.image_uris) } : {}) }));
   }
   const legal = out.legalities as Record<string, string> | undefined;
   if (legal) out.legalities = { commander: legal.commander };
