@@ -17,6 +17,8 @@ export interface AppContext {
   deleteDeck(id: string): void;
   /** Ticks or unticks a card in the owned collection shared by every deck. */
   setOwned(oracleId: string, typeLine: string, owned: boolean): void;
+  /** Remembers the list or grid view for every deck. */
+  setView(view: 'list' | 'grid'): void;
   go(route: string): void;
 }
 
@@ -39,6 +41,10 @@ export function startApp(root: HTMLElement): void {
       const next = setOwnedIn(store, oracleId, typeLine, owned);
       store.owned = next.owned;
       store.unownedBasics = next.unownedBasics;
+      save();
+    },
+    setView(view) {
+      store.prefs = { ...store.prefs, view };
       save();
     },
     deleteDeck(id) {
