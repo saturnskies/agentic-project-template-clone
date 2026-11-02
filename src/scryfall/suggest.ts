@@ -90,7 +90,8 @@ export function deckCardFacts(priced: PricedCard[], roles: Map<string, string[]>
       rank: p.card?.edhrec_rank ?? null,
       roles: roles.get(id) ?? poolRoles.get(id) ?? [],
       isCommander: p.isCommander,
-      keep: !!p.entry.keep,
+      // A card whose Scryfall data didn't load can't be judged, so it is never offered as a cut.
+      keep: !!p.entry.keep || !p.card || !!p.failed,
       owned: isOwned(collection, id, p.typeLine),
     };
   });
