@@ -10,7 +10,6 @@ app.innerHTML = `
   <header class="site-header">
     <div class="wrap">
       <h1><a href="#/" class="home-link">Swap<span>smith</span></a></h1>
-      <p class="tagline">Price your Commander deck, track what you own, find better swaps.</p>
     </div>
   </header>
   <main class="wrap" id="main"></main>

@@ -1,4 +1,5 @@
 import { cleanDeckName, deckTotals, newDeckId, type Deck, type DeckEntry } from '../lib/deck';
+import { deckFileName, deckToText } from '../lib/export';
 import { decodeDeck, encodeDeck, ShareError } from '../lib/share';
 import { cardWarnings, DECK_SIZE, isBasicLand, warningText } from '../lib/format';
 import { cardImage, compareLines, GROUP_ORDER, groupByType, typeGroup, typeName, type SortKey } from '../lib/groups';
@@ -9,6 +10,7 @@ import { oracleIdOf, priceDeck, priceEntries, withPrinting, type PricedCard } fr
 import type { ScryCard } from '../scryfall/types';
 import type { AppContext } from './app';
 import { combobox } from './combobox';
+import { saveFile } from './saveFile';
 import { suggestionsPanel } from './suggestions';
 import { h, usd } from './dom';
 
@@ -357,6 +359,28 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
     }
   });
 
+  // ---- Exporting ------------------------------------------------------------------------------
+  const exportMsg = h('p', { class: 'muted small', role: 'status' });
+  const copyBtn = h('button', { type: 'button', class: 'button' }, 'Copy deck');
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(deckToText(deck));
+      exportMsg.textContent = 'Deck copied.';
+    } catch {
+      exportMsg.textContent = "Couldn't copy. Use Download .txt instead.";
+    }
+  });
+  const downloadBtn = h('button', { type: 'button', class: 'button' }, 'Download .txt');
+  downloadBtn.addEventListener('click', async () => {
+    try {
+      await saveFile(deckToText(deck), deckFileName(deck), 'text/plain');
+      exportMsg.textContent = 'Deck list saved.';
+    } catch (e) {
+      // Closing the share sheet rejects on some devices; that is not an error.
+      if (!/cancel|dismiss/i.test(String((e as Error)?.message))) exportMsg.textContent = "Couldn't save the deck list. Try again.";
+    }
+  });
+
   const save = h('button', { type: 'button', class: 'button primary' }, 'Save to my decks');
   save.addEventListener('click', () => {
     ctx.saveDeck(deck);
@@ -374,8 +398,9 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
         'div',
         { class: 'row-between' },
         titleBox,
-        readOnly ? null : shareBtn,
+        h('div', { class: 'actions' }, copyBtn, downloadBtn, readOnly ? null : shareBtn),
       ),
+      exportMsg,
       shareBox,
       h(
         'div',
