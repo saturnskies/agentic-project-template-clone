@@ -1,11 +1,17 @@
 name: Android APK
 
-# Builds the signed APK. Push a tag like v0.3.0 to publish it as a GitHub Release,
-# or run the workflow by hand to get the APK as a downloadable build artifact only.
+# Builds the signed APK. To publish a GitHub Release either push a tag like v0.3.0, or run this
+# workflow by hand from main with `release_tag` set (it creates the tag and the release itself).
+# A manual run without `release_tag` only builds the APK as a downloadable artifact.
 on:
   push:
     tags: ['v*']
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Publish a release with this tag, e.g. v0.3.0 (main only). Leave empty to only build.'
+        required: false
+        default: ''
 
 permissions:
   contents: write # create the release
@@ -15,6 +21,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Decide the release tag
+        env:
+          INPUT_TAG: ${{ inputs.release_tag }}
+        run: |
+          TAG=""
+          if [ "$GITHUB_REF_TYPE" = tag ]; then TAG="$GITHUB_REF_NAME"; else TAG="$INPUT_TAG"; fi
+          if [ -n "$TAG" ]; then
+            [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::Release tag must look like v0.3.0, got '$TAG'."; exit 1; }
+            if [ "$GITHUB_REF_TYPE" != tag ] && [ "$GITHUB_REF" != refs/heads/main ]; then
+              echo "::error::Releases can only be published from main (this run is on $GITHUB_REF_NAME)."; exit 1
+            fi
+          fi
+          echo "RELEASE_TAG=$TAG" >> "$GITHUB_ENV"
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -53,7 +74,7 @@ jobs:
         run: |
           # versionCode must only ever go up. The run number does, and +100 keeps it above the hand-built 0.2.0 (code 2).
           export SWAPSMITH_VERSION_CODE=$((GITHUB_RUN_NUMBER + 100))
-          if [ "$GITHUB_REF_TYPE" = tag ]; then export SWAPSMITH_VERSION_NAME="${GITHUB_REF_NAME#v}"; else export SWAPSMITH_VERSION_NAME="0.0.0-run$GITHUB_RUN_NUMBER"; fi
+          if [ -n "$RELEASE_TAG" ]; then export SWAPSMITH_VERSION_NAME="${RELEASE_TAG#v}"; else export SWAPSMITH_VERSION_NAME="0.0.0-run$GITHUB_RUN_NUMBER"; fi
           echo "VERSION_NAME=$SWAPSMITH_VERSION_NAME" >> "$GITHUB_ENV"
           npm run apk
           cp android/app/build/outputs/apk/release/app-release.apk "swapsmith-$SWAPSMITH_VERSION_NAME.apk"
@@ -71,14 +92,15 @@ jobs:
           path: swapsmith-*.apk
 
       - name: Publish the release
-        if: github.ref_type == 'tag'
+        if: env.RELEASE_TAG != ''
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           FILE="swapsmith-$VERSION_NAME.apk"
-          # Creating a release on github.com makes the tag and the release together, so it may already exist.
-          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
-            gh release upload "$GITHUB_REF_NAME" "$FILE" --clobber
+          # The release may already exist (created on github.com, which makes the tag too). Otherwise create it,
+          # which also creates the tag at this commit.
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" "$FILE" --clobber
           else
-            gh release create "$GITHUB_REF_NAME" "$FILE" --title "Swapsmith $VERSION_NAME" --generate-notes
+            gh release create "$RELEASE_TAG" "$FILE" --target "$GITHUB_SHA" --title "Swapsmith $VERSION_NAME" --generate-notes
           fi
