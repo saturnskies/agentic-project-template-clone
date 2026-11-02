@@ -20,3 +20,9 @@ ralph/state.json
 Thumbs.db
 .vscode/
 .idea/
+
+# Swapsmith app
+node_modules/
+dist/
+test-results/
+playwright-report/
