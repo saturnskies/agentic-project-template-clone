@@ -6,7 +6,7 @@
     </linearGradient>
   </defs>
   <rect width="512" height="512" rx="96" fill="#000"/>
-  <g transform="translate(-44 -487) scale(.68)">
+  <g transform="translate(-24.5 -487) scale(.68)">
     <path d="M100 960H330V935H725V980C620 982 545 1020 528 1075C520 1140 540 1190 552 1218H580V1250H303V1218H330C355 1180 360 1130 350 1090C345 1070 338 1058 322 1048C220 1035 140 1000 100 960Z" fill="url(#b)"/>
     <circle cx="441.0" cy="1010.0" r="20" fill="#f6f1d0" stroke="#bdb58a" stroke-width="5"/>
     <circle cx="488.6" cy="1044.5" r="20" fill="#1f78c4" stroke="#0b4a82" stroke-width="5"/>
