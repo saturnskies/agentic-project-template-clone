@@ -4,15 +4,19 @@ import { requestKey, type FixtureMap } from '../support/fixtures';
 
 const load = (name: string): FixtureMap => JSON.parse(readFileSync(new URL(`../fixtures/${name}`, import.meta.url), 'utf8'));
 
-/** Every recorded Scryfall reply (see tests/unit/record-fixtures.test.ts). */
-export const recorded: FixtureMap = { ...load('scryfall-e2e.json'), ...load('scryfall-new-deck.json') };
+/**
+ * Recorded Scryfall replies (see tests/unit/record-fixtures.test.ts). Fixtures recorded at different
+ * times can hold the same request with different prices, so each test uses only its own flow's map.
+ */
+export const flows: FixtureMap = { ...load('scryfall-e2e.json'), ...load('scryfall-new-deck.json') };
+export const edgarFull: FixtureMap = load('scryfall-edgar-full.json');
 export const e2eList = readFileSync(new URL('../fixtures/e2e-list.txt', import.meta.url), 'utf8');
 
 // A 1×1 grey PNG standing in for card images, so tests never download from Scryfall's image host.
 const PIXEL = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
 
 /** Answers Scryfall from recorded replies; returns the requests that had no recording. */
-export async function mockScryfall(page: Page): Promise<string[]> {
+export async function mockScryfall(page: Page, recorded: FixtureMap = flows): Promise<string[]> {
   const misses: string[] = [];
   await page.route('https://cards.scryfall.io/**', (route) => route.fulfill({ status: 200, contentType: 'image/png', body: PIXEL }));
   await page.route('https://api.scryfall.com/**', async (route) => {
@@ -45,4 +49,15 @@ export async function pasteAndFix(page: Page, name = 'Edgar test') {
   await expect(page.getByText('Commander: Edgar Markov')).toBeVisible();
   await page.getByRole('button', { name: 'Create deck' }).click();
   await expect(page.getByTestId('deck-total')).toHaveText(/\$/);
+}
+
+/** The full 100-card Edgar Markov deck, saved before the page loads, as if the user had built it. */
+export async function seedEdgarDeck(page: Page) {
+  const deck = JSON.parse(readFileSync(new URL('../fixtures/edgar-deck.json', import.meta.url), 'utf8'));
+  await page.addInitScript((d) => {
+    if (!localStorage.getItem('swapsmith:v1')) {
+      localStorage.setItem('swapsmith:v1', JSON.stringify({ version: 1, decks: [d], owned: [], unownedBasics: [], prefs: { view: 'list' } }));
+    }
+  }, deck);
+  return deck as { id: string };
 }
