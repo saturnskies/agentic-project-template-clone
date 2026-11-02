@@ -13,9 +13,32 @@ Decisions: [ADR-003](decisions/ADR-003-android-apk-capacitor.md) (Capacitor wrap
 2. Put the signing keystore file somewhere outside the repo, for example `~/.swapsmith/swapsmith.keystore`.
 3. Copy `android/keystore.properties.example` to `android/keystore.properties` and fill in the path, passwords and alias. That file is gitignored. (Or set `SWAPSMITH_KEYSTORE`, `SWAPSMITH_KEYSTORE_PASSWORD`, `SWAPSMITH_KEY_ALIAS`, `SWAPSMITH_KEY_PASSWORD`.)
 
-## Each release
+## Publishing from GitHub (the normal way)
 
-1. Raise `versionCode` by 1 in `android/app/build.gradle` (and `versionName` if it makes sense).
+`.github/workflows/android.yml` builds the signed APK and publishes it as a GitHub Release, so a phone can update straight from the repo.
+
+**One-time: add four repository secrets** (Settings → Secrets and variables → Actions → New repository secret):
+
+| Secret | Value |
+|---|---|
+| `SWAPSMITH_KEYSTORE_BASE64` | the keystore file, base64: `base64 -w0 swapsmith-signing.keystore` (on a Mac: `base64 -i swapsmith-signing.keystore`) |
+| `SWAPSMITH_KEYSTORE_PASSWORD` | `android` |
+| `SWAPSMITH_KEY_ALIAS` | `androiddebugkey` |
+| `SWAPSMITH_KEY_PASSWORD` | `android` |
+
+The keystore is the one every installed phone was signed with. Never commit it (the repo is public). The workflow fails with a clear message if a secret is missing, and also fails if the built APK is not signed with the original key.
+
+**Each release:** merge to `main`, then `git tag v0.3.0 && git push origin v0.3.0` (or create the tag from GitHub's Releases page). The workflow builds, then attaches `swapsmith-0.3.0.apk` to a new Release. On the phone, open the repo's **Releases** page in Chrome, download the APK, tap it and choose **Update**. Running the workflow by hand (Actions → Android APK → Run workflow) builds the APK as a downloadable artifact without publishing a release.
+
+Version numbers: CI sets `versionName` from the tag and `versionCode` to the run number plus 100, so each CI build is newer than the last. A local `npm run apk` uses the lower defaults in `android/app/build.gradle`, so **do not install local builds on a phone that already has a CI build**; Android refuses a downgrade. Hand out CI builds only.
+
+## Building locally
+
+Use this for testing. The steps below build the same signed APK on your machine.
+
+### Each local build
+
+1. Only if you will install it on a phone that has never had a CI build: raise the default `versionCode` in `android/app/build.gradle` above what the phone has.
 2. `npm run apk` — builds the site with `--base=./`, syncs it into `android/`, and signs the release APK.
 3. The file is `android/app/build/outputs/apk/release/app-release.apk`.
 4. Install it **over** the old app (tap the file, choose Update). Never uninstall first: that deletes the decks.
