@@ -27,12 +27,12 @@ Builds the [v1 spec](../specs/2026-11-02-swapsmith-design.md) on the stack in [A
 ## Slices
 
 ### 1. Skeleton, Scryfall client and deploy
-- [ ] Vite + TypeScript app with `base: '/swapsmith/'`. App shell has header, an empty deck list and a footer crediting Scryfall.
-- [ ] `src/scryfall/client.ts`: queued fetch about 100 ms apart, 429 retry with backoff, and a 24 h IndexedDB cache keyed by URL.
-- [ ] Unit tests: queue spacing, retry on 429, cache hit, cache expiry (fake timers, fake IndexedDB).
-- [ ] E2E smoke: page loads, title "Swapsmith", Scryfall credit visible.
-- [ ] `.github/workflows/pages.yml`: typecheck, unit and e2e tests on push and PR. Deploy to Pages from `main` only.
-- [ ] CLAUDE.md: Stack line and Essential Commands filled in.
+- [x] Vite + TypeScript app with `base: '/swapsmith/'`. App shell has header, an empty deck list and a footer crediting Scryfall.
+- [x] `src/scryfall/client.ts`: queued fetch about 100 ms apart, 429 retry with backoff, and a 24 h IndexedDB cache keyed by URL.
+- [x] Unit tests: queue spacing, retry on 429, cache hit, cache expiry (fake timers, fake IndexedDB).
+- [x] E2E smoke: page loads, title "Swapsmith", Scryfall credit visible.
+- [x] `.github/workflows/pages.yml`: typecheck, unit and e2e tests on push and PR. Deploy to Pages from `main` only.
+- [x] CLAUDE.md: Stack line and Essential Commands filled in.
 
 ### 2. Paste a list and price it
 - [ ] `lib/parse.ts`: the spec's list formats. Unit tests include the Edgar Markov list.
