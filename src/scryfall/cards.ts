@@ -22,7 +22,7 @@ export function matchesName(card: ScryCard, typed: string): boolean {
 
 const chunks = <T>(xs: T[], n: number) => Array.from({ length: Math.ceil(xs.length / n) }, (_, i) => xs.slice(i * n, i * n + n));
 
-type Identifier = { name: string } | { name: string; set: string } | { set: string; collector_number: string } | { oracle_id: string };
+type Identifier = { name: string } | { name: string; set: string } | { set: string; collector_number: string } | { oracle_id: string } | { id: string };
 
 async function collection(client: ScryfallClient, ids: Identifier[]): Promise<ScryCard[]> {
   const out: ScryCard[] = [];
@@ -83,6 +83,13 @@ export async function cardsByOracleId(client: ScryfallClient, oracleIds: string[
     if (id) map.set(id, c);
   }
   return map;
+}
+
+/** The specific printings a user picked, by Scryfall ID. */
+export async function cardsByPrintingId(client: ScryfallClient, printingIds: string[]): Promise<Map<string, ScryCard>> {
+  const unique = [...new Set(printingIds)];
+  if (!unique.length) return new Map();
+  return new Map((await collection(client, unique.map((id) => ({ id })))).map((c) => [c.id, c]));
 }
 
 export const PRINTINGS_QUERY = (oracleId: string) => `oracleid:${oracleId} ${PRINT_FILTERS}`;

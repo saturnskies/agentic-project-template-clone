@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
-import { mockScryfall, pasteAndFix } from './helpers';
+import { flows, mockScryfall, pasteAndFix } from './helpers';
+import { requestKey } from '../support/fixtures';
 
 test('share a deck by link; a friend sees it read-only and can save a copy', async ({ page, browser }) => {
   await mockScryfall(page);
@@ -18,7 +19,10 @@ test('share a deck by link; a friend sees it read-only and can save a copy', asy
   // A friend: a brand-new browser profile with nothing saved.
   const friendCtx = await browser.newContext();
   const friend = await friendCtx.newPage();
-  const misses = await mockScryfall(friend);
+  // The home page asks for the picked commander printing's art; answer it so no request goes unrecorded.
+  const artKey = requestKey('POST', 'https://api.scryfall.com/cards/collection', JSON.stringify({ identifiers: [{ id: '089b6e6f-c178-4612-866f-da9cbc01b442' }] }));
+  const artReply = { status: 200, body: { object: 'list', not_found: [], data: [{ object: 'card', id: '089b6e6f-c178-4612-866f-da9cbc01b442', name: 'Edgar Markov', image_uris: { art_crop: 'https://cards.scryfall.io/art_crop/test.jpg' } }] } };
+  const misses = await mockScryfall(friend, { ...flows, [artKey]: artReply });
   await friend.goto(link);
   await expect(friend.getByRole('heading', { level: 2, name: 'Edgar to share' })).toBeVisible();
   await expect(friend.getByText('A shared deck.')).toBeVisible();
