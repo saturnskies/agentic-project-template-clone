@@ -16,7 +16,8 @@ describe('deckRoles', () => {
       },
       post: async () => { throw new Error('unused'); },
     };
-    const roles = await deckRoles(client, cards);
+    const { roles, complete } = await deckRoles(client, cards);
+    expect(complete).toBe(true);
     expect(asked.size).toBe(80);
     expect([...asked.values()].every((n) => n === 4)).toBe(true); // once per role
     expect(roles.get('o0')).toEqual([]);
@@ -33,7 +34,7 @@ describe('deckRoles', () => {
       },
       post: async () => { throw new Error('unused'); },
     };
-    const roles = await deckRoles(client, [
+    const { roles } = await deckRoles(client, [
       { oracleId: 'o-mortify', name: 'Mortify' },
       { oracleId: 'o-dusk', name: 'Dusk // Dawn' },
       { oracleId: 'o-sol', name: 'Sol Ring' },
@@ -43,8 +44,33 @@ describe('deckRoles', () => {
     expect(roles.get('o-sol')).toEqual([]);
   });
 
-  it('passes on errors other than "no cards found"', async () => {
+  it('keeps the roles it found when some searches fail, and says so', async () => {
+    const client: ScryfallClient = {
+      get: async <T,>(path: string) => {
+        const q = new URLSearchParams(path.split('?')[1]).get('q')!;
+        if (q.startsWith('otag:removal')) return { object: 'list', data: [{ oracle_id: 'o-mortify', name: 'Mortify' }] } as T;
+        if (q.startsWith('otag:ramp')) throw new ScryfallError(0, 'offline');
+        throw new ScryfallError(404, 'none');
+      },
+      post: async () => { throw new Error('unused'); },
+    };
+    const { roles, complete } = await deckRoles(client, [{ oracleId: 'o-mortify', name: 'Mortify' }]);
+    expect(roles.get('o-mortify')).toEqual(['removal']);
+    expect(complete).toBe(false);
+  });
+
+  it('fails outright only when every search fails', async () => {
     const client: ScryfallClient = { get: async () => { throw new ScryfallError(0, 'offline'); }, post: async () => { throw new Error('unused'); } };
     await expect(deckRoles(client, [{ oracleId: 'o', name: 'X' }])).rejects.toThrow('offline');
+  });
+
+  it('strips quotes and backslashes from names before searching', async () => {
+    const seen: string[] = [];
+    const client: ScryfallClient = {
+      get: async (path: string) => { seen.push(new URLSearchParams(path.split('?')[1]).get('q')!); throw new ScryfallError(404, 'none'); },
+      post: async () => { throw new Error('unused'); },
+    };
+    await deckRoles(client, [{ oracleId: 'o', name: 'Odd "Name"\\' }]);
+    expect(seen[0]).toBe('otag:ramp (!"Odd Name")');
   });
 });
