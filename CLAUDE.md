@@ -33,6 +33,8 @@ Any developer should be able to say "run the tests" and have it work on the firs
 - `src/lib/` — pure logic (parser, pricing, suggestions, share links), unit-tested in `tests/unit/`
 - `src/ui/` — screens; `tests/e2e/` drives them with Scryfall answered from `tests/fixtures/` (real replies; re-record with `RECORD=1 npx vitest run tests/unit/record-fixtures.test.ts`)
 - `public/` — manifest, `sw.js` (shell cache, same-origin only), icons; regenerate PNG icons with `node tools/make-icons.mjs` ([ADR-002](docs/decisions/ADR-002-installable-pwa.md))
+- `capacitor.config.ts`, `android/` — the Android app: Capacitor wraps the built `dist/` (built with `--base=./`); the Android project is committed, build output and keys are not. Releases come from `.github/workflows/android.yml` on a `v*` tag ([ADR-003](docs/decisions/ADR-003-android-apk-capacitor.md), [ADR-004](docs/decisions/ADR-004-apk-signing-and-data-safety.md), runbook [`docs/android-build.md`](docs/android-build.md))
+- `src/ui/native.ts`, `src/ui/backup.ts` — Android back gesture (to Your decks, then exit) and deck backup/restore (share sheet in the app, file download in a browser)
 - `.github/workflows/pages.yml` — CI on every push/PR; deploys `dist/` to Pages from `main` only
 
 <!-- TODO: Key directories and what lives where. Prefer an ASCII diagram for data flow. -->
@@ -103,6 +105,8 @@ Test gates and commits are shell scripts (run the tests, then `git commit` only 
 
 ## Gotchas
 
+- **Android signing (data safety):** every APK people install must be signed with the one original key and keep the package id `io.github.saturnskies.swapsmith`, or Android refuses the update and uninstalling deletes users' decks. Never generate a new keystore, never commit `*.keystore`, `*.jks` or `android/keystore.properties` (the repo is public), and never change the package id or the `swapsmith:v1` storage key without a migration. The key lives in the owner's safe copy and in the repo's GitHub secrets. Releases are CI builds only; local builds have a lower `versionCode` and cannot update a phone that has a CI build. Details: ADR-004.
+- Gradle downloads from Maven Central can fail with HTTP 429 in cloud sandboxes; rerun the same command, since Gradle keeps what it already fetched.
 - Scripted file edits on Windows: Python text mode rewrites LF as CRLF and can double carriage returns; read and write bytes or use `newline=""`, or prefer the Edit tool. Backslashes in a heredoc'd Python string get unescaped twice (`\1` became a control character), so sed or regex text goes through the Edit tool. `git ls-files --eol | grep i/crlf` finds files stored with the wrong endings.
 - Saved tool output: when a Bash or agent result says it was saved to a file, Grep it or Read a slice with offset/limit; never open it whole. Whatever is read stays in context and is re-sent every later turn.
 - Measure your own transcripts before adopting someone else's token fix: a guard that sounds useful may fire once a session here.
