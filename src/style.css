@@ -134,3 +134,21 @@ table.cards { width: 100%; border-collapse: collapse; font-variant-numeric: tabu
 th[aria-sort="ascending"] .sort::after { content: " ↑"; }
 th[aria-sort="descending"] .sort::after { content: " ↓"; }
 @media (max-width: 40rem) { .hide-narrow { display: none; } }
+
+/* Combobox (commander and add-card search) */
+.narrow { max-width: 40rem; }
+.combo-box { position: relative; }
+.combo-box input { width: 100%; }
+.combo-list {
+  position: absolute; z-index: 5; left: 0; right: 0; top: calc(100% + 4px); margin: 0; padding: 0.25rem 0; list-style: none;
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+  max-height: 18rem; overflow-y: auto;
+}
+.combo-list li { padding: 0.45rem 0.75rem; cursor: pointer; display: grid; gap: 0.1rem; }
+.combo-list li[aria-selected="true"], .combo-list li:hover { background: var(--tag-bg); }
+.combo-detail { color: var(--muted); font-size: 0.85rem; }
+.combo-note:empty { display: none; }
+.icon-button { font: inherit; font-size: 1.1rem; line-height: 1; width: 2rem; height: 2rem; border-radius: 50%; border: 1px solid transparent; background: none; color: var(--muted); cursor: pointer; }
+.icon-button:hover { color: var(--danger); border-color: var(--line); }
+.cards td.remove { width: 2.5rem; padding-block: 0.25rem; text-align: right; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
