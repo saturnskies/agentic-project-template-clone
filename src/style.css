@@ -67,8 +67,8 @@ h2 { font: 500 1.25rem/1.2 var(--font-display); margin: 0; }
 .site-footer p { margin: 0; max-width: 75ch; }
 
 /* Shared controls */
-:root { --danger: #a3261b; --tag-bg: #eeeeee; }
-@media (prefers-color-scheme: dark) { :root { --danger: #ff8a7a; --tag-bg: #333333; } }
+:root { --danger: #8a5a0b; --tag-bg: #eeeeee; }
+@media (prefers-color-scheme: dark) { :root { --danger: #e0b04a; --tag-bg: #333333; } }
 .home-link { color: inherit; text-decoration: none; }
 .view, .stack { display: grid; gap: 1rem; min-width: 0; }
 .row-between { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
