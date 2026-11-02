@@ -4,6 +4,10 @@ import { parseDeckList } from '../../src/lib/parse';
 import { createClient, memoryCache } from '../../src/scryfall/client';
 import { autocompleteNames, cardByName, searchCommanders } from '../../src/scryfall/cards';
 import { buildDeck, commanderCandidates, oracleIdOf, priceDeck, priceEntries, resolveList } from '../../src/scryfall/resolve';
+import { fuzzyCard } from '../../src/scryfall/cards';
+import { deckProfile } from '../../src/lib/profile';
+import { scoreSuggestions, upgradesByTier } from '../../src/lib/suggest';
+import { candidatePool } from '../../src/scryfall/suggest';
 import { requestKey, trim, type FixtureMap } from '../support/fixtures';
 
 /**
@@ -59,6 +63,49 @@ describe.runIf(process.env.RECORD === '1')('record Scryfall fixtures', () => {
     writeFileSync(new URL('../fixtures/scryfall-new-deck.json', import.meta.url), JSON.stringify(map, null, 1) + '\n');
     expect(Object.keys(map).length).toBeGreaterThan(5);
   }, 120_000);
+
+  it('records the full Edgar deck, priced, with its upgrade searches', async () => {
+    const map: FixtureMap = {};
+    const recording: typeof fetch = async (input, init) => {
+      const headers = { ...Object.fromEntries(new Headers(init?.headers)), 'User-Agent': 'Swapsmith-fixture-recorder/0.1' };
+      const res = await fetch(input, { ...init, headers });
+      map[requestKey(init?.method ?? 'GET', String(input), init?.body as string | undefined)] = { status: res.status, body: trim(await res.clone().json()) };
+      return res;
+    };
+    const resolver = createClient({ cache: memoryCache(), fetch: (i, init) => fetch(i, { ...init, headers: { ...Object.fromEntries(new Headers(init?.headers)), 'User-Agent': 'Swapsmith-fixture-recorder/0.1' } }) });
+    const client = createClient({ fetch: recording, cache: memoryCache() });
+
+    // Build the deck as a user would (accept every suggestion, look up Immersturm Predator) without recording it:
+    // e2e tests start from this saved deck.
+    const resolved = await resolveList(resolver, parseDeckList(readFileSync(new URL('../fixtures/edgar-list.txt', import.meta.url), 'utf8')).entries);
+    const immersturm = (await fuzzyCard(resolver, 'Immersturm Predator'))!;
+    const lines = resolved.map((r) => ({ entry: r.entry, card: r.card ?? r.suggestion ?? immersturm }));
+    const deck = { ...buildDeck('Edgar Vampires', lines, commanderCandidates(lines)[0], new Date('2026-11-02T00:00:00Z')), id: 'edgarfull' };
+    writeFileSync(new URL('../fixtures/edgar-deck.json', import.meta.url), JSON.stringify(deck, null, 1) + '\n');
+
+    // What the deck page does: price it, then Find upgrades, then Add the top Budget pick.
+    const priced = await priceDeck(client, deck);
+    const commander = priced.find((p) => p.isCommander)!.card!;
+    const profile = deckProfile(
+      priced.map((p) => ({ name: p.entry.card.name, typeLine: p.typeLine, oracleText: p.card?.oracle_text ?? p.card?.card_faces?.map((f) => f.oracle_text ?? '').join('\n') ?? '', isCommander: p.isCommander })),
+      commander.color_identity,
+    );
+    const pool = await candidatePool(client, profile);
+    const tiers = upgradesByTier(scoreSuggestions(pool, { colorIdentity: profile.colorIdentity, oracleIds: new Set(priced.map((p) => p.entry.card.oracleId)) }, new Set()), 10);
+    const top = tiers.budget[0].card;
+    await priceEntries(client, [{ entry: { card: { oracleId: oracleIdOf(top), name: top.name }, qty: 1 }, isCommander: false }], undefined, new Map([[oracleIdOf(top), top]]));
+
+    // Suggestion results are only scored and shown, never read for rules text: drop it to keep the fixture small.
+    for (const [key, rec] of Object.entries(map)) {
+      if (!key.includes('prefer%3Ausd-low')) continue;
+      for (const c of (rec.body as { data?: Array<Record<string, unknown>> }).data ?? []) {
+        delete c.oracle_text;
+        for (const f of (c.card_faces as Array<Record<string, unknown>> | undefined) ?? []) delete f.oracle_text;
+      }
+    }
+    writeFileSync(new URL('../fixtures/scryfall-edgar-full.json', import.meta.url), JSON.stringify(map) + '\n');
+    expect(tiers.budget.length).toBeGreaterThan(0);
+  }, 300_000);
 
   it('records lookups for the full Edgar Markov list', async () => {
     const map: FixtureMap = {};
