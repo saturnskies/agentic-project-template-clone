@@ -32,6 +32,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "234",
      "type_line": "Legendary Creature — Vampire Knight",
+     "oracle_text": "Eminence — Whenever you cast another Vampire spell, if Edgar is in the command zone or on the battlefield, create a 1/1 black Vampire creature token.\nFirst strike, haste\nWhenever Edgar attacks, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 3174,
      "color_identity": [
       "B",
       "R",
@@ -45,8 +47,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "44.43",
-      "usd_foil": "46.65",
+      "usd": "45.01",
+      "usd_foil": "46.47",
       "usd_etched": null
      },
      "tcgplayer_id": 596272,
@@ -64,6 +66,7 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "98",
      "type_line": "Creature — Vampire // Creature — Vampire",
+     "edhrec_rank": 2550,
      "color_identity": [
       "B"
      ],
@@ -75,7 +78,7 @@
       "foil"
      ],
      "prices": {
-      "usd": "9.25",
+      "usd": "8.68",
       "usd_foil": "9.55",
       "usd_etched": null
      },
@@ -84,6 +87,7 @@
       {
        "name": "Bloodline Keeper",
        "type_line": "Creature — Vampire",
+       "oracle_text": "Flying\n{T}: Create a 2/2 black Vampire creature token with flying.\n{B}: Transform this creature. Activate only if you control five or more Vampires.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/front/6/0/60658907-dd63-478d-a66a-123e4e9d2a00.jpg?1783908156",
         "normal": "https://cards.scryfall.io/normal/front/6/0/60658907-dd63-478d-a66a-123e4e9d2a00.jpg?1783908156"
@@ -92,6 +96,7 @@
       {
        "name": "Lord of Lineage",
        "type_line": "Creature — Vampire",
+       "oracle_text": "Flying\nOther Vampire creatures you control get +2/+2.\n{T}: Create a 2/2 black Vampire creature token with flying.",
        "image_uris": {
         "small": "https://cards.scryfall.io/small/back/6/0/60658907-dd63-478d-a66a-123e4e9d2a00.jpg?1783908156",
         "normal": "https://cards.scryfall.io/normal/back/6/0/60658907-dd63-478d-a66a-123e4e9d2a00.jpg?1783908156"
@@ -108,6 +113,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "100",
      "type_line": "Creature — Vampire",
+     "oracle_text": "Other Vampire creatures you control get +1/+1.\nTap five untapped Vampires you control: Gain control of target creature. It becomes a Vampire in addition to its other types.",
+     "edhrec_rank": 2485,
      "color_identity": [
       "B"
      ],
@@ -119,7 +126,7 @@
       "foil"
      ],
      "prices": {
-      "usd": "3.01",
+      "usd": "2.91",
       "usd_foil": "3.34",
       "usd_etched": null
      },
@@ -138,6 +145,8 @@
      "set_name": "The Lost Caverns of Ixalan Commander",
      "collector_number": "189",
      "type_line": "Creature — Vampire",
+     "oracle_text": "Whenever this creature or another creature dies, put a +1/+1 counter on each Vampire you control.",
+     "edhrec_rank": 1894,
      "color_identity": [
       "B"
      ],
@@ -148,7 +157,7 @@
       "nonfoil"
      ],
      "prices": {
-      "usd": "2.32",
+      "usd": "2.31",
       "usd_foil": null,
       "usd_etched": null
      },
@@ -167,6 +176,8 @@
      "set_name": "The Lost Caverns of Ixalan Commander",
      "collector_number": "193",
      "type_line": "Legendary Creature — Vampire Ally",
+     "oracle_text": "Flying, first strike\nWhenever Drana deals combat damage to a player, put a +1/+1 counter on each attacking creature you control.",
+     "edhrec_rank": 1559,
      "color_identity": [
       "B"
      ],
@@ -177,7 +188,7 @@
       "nonfoil"
      ],
      "prices": {
-      "usd": "1.09",
+      "usd": "1.19",
       "usd_foil": null,
       "usd_etched": null
      },
@@ -196,6 +207,8 @@
      "set_name": "Foundations",
      "collector_number": "605",
      "type_line": "Creature — Vampire",
+     "oracle_text": "When this creature dies, return target creature card with mana value 2 or less from your graveyard to the battlefield.",
+     "edhrec_rank": 18443,
      "color_identity": [
       "B"
      ],
@@ -225,6 +238,7 @@
      "set_name": "Secrets of Strixhaven",
      "collector_number": "80",
      "type_line": "Creature — Vampire Warlock // Sorcery",
+     "edhrec_rank": 2733,
      "color_identity": [
       "B"
      ],
@@ -236,8 +250,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "12.23",
-      "usd_foil": "12.80",
+      "usd": "11.18",
+      "usd_foil": "12.88",
       "usd_etched": null
      },
      "tcgplayer_id": 689158,
@@ -248,11 +262,13 @@
      "card_faces": [
       {
        "name": "Emeritus of Woe",
-       "type_line": "Creature — Vampire Warlock"
+       "type_line": "Creature — Vampire Warlock",
+       "oracle_text": "This creature enters prepared. (While it's prepared, you may cast a copy of its spell. Doing so unprepares it.)\nAt the beginning of your end step, if two or more creatures died this turn, this creature becomes prepared."
       },
       {
        "name": "Demonic Tutor",
-       "type_line": "Sorcery"
+       "type_line": "Sorcery",
+       "oracle_text": "Search your library for a card, put that card into your hand, then shuffle."
       }
      ],
      "object": "card"
@@ -265,6 +281,8 @@
      "set_name": "Foundations",
      "collector_number": "752",
      "type_line": "Creature — Vampire Warrior",
+     "oracle_text": "Kicker {B} (You may pay an additional {B} as you cast this spell.)\nWhen this creature enters, if it was kicked, target player sacrifices a creature of their choice.",
+     "edhrec_rank": 12836,
      "color_identity": [
       "B"
      ],
@@ -294,6 +312,8 @@
      "set_name": "Foundations",
      "collector_number": "734",
      "type_line": "Creature — Bird",
+     "oracle_text": "Flying\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 3835,
      "color_identity": [
       "W"
      ],
@@ -323,6 +343,8 @@
      "set_name": "Crimson Vow Commander",
      "collector_number": "131",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying, protection from white\nWhen this creature enters, each opponent loses life equal to the number of Vampires you control. You gain life equal to the life lost this way.",
+     "edhrec_rank": 3593,
      "color_identity": [
       "B"
      ],
@@ -333,7 +355,7 @@
       "nonfoil"
      ],
      "prices": {
-      "usd": "3.88",
+      "usd": "3.80",
       "usd_foil": null,
       "usd_etched": null
      },
@@ -352,6 +374,8 @@
      "set_name": "Foundations",
      "collector_number": "178",
      "type_line": "Creature — Vampire Cleric",
+     "oracle_text": "Whenever you gain life, each opponent loses 1 life.",
+     "edhrec_rank": 1094,
      "color_identity": [
       "B"
      ],
@@ -363,8 +387,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "0.32",
-      "usd_foil": "0.41",
+      "usd": "0.37",
+      "usd_foil": "0.47",
       "usd_etched": null
      },
      "tcgplayer_id": 591730,
@@ -382,6 +406,8 @@
      "set_name": "The Lost Caverns of Ixalan Commander",
      "collector_number": "83",
      "type_line": "Creature — Vampire Cleric",
+     "oracle_text": "{T}, Sacrifice another creature: Add {B}{B}{B}. Spend this mana only to cast Vampire, Cleric, and/or Demon spells.",
+     "edhrec_rank": 2755,
      "color_identity": [
       "B"
      ],
@@ -392,7 +418,7 @@
       "nonfoil"
      ],
      "prices": {
-      "usd": "4.93",
+      "usd": "5.03",
       "usd_foil": null,
       "usd_etched": null
      },
@@ -411,6 +437,8 @@
      "set_name": "The Hobbit Eternal",
      "collector_number": "170",
      "type_line": "Creature — Human Soldier",
+     "oracle_text": "Whenever another creature you control with power 2 or less enters, you may pay {1}. If you do, draw a card.",
+     "edhrec_rank": 675,
      "color_identity": [
       "W"
      ],
@@ -440,6 +468,8 @@
      "set_name": "Marvel's Spider-Man",
      "collector_number": "59",
      "type_line": "Legendary Creature — Vampire Villain",
+     "oracle_text": "Lifelink\nMorlun enters with X +1/+1 counters on him.\nWhen Morlun enters, he deals X damage to target opponent.",
+     "edhrec_rank": 9321,
      "color_identity": [
       "B"
      ],
@@ -451,8 +481,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "0.37",
-      "usd_foil": "0.47",
+      "usd": "0.36",
+      "usd_foil": "0.46",
       "usd_etched": null
      },
      "tcgplayer_id": 652072,
@@ -470,6 +500,8 @@
      "set_name": "Foundations",
      "collector_number": "611",
      "type_line": "Creature — Vampire Cleric",
+     "oracle_text": "Kicker {3}{B} (You may pay an additional {3}{B} as you cast this spell.)\nLifelink\nMenace (This creature can't be blocked except by two or more creatures.)\nWhen this creature enters, if it was kicked, return target creature card from your graveyard to the battlefield.",
+     "edhrec_rank": 4847,
      "color_identity": [
       "B"
      ],
@@ -480,7 +512,7 @@
       "nonfoil"
      ],
      "prices": {
-      "usd": "0.21",
+      "usd": "0.22",
       "usd_foil": null,
       "usd_etched": null
      },
@@ -499,6 +531,8 @@
      "set_name": "Secrets of Strixhaven",
      "collector_number": "93",
      "type_line": "Creature — Zombie Warlock",
+     "oracle_text": "This creature can't block.\nWhenever this creature attacks, each opponent loses 1 life and you gain 1 life.\n{1}{B}, Exile an instant or sorcery card from your graveyard: Return this card from your graveyard to the battlefield.",
+     "edhrec_rank": 15403,
      "color_identity": [
       "B"
      ],
@@ -510,8 +544,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "0.23",
-      "usd_foil": "0.30",
+      "usd": "0.24",
+      "usd_foil": "0.31",
       "usd_etched": null
      },
      "tcgplayer_id": 689105,
@@ -529,6 +563,8 @@
      "set_name": "Foundations",
      "collector_number": "755",
      "type_line": "Creature — Vampire Rogue",
+     "oracle_text": "Whenever this creature attacks, each opponent loses 1 life.",
+     "edhrec_rank": 9963,
      "color_identity": [
       "B"
      ],
@@ -558,6 +594,8 @@
      "set_name": "The Lost Caverns of Ixalan Commander",
      "collector_number": "209",
      "type_line": "Creature — Vampire Knight",
+     "oracle_text": "Whenever a Vampire you control attacks, each opponent loses 1 life and you gain 1 life.",
+     "edhrec_rank": 2364,
      "color_identity": [
       "B"
      ],
@@ -568,7 +606,7 @@
       "nonfoil"
      ],
      "prices": {
-      "usd": "0.34",
+      "usd": "0.38",
       "usd_foil": null,
       "usd_etched": null
      },
@@ -587,6 +625,7 @@
      "set_name": "Secrets of Strixhaven",
      "collector_number": "99",
      "type_line": "Creature — Vampire Warlock // Sorcery",
+     "edhrec_rank": 3427,
      "color_identity": [
       "B"
      ],
@@ -598,7 +637,7 @@
       "foil"
      ],
      "prices": {
-      "usd": "2.03",
+      "usd": "2.06",
       "usd_foil": "1.79",
       "usd_etched": null
      },
@@ -610,11 +649,13 @@
      "card_faces": [
       {
        "name": "Scheming Silvertongue",
-       "type_line": "Creature — Vampire Warlock"
+       "type_line": "Creature — Vampire Warlock",
+       "oracle_text": "Flying, lifelink\nAt the beginning of your second main phase, if you gained 2 or more life this turn, this creature becomes prepared. (While it's prepared, you may cast a copy of its spell. Doing so unprepares it.)"
       },
       {
        "name": "Sign in Blood",
-       "type_line": "Sorcery"
+       "type_line": "Sorcery",
+       "oracle_text": "Target player draws two cards and loses 2 life."
       }
      ],
      "object": "card"
@@ -627,6 +668,8 @@
      "set_name": "Foundations",
      "collector_number": "185",
      "type_line": "Creature — Vampire Rogue",
+     "oracle_text": "At the beginning of your end step, if an opponent lost life this turn, put a +1/+1 counter on target Vampire you control.",
+     "edhrec_rank": 11461,
      "color_identity": [
       "B"
      ],
@@ -657,6 +700,8 @@
      "set_name": "Crimson Vow Commander",
      "collector_number": "157",
      "type_line": "Creature — Vampire Soldier",
+     "oracle_text": "First strike\nOther Vampire creatures you control get +1/+1 and have first strike.",
+     "edhrec_rank": 3078,
      "color_identity": [
       "B",
       "R"
@@ -687,6 +732,8 @@
      "set_name": "Foundations",
      "collector_number": "632",
      "type_line": "Creature — Vampire Noble",
+     "oracle_text": "This creature can't be blocked by Humans.\nWhenever this creature deals combat damage to a player, put a +1/+1 counter on it.",
+     "edhrec_rank": 13541,
      "color_identity": [
       "R"
      ],
@@ -716,6 +763,8 @@
      "set_name": "Commander Masters",
      "collector_number": "359",
      "type_line": "Legendary Creature — Human Advisor",
+     "oracle_text": "If a creature dying causes a triggered ability of a permanent you control to trigger, that ability triggers an additional time.\nCreature tokens you control have vigilance and lifelink.",
+     "edhrec_rank": 1344,
      "color_identity": [
       "B",
       "W"
@@ -728,8 +777,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "2.47",
-      "usd_foil": "3.94",
+      "usd": "2.44",
+      "usd_foil": "3.96",
       "usd_etched": null
      },
      "tcgplayer_id": 505594,
@@ -747,6 +796,8 @@
      "set_name": "Foundations",
      "collector_number": "74",
      "type_line": "Creature — Vampire",
+     "oracle_text": "Whenever this creature attacks, you may sacrifice another creature. If you do, draw a card and this creature can't be blocked this turn.",
+     "edhrec_rank": 7780,
      "color_identity": [
       "B"
      ],
@@ -758,8 +809,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "0.28",
-      "usd_foil": "0.31",
+      "usd": "0.30",
+      "usd_foil": "0.30",
       "usd_etched": null
      },
      "tcgplayer_id": 589760,
@@ -777,6 +828,8 @@
      "set_name": "Foundations",
      "collector_number": "757",
      "type_line": "Creature — Vampire Shaman",
+     "oracle_text": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+     "edhrec_rank": 1755,
      "color_identity": [
       "B"
      ],
@@ -806,6 +859,8 @@
      "set_name": "Foundations",
      "collector_number": "76",
      "type_line": "Creature — Vampire Warlock",
+     "oracle_text": "Whenever this creature or another creature you control dies, target opponent loses 1 life and you gain 1 life.",
+     "edhrec_rank": 1717,
      "color_identity": [
       "B"
      ],
@@ -817,7 +872,7 @@
       "foil"
      ],
      "prices": {
-      "usd": "0.26",
+      "usd": "0.30",
       "usd_foil": "0.39",
       "usd_etched": null
      },
@@ -836,6 +891,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "133",
      "type_line": "Legendary Planeswalker — Sorin",
+     "oracle_text": "+1: Target creature you control gains deathtouch and lifelink until end of turn. If it's a Vampire, put a +1/+1 counter on it.\n+1: You may sacrifice a Vampire. When you do, Sorin deals 3 damage to any target and you gain 3 life.\n−3: You may put a Vampire creature card from your hand onto the battlefield.",
+     "edhrec_rank": 3984,
      "color_identity": [
       "B"
      ],
@@ -847,7 +904,7 @@
       "foil"
      ],
      "prices": {
-      "usd": "5.69",
+      "usd": "5.75",
       "usd_foil": "6.30",
       "usd_etched": null
      },
@@ -866,6 +923,8 @@
      "set_name": "Secrets of Strixhaven",
      "collector_number": "6",
      "type_line": "Instant",
+     "oracle_text": "This spell costs {3} less to cast if it targets a tapped creature.\nDestroy target creature.",
+     "edhrec_rank": 17160,
      "color_identity": [
       "W"
      ],
@@ -877,7 +936,7 @@
       "foil"
      ],
      "prices": {
-      "usd": "0.14",
+      "usd": "0.13",
       "usd_foil": "0.25",
       "usd_etched": null
      },
@@ -896,6 +955,8 @@
      "set_name": "Marvel Super Heroes Commander",
      "collector_number": "163",
      "type_line": "Sorcery",
+     "oracle_text": "This spell costs {1} less to cast for each creature on the battlefield.\nBlasphemous Act deals 13 damage to each creature.",
+     "edhrec_rank": 22,
      "color_identity": [
       "R"
      ],
@@ -907,7 +968,7 @@
       "foil"
      ],
      "prices": {
-      "usd": "1.60",
+      "usd": "1.73",
       "usd_foil": null,
       "usd_etched": null
      },
@@ -926,6 +987,8 @@
      "set_name": "Foundations",
      "collector_number": "192",
      "type_line": "Instant",
+     "oracle_text": "Kicker {4} (You may pay an additional {4} as you cast this spell.)\nBurst Lightning deals 2 damage to any target. If this spell was kicked, it deals 4 damage instead.",
+     "edhrec_rank": 5112,
      "color_identity": [
       "R"
      ],
@@ -937,8 +1000,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "0.21",
-      "usd_foil": "0.31",
+      "usd": "0.26",
+      "usd_foil": "0.32",
       "usd_etched": null
      },
      "tcgplayer_id": 590106,
@@ -956,6 +1019,8 @@
      "set_name": "Commander Masters",
      "collector_number": "153",
      "type_line": "Sorcery",
+     "oracle_text": "Return target creature card from your graveyard to the battlefield.\nFlashback—Sacrifice three creatures. (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+     "edhrec_rank": 540,
      "color_identity": [
       "B"
      ],
@@ -967,7 +1032,7 @@
       "foil"
      ],
      "prices": {
-      "usd": "0.67",
+      "usd": "0.65",
       "usd_foil": "0.46",
       "usd_etched": null
      },
@@ -986,6 +1051,8 @@
      "set_name": "Foundations",
      "collector_number": "173",
      "type_line": "Sorcery",
+     "oracle_text": "Each opponent loses X life. You gain life equal to the life lost this way.",
+     "edhrec_rank": 271,
      "color_identity": [
       "B"
      ],
@@ -997,8 +1064,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "0.39",
-      "usd_foil": "0.79",
+      "usd": "0.42",
+      "usd_foil": "0.74",
       "usd_etched": null
      },
      "tcgplayer_id": 591153,
@@ -1016,6 +1083,8 @@
      "set_name": "Secrets of Strixhaven Commander",
      "collector_number": "244",
      "type_line": "Sorcery",
+     "oracle_text": "Draw two cards, then discard two cards.\nFlashback {2}{R} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+     "edhrec_rank": 99,
      "color_identity": [
       "R"
      ],
@@ -1026,7 +1095,7 @@
       "nonfoil"
      ],
      "prices": {
-      "usd": "0.52",
+      "usd": "0.48",
       "usd_foil": null,
       "usd_etched": null
      },
@@ -1045,6 +1114,8 @@
      "set_name": "Secrets of Strixhaven",
      "collector_number": "115",
      "type_line": "Instant",
+     "oracle_text": "Target instant or sorcery card in your graveyard gains flashback until end of turn. The flashback cost is equal to its mana cost. (You may cast that card from your graveyard for its flashback cost. Then exile it.)",
+     "edhrec_rank": 1753,
      "color_identity": [
       "R"
      ],
@@ -1056,7 +1127,7 @@
       "foil"
      ],
      "prices": {
-      "usd": "2.77",
+      "usd": "2.92",
       "usd_foil": "3.55",
       "usd_etched": null
      },
@@ -1075,6 +1146,8 @@
      "set_name": "The Hobbit",
      "collector_number": "76",
      "type_line": "Sorcery",
+     "oracle_text": "Exile the top X cards of target opponent's library. You may play those cards this turn. If you cast a spell this way, pay life equal to its mana value rather than pay its mana cost.",
+     "edhrec_rank": 10999,
      "color_identity": [
       "B"
      ],
@@ -1086,8 +1159,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "1.13",
-      "usd_foil": "1.66",
+      "usd": "1.04",
+      "usd_foil": "1.68",
       "usd_etched": null
      },
      "tcgplayer_id": 708207,
@@ -1105,6 +1178,8 @@
      "set_name": "Secrets of Strixhaven",
      "collector_number": "200",
      "type_line": "Instant",
+     "oracle_text": "Choose one —\n• Each opponent sacrifices a nontoken artifact of their choice.\n• Return target artifact or creature card with mana value 2 or less from your graveyard to the battlefield.\n• Creatures you control get +1/+1 and gain trample until end of turn.",
+     "edhrec_rank": 6108,
      "color_identity": [
       "R",
       "W"
@@ -1117,7 +1192,7 @@
       "foil"
      ],
      "prices": {
-      "usd": "0.23",
+      "usd": "0.20",
       "usd_foil": "0.33",
       "usd_etched": null
      },
@@ -1136,6 +1211,8 @@
      "set_name": "Foundations",
      "collector_number": "662",
      "type_line": "Instant",
+     "oracle_text": "Destroy target creature or enchantment.",
+     "edhrec_rank": 583,
      "color_identity": [
       "B",
       "W"
@@ -1147,7 +1224,7 @@
       "nonfoil"
      ],
      "prices": {
-      "usd": "0.20",
+      "usd": "0.17",
       "usd_foil": null,
       "usd_etched": null
      },
@@ -1166,6 +1243,8 @@
      "set_name": "Seventh Edition",
      "collector_number": "31",
      "type_line": "Sorcery",
+     "oracle_text": "Destroy all artifacts and enchantments.",
+     "edhrec_rank": 25761,
      "color_identity": [
       "W"
      ],
@@ -1195,6 +1274,8 @@
      "set_name": "Bloomburrow",
      "collector_number": "27",
      "type_line": "Instant",
+     "oracle_text": "Destroy target creature with power or toughness 4 or greater.",
+     "edhrec_rank": 7084,
      "color_identity": [
       "W"
      ],
@@ -1206,7 +1287,7 @@
       "foil"
      ],
      "prices": {
-      "usd": "0.16",
+      "usd": "0.17",
       "usd_foil": "0.22",
       "usd_etched": null
      },
@@ -1225,6 +1306,8 @@
      "set_name": "Commander 2021",
      "collector_number": "101",
      "type_line": "Sorcery",
+     "oracle_text": "You may cast this spell as though it had flash if you pay {2} more to cast it. (You may cast it any time you could cast an instant.)\nDestroy all creatures. They can't be regenerated.",
+     "edhrec_rank": 8229,
      "color_identity": [
       "W"
      ],
@@ -1254,6 +1337,7 @@
      "set_name": "Secrets of Strixhaven",
      "collector_number": "99",
      "type_line": "Creature — Vampire Warlock // Sorcery",
+     "edhrec_rank": 3427,
      "color_identity": [
       "B"
      ],
@@ -1265,7 +1349,7 @@
       "foil"
      ],
      "prices": {
-      "usd": "2.03",
+      "usd": "2.06",
       "usd_foil": "1.79",
       "usd_etched": null
      },
@@ -1277,11 +1361,13 @@
      "card_faces": [
       {
        "name": "Scheming Silvertongue",
-       "type_line": "Creature — Vampire Warlock"
+       "type_line": "Creature — Vampire Warlock",
+       "oracle_text": "Flying, lifelink\nAt the beginning of your second main phase, if you gained 2 or more life this turn, this creature becomes prepared. (While it's prepared, you may cast a copy of its spell. Doing so unprepares it.)"
       },
       {
        "name": "Sign in Blood",
-       "type_line": "Sorcery"
+       "type_line": "Sorcery",
+       "oracle_text": "Target player draws two cards and loses 2 life."
       }
      ],
      "object": "card"
@@ -1294,6 +1380,8 @@
      "set_name": "Star Trek Commander",
      "collector_number": "455",
      "type_line": "Instant",
+     "oracle_text": "As an additional cost to cast this spell, discard a card.\nDraw two cards.",
+     "edhrec_rank": 214,
      "color_identity": [
       "R"
      ],
@@ -1324,6 +1412,8 @@
      "set_name": "Lorwyn Eclipsed",
      "collector_number": "123",
      "type_line": "Instant",
+     "oracle_text": "Choose one —\n• Return target creature card from your graveyard to your hand.\n• Return two target creature cards that share a creature type from your graveyard to your hand.",
+     "edhrec_rank": 8165,
      "color_identity": [
       "B"
      ],
@@ -1336,7 +1426,7 @@
      ],
      "prices": {
       "usd": "0.29",
-      "usd_foil": "0.33",
+      "usd_foil": "0.34",
       "usd_etched": null
      },
      "tcgplayer_id": 671658,
@@ -1354,6 +1444,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "137",
      "type_line": "Instant",
+     "oracle_text": "As an additional cost to cast this spell, sacrifice a creature.\nDraw two cards.",
+     "edhrec_rank": 201,
      "color_identity": [
       "B"
      ],
@@ -1365,8 +1457,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "0.41",
-      "usd_foil": "1.80",
+      "usd": "0.40",
+      "usd_foil": "1.75",
       "usd_etched": null
      },
      "tcgplayer_id": 610071,
@@ -1384,6 +1476,8 @@
      "set_name": "Secrets of Strixhaven",
      "collector_number": "173",
      "type_line": "Artifact",
+     "oracle_text": "Whenever one or more cards leave your graveyard, this artifact deals 1 damage to each opponent and you gain 1 life.\n{T}: Mill a card. You may play that card this turn.",
+     "edhrec_rank": 8362,
      "color_identity": [
       "R",
       "W"
@@ -1396,8 +1490,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "0.33",
-      "usd_foil": "0.38",
+      "usd": "0.31",
+      "usd_foil": "0.39",
       "usd_etched": null
      },
      "tcgplayer_id": 688665,
@@ -1415,6 +1509,8 @@
      "set_name": "Star Trek Commander",
      "collector_number": "485",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add one mana of any color in your commander's color identity.",
+     "edhrec_rank": 3,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1443,6 +1539,8 @@
      "set_name": "Star Trek Commander",
      "collector_number": "498",
      "type_line": "Artifact — Equipment",
+     "oracle_text": "Equipped creature gets +1/-1.\nWhenever equipped creature dies, draw two cards.\nEquip {1}",
+     "edhrec_rank": 38,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1471,6 +1569,8 @@
      "set_name": "Star Trek Commander",
      "collector_number": "499",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}{C}.",
+     "edhrec_rank": 1,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1499,6 +1599,8 @@
      "set_name": "Star Trek Commander",
      "collector_number": "501",
      "type_line": "Artifact — Equipment",
+     "oracle_text": "Equipped creature has hexproof and haste. (It can't be the target of spells or abilities your opponents control. It can attack and {T} no matter when it came under your control.)\nEquip {1} ({1}: Attach to target creature you control. Equip only as a sorcery.)",
+     "edhrec_rank": 12,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1527,6 +1629,8 @@
      "set_name": "Star Trek Commander",
      "collector_number": "506",
      "type_line": "Artifact",
+     "oracle_text": "{T}: Add {C}.\n{T}: Add {W} or {B}. This artifact deals 1 damage to you.",
+     "edhrec_rank": 135,
      "color_identity": [
       "B",
       "W"
@@ -1558,6 +1662,8 @@
      "set_name": "Secrets of Strixhaven Commander",
      "collector_number": "134",
      "type_line": "Enchantment — Aura",
+     "oracle_text": "Enchant creature\nEnchanted creature gets +4/+4, has flying and first strike, and is an Angel in addition to its other types.\nWhen enchanted creature dies, return this card to its owner's hand.",
+     "edhrec_rank": 2562,
      "color_identity": [
       "W"
      ],
@@ -1568,7 +1674,7 @@
       "nonfoil"
      ],
      "prices": {
-      "usd": "0.34",
+      "usd": "0.33",
       "usd_foil": null,
       "usd_etched": null
      },
@@ -1587,6 +1693,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "17",
      "type_line": "Enchantment",
+     "oracle_text": "Whenever a creature you control enters, put a +1/+1 counter on each creature you control.",
+     "edhrec_rank": 558,
      "color_identity": [
       "W"
      ],
@@ -1598,7 +1706,7 @@
       "foil"
      ],
      "prices": {
-      "usd": "8.23",
+      "usd": "8.48",
       "usd_foil": "9.30",
       "usd_etched": null
      },
@@ -1617,6 +1725,8 @@
      "set_name": "Tarkir: Dragonstorm",
      "collector_number": "10",
      "type_line": "Instant",
+     "oracle_text": "As an additional cost to cast this spell, sacrifice a creature.\nCreatures you control gain indestructible until end of turn. Put a +1/+1 counter on each creature you control. (Damage and effects that say \"destroy\" don't destroy those creatures.)",
+     "edhrec_rank": 2217,
      "color_identity": [
       "W"
      ],
@@ -1647,6 +1757,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "117",
      "type_line": "Enchantment",
+     "oracle_text": "Creature spells you cast cost {2} less to cast.\nCreatures you control get -1/-1.",
+     "edhrec_rank": 2660,
      "color_identity": [
       "B"
      ],
@@ -1658,7 +1770,7 @@
       "foil"
      ],
      "prices": {
-      "usd": "2.16",
+      "usd": "2.13",
       "usd_foil": "2.14",
       "usd_etched": null
      },
@@ -1677,6 +1789,8 @@
      "set_name": "Foundations",
      "collector_number": "26",
      "type_line": "Enchantment — Aura",
+     "oracle_text": "Flash (You may cast this spell any time you could cast an instant.)\nEnchant creature\nEnchanted creature has double strike. (It deals both first-strike and regular combat damage.)",
+     "edhrec_rank": 4725,
      "color_identity": [
       "W"
      ],
@@ -1688,8 +1802,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "0.25",
-      "usd_foil": "0.33",
+      "usd": "0.26",
+      "usd_foil": "0.35",
       "usd_etched": null
      },
      "tcgplayer_id": 591302,
@@ -1707,6 +1821,8 @@
      "set_name": "Innistrad Remastered",
      "collector_number": "143",
      "type_line": "Enchantment",
+     "oracle_text": "At the beginning of combat on your turn, target creature you control gains double strike until end of turn.",
+     "edhrec_rank": 9149,
      "color_identity": [
       "R"
      ],
@@ -1737,6 +1853,8 @@
      "set_name": "Foundations",
      "collector_number": "5",
      "type_line": "Artifact — Equipment",
+     "oracle_text": "Flash (You may cast this spell any time you could cast an instant.)\nWhen this Equipment enters, attach it to target creature you control. That creature gains hexproof and indestructible until end of turn.\nEquipped creature gets +2/+0 and has flying.\nEquip {3}{W} ({3}{W}: Attach to target creature you control. Equip only as a sorcery.)",
+     "edhrec_rank": 3239,
      "color_identity": [
       "W"
      ],
@@ -1748,8 +1866,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "0.36",
-      "usd_foil": "0.69",
+      "usd": "0.38",
+      "usd_foil": "0.67",
       "usd_etched": null
      },
      "tcgplayer_id": 591157,
@@ -1767,6 +1885,8 @@
      "set_name": "Final Fantasy",
      "collector_number": "27",
      "type_line": "Instant",
+     "oracle_text": "For each creature you control, create a 1/2 white Moogle creature token with lifelink. Then creatures you control gain indestructible until end of turn.",
+     "edhrec_rank": 4302,
      "color_identity": [
       "W"
      ],
@@ -1778,8 +1898,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "0.75",
-      "usd_foil": "1.38",
+      "usd": "0.68",
+      "usd_foil": "1.37",
       "usd_etched": null
      },
      "tcgplayer_id": 631823,
@@ -1797,6 +1917,8 @@
      "set_name": "Avatar: The Last Airbender",
      "collector_number": "263",
      "type_line": "Land",
+     "oracle_text": "This land enters tapped unless you control a basic land.\n{T}: Add {W}.\n{3}{W}, {T}: Put a +1/+1 counter on each creature you control.",
+     "edhrec_rank": 1088,
      "color_identity": [
       "W"
      ],
@@ -1808,8 +1930,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "6.75",
-      "usd_foil": "8.68",
+      "usd": "6.29",
+      "usd_foil": "8.21",
       "usd_etched": null
      },
      "tcgplayer_id": 662801,
@@ -1827,6 +1949,8 @@
      "set_name": "Adventures in the Forgotten Realms",
      "collector_number": "253",
      "type_line": "Land",
+     "oracle_text": "If you control two or more other lands, this land enters tapped.\n{T}: Add {W}.\n{4}{W}: This land becomes a 3/4 white Dragon creature with flying until end of turn. It's still a land.",
+     "edhrec_rank": 8096,
      "color_identity": [
       "W"
      ],
@@ -1857,6 +1981,8 @@
      "set_name": "Star Trek Commander",
      "collector_number": "521",
      "type_line": "Land",
+     "oracle_text": "{T}: Add one mana of any color in your commander's color identity.",
+     "edhrec_rank": 2,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1885,6 +2011,8 @@
      "set_name": "Star Trek Commander",
      "collector_number": "527",
      "type_line": "Land",
+     "oracle_text": "{T}, Sacrifice this land: Search your library for a basic land card, put it onto the battlefield tapped, then shuffle.",
+     "edhrec_rank": 19,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1913,6 +2041,8 @@
      "set_name": "Reality Fracture",
      "collector_number": "180",
      "type_line": "Land",
+     "oracle_text": "This land enters tapped unless you control two or more other lands.\n{T}: Add {B} or {R}.",
+     "edhrec_rank": 268,
      "color_identity": [
       "B",
       "R"
@@ -1925,8 +2055,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "1.56",
-      "usd_foil": "2.27",
+      "usd": "1.42",
+      "usd_foil": "2.44",
       "usd_etched": null
      },
      "tcgplayer_id": 715940,
@@ -1944,6 +2074,8 @@
      "set_name": "The Lord of the Rings: Tales of Middle-earth",
      "collector_number": "256",
      "type_line": "Legendary Land",
+     "oracle_text": "Minas Tirith enters tapped unless you control a legendary creature.\n{T}: Add {W}.\n{1}{W}, {T}: Draw a card. Activate only if you attacked with two or more creatures this turn.",
+     "edhrec_rank": 417,
      "color_identity": [
       "W"
      ],
@@ -1955,8 +2087,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "6.30",
-      "usd_foil": "7.50",
+      "usd": "6.08",
+      "usd_foil": "7.38",
       "usd_etched": null
      },
      "tcgplayer_id": 498350,
@@ -1974,6 +2106,8 @@
      "set_name": "Aetherdrift",
      "collector_number": "258",
      "type_line": "Land",
+     "oracle_text": "This land enters tapped. As it enters, choose a color.\n{T}: Add one mana of the chosen color.\nCycling {3} ({3}, Discard this card: Draw a card.)",
+     "edhrec_rank": 6584,
      "color_identity": [],
      "legalities": {
       "commander": "legal"
@@ -1983,8 +2117,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "0.27",
-      "usd_foil": "0.30",
+      "usd": "0.26",
+      "usd_foil": "0.32",
       "usd_etched": null
      },
      "tcgplayer_id": 614173,
@@ -2002,6 +2136,8 @@
      "set_name": "Secrets of Strixhaven",
      "collector_number": "260",
      "type_line": "Land",
+     "oracle_text": "This land enters tapped unless you control two or more other lands.\n{T}: Add {W} or {B}.",
+     "edhrec_rank": 259,
      "color_identity": [
       "B",
       "W"
@@ -2014,8 +2150,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "2.46",
-      "usd_foil": "2.42",
+      "usd": "2.67",
+      "usd_foil": "2.51",
       "usd_etched": null
      },
      "tcgplayer_id": 686574,
@@ -2033,6 +2169,8 @@
      "set_name": "Star Trek Commander",
      "collector_number": "560",
      "type_line": "Land — Swamp Mountain",
+     "oracle_text": "({T}: Add {B} or {R}.)\nThis land enters tapped unless you control two or more basic lands.",
+     "edhrec_rank": 95,
      "color_identity": [
       "B",
       "R"
@@ -2064,6 +2202,8 @@
      "set_name": "Secrets of Strixhaven",
      "collector_number": "264",
      "type_line": "Land",
+     "oracle_text": "This land enters tapped unless you control two or more other lands.\n{T}: Add {R} or {W}.",
+     "edhrec_rank": 260,
      "color_identity": [
       "R",
       "W"
@@ -2076,8 +2216,8 @@
       "foil"
      ],
      "prices": {
-      "usd": "2.90",
-      "usd_foil": "2.76",
+      "usd": "2.75",
+      "usd_foil": "2.84",
       "usd_etched": null
      },
      "tcgplayer_id": 686583,
@@ -2095,6 +2235,8 @@
      "set_name": "Marvel Super Heroes Commander",
      "collector_number": "578",
      "type_line": "Land",
+     "oracle_text": "This land enters tapped. As it enters, choose a color other than red.\n{T}: Add {R} or one mana of the chosen color.",
+     "edhrec_rank": 1206,
      "color_identity": [
       "R"
      ],
@@ -2105,7 +2247,7 @@
       "nonfoil"
      ],
      "prices": {
-      "usd": "0.23",
+      "usd": "0.24",
       "usd_foil": null,
       "usd_etched": null
      },
@@ -2133,6 +2275,7 @@
      "set_name": "Marvel: Darkhold Destiny",
      "collector_number": "296",
      "type_line": "Basic Land — Swamp",
+     "oracle_text": "({T}: Add {B}.)",
      "color_identity": [
       "B"
      ],
@@ -2163,6 +2306,7 @@
      "set_name": "Marvel: Darkhold Destiny",
      "collector_number": "298",
      "type_line": "Basic Land — Mountain",
+     "oracle_text": "({T}: Add {R}.)",
      "color_identity": [
       "R"
      ],
@@ -2193,6 +2337,7 @@
      "set_name": "Marvel: Darkhold Destiny",
      "collector_number": "292",
      "type_line": "Basic Land — Plains",
+     "oracle_text": "({T}: Add {W}.)",
      "color_identity": [
       "W"
      ],
@@ -2228,6 +2373,8 @@
    "set_name": "Foundations",
    "collector_number": "753",
    "type_line": "Creature — Vampire Shaman",
+   "oracle_text": "Whenever this creature or another Vampire you control dies, you may pay {B}. If you do, target player loses 2 life and you gain 2 life.",
+   "edhrec_rank": 11823,
    "color_identity": [
     "B"
    ],
@@ -2260,6 +2407,8 @@
    "set_name": "Lorwyn Eclipsed",
    "collector_number": "231",
    "type_line": "Legendary Creature — Vampire Cleric",
+   "oracle_text": "Tap two untapped creatures you control: Copy target triggered ability you control. You may choose new targets for the copy. Activate only once each turn.",
+   "edhrec_rank": 7276,
    "color_identity": [
     "R",
     "W"
@@ -2295,6 +2444,8 @@
    "set_name": "Innistrad: Crimson Vow",
    "collector_number": "334",
    "type_line": "Creature — Vampire",
+   "oracle_text": "Flying\nThis creature can't block.\nWhenever this creature deals combat damage to a player, create a Blood token.\n{B}, Sacrifice two Blood tokens: Return this card from your graveyard to the battlefield.",
+   "edhrec_rank": 10677,
    "color_identity": [
     "B"
    ],
@@ -2337,6 +2488,8 @@
    "set_name": "Foundations",
    "collector_number": "68",
    "type_line": "Creature — Vampire Warlock",
+   "oracle_text": "Whenever this creature attacks, each opponent loses 1 life and you gain 1 life.",
+   "edhrec_rank": 6466,
    "color_identity": [
     "B"
    ],
@@ -2370,6 +2523,8 @@
    "set_name": "Duskmourn: House of Horror Commander",
    "collector_number": "156",
    "type_line": "Sorcery",
+   "oracle_text": "Target player draws two cards and loses 2 life.",
+   "edhrec_rank": 233,
    "color_identity": [
     "B"
    ],
@@ -2403,6 +2558,8 @@
    "set_name": "Marvel Super Heroes Commander",
    "collector_number": "288",
    "type_line": "Artifact",
+   "oracle_text": "Whenever an opponent draws a card, you may pay {1}. If you do, draw a card.",
+   "edhrec_rank": 2199,
    "color_identity": [],
    "legalities": {
     "commander": "legal"
