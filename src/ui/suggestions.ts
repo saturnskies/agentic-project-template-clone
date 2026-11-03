@@ -1,12 +1,14 @@
-import { edhrecCandidates, type EdhrecResult } from '../edhrec/candidates';
+import { edhrecCandidates, type EdhrecResult, type KnownCards } from '../edhrec/candidates';
 import { pageUrl } from '../edhrec/page';
+import { BRACKETS, commanderSlug, estimateBracket, type PageFilter } from '../lib/edhrec';
 import { cardImage } from '../lib/groups';
 import { deckProfile, type DeckProfile } from '../lib/profile';
 import { tcgplayerUrl } from '../lib/price';
-import { byCategory, scoreEdhrec, scoreSuggestions, TIERS, upgradesByTier, type PoolEntry, type Suggestion, type Tier } from '../lib/suggest';
+import { byCategory, scoreEdhrec, scoreSuggestions, tierOf, TIERS, upgradesByTier, type PoolEntry, type Suggestion, type Tier } from '../lib/suggest';
 import { cheaperReplacements, swapPairs } from '../lib/swaps';
 import { frontFace } from '../scryfall/cards';
 import type { PricedCard } from '../scryfall/resolve';
+import { gameChangerCount } from '../scryfall/names';
 import { deckRoles } from '../scryfall/roles';
 import { candidatePool, deckCardFacts, rulesText } from '../scryfall/suggest';
 import type { ScryCard } from '../scryfall/types';
@@ -15,6 +17,9 @@ import { h, usd } from './dom';
 
 /** Cards shown per category before Show more, and how many more each click adds. */
 const CATEGORY_STEP = 5;
+/** Themes offered in the Theme menu: EDHREC lists over a hundred for popular commanders. */
+const THEME_MENU = 20;
+const ALL_DECKS: PageFilter = { bracket: null, theme: null, budget: false };
 
 type EdhState = { status: 'loading' } | EdhrecResult | { status: 'lookup-failed' };
 
@@ -34,6 +39,10 @@ export interface PanelActions {
   undo(): void;
   /** A short label for the last swap, or null when there is nothing to undo. */
   lastSwap(): string | null;
+  /** The bracket saved with the deck for EDHREC suggestions (0 = all decks), if any. */
+  bracket(): number | undefined;
+  /** Saves a bracket picked in the panel with the deck (0 = all decks). */
+  setBracket(bracket: number): void;
 }
 
 /**
@@ -48,6 +57,20 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
   let poolError = false;
   let edh: EdhState | null = null;
   let commanderName = '';
+  let slug = '';
+  /** The EDHREC page asked for; while a new one loads, `edh` still holds the one shown. */
+  let filter: PageFilter = ALL_DECKS;
+  /** Upgrades price filter, applied locally; Budget also reads EDHREC's budget decks. */
+  let price: Tier | 'any' = 'any';
+  /** Where the starting bracket came from, for the label beside the menu. */
+  let bracketFrom: { kind: 'saved' } | { kind: 'estimated'; gameChangers: number } | { kind: 'unknown' } = { kind: 'unknown' };
+  /** Cards looked up for this Find, so a filter change only looks up new names. */
+  let known: KnownCards = new Map();
+  /** Each EDHREC page load bumps this; an older page that answers late is ignored. */
+  let pageRun = 0;
+  let pageLoading = false;
+  /** Set when a filter's page failed and the previous list is still shown. */
+  let pageNote: string | null = null;
   /** How many cards each Upgrades category shows; Show more raises it. */
   const shown = new Map<string, number>();
   /** Searches that didn't answer last time, named in a note. */
@@ -133,20 +156,99 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
               : "Couldn't look up EDHREC's cards on Scryfall, so these come from card rules. Refresh suggestions to try again.",
         );
 
+  /** Loads the EDHREC page for `want` and shows it; a failure keeps the list already shown. */
+  const loadPage = async (want: PageFilter) => {
+    const mine = run;
+    const me = ++pageRun;
+    filter = want;
+    pageLoading = true;
+    pageNote = null;
+    draw();
+    let res: EdhState;
+    try {
+      res = await edhrecCandidates(ctx.edhrec, ctx.client, { slug, filter: want, colorIdentity: profile!.colorIdentity, known });
+    } catch {
+      res = { status: 'lookup-failed' };
+    }
+    if (mine !== run || me !== pageRun) return;
+    pageLoading = false;
+    if (res.status === 'ok') {
+      edh = res;
+      filter = res.filter;
+    } else if (edh?.status === 'ok') {
+      filter = edh.filter;
+      pageNote = "EDHREC didn't answer for that choice, so this is still the previous list. Try again.";
+    } else {
+      edh = res;
+    }
+    draw();
+  };
+
+  const select = (label: string, options: Array<{ value: string; label: string }>, current: string, onPick: (value: string) => void) => {
+    const el = h('select', { 'aria-label': label }, ...options.map((o) => h('option', { value: o.value, selected: o.value === current }, o.label)));
+    el.addEventListener('change', () => onPick(el.value));
+    return h('label', { class: 'filter' }, h('span', { class: 'small' }, label), el);
+  };
+
+  const filters = (res: Extract<EdhState, { status: 'ok' }>): HTMLElement => {
+    const counts = res.page.bracketCounts;
+    const bracketMenu = select(
+      'Bracket',
+      [{ value: '0', label: 'All decks' }, ...BRACKETS.map((b) => ({ value: String(b.n), label: `${b.n} ${b.label}${counts[b.n] != null ? ` (${counts[b.n].toLocaleString('en-US')})` : ''}` }))],
+      String(filter.bracket ?? 0),
+      (v) => {
+        const n = Number(v);
+        actions.setBracket(n);
+        bracketFrom = { kind: 'saved' };
+        void loadPage({ ...filter, bracket: n || null });
+      },
+    );
+    const themes = [...res.page.themes].sort((a, b) => b.count - a.count).slice(0, THEME_MENU);
+    const current = filter.theme && !themes.some((t) => t.slug === filter.theme) ? [{ slug: filter.theme, label: filter.theme, count: 0 }] : [];
+    const themeMenu = select(
+      'Theme',
+      [{ value: '', label: 'All themes' }, ...[...current, ...themes].map((t) => ({ value: t.slug, label: t.count ? `${t.label} (${t.count.toLocaleString('en-US')})` : t.label }))],
+      filter.theme ?? '',
+      (v) => void loadPage({ ...filter, theme: v || null }),
+    );
+    const estimate = bracketFrom.kind === 'estimated' && filter.bracket != null
+      ? h('p', { class: 'muted small', 'data-testid': 'bracket-estimate' }, `Bracket estimated from your deck’s Game Changers (${bracketFrom.gameChangers}). Pick another to change it.`)
+      : null;
+    return h(
+      'div',
+      { class: 'stack' },
+      h('div', { class: 'filters' }, bracketMenu, themeMenu),
+      estimate,
+      segmented<Tier | 'any'>('Price', [{ id: 'any', label: 'Any price' }, ...TIERS.map((t) => ({ id: t.id, label: t.label }))], price, (p) => {
+        price = p;
+        const budget = p === 'budget';
+        if (budget !== filter.budget) void loadPage({ ...filter, budget });
+        else draw();
+      }),
+    );
+  };
+
   const edhrecUpgrades = (res: Extract<EdhState, { status: 'ok' }>, oracleIds: Set<string>): HTMLElement[] => {
-    const scored = scoreEdhrec(res.candidates, { colorIdentity: profile!.colorIdentity, oracleIds }, new Set(ctx.store.owned), commanderName);
+    const scored = scoreEdhrec(res.candidates, { colorIdentity: profile!.colorIdentity, oracleIds }, new Set(ctx.store.owned), commanderName).filter((s) => price === 'any' || tierOf(s.price) === price);
     const groups = byCategory(scored);
+    const range = TIERS.find((t) => t.id === price)?.range;
+    const thin = res.thinBracket;
+    const thinLabel = thin && BRACKETS.find((b) => b.n === thin.bracket);
     const out: HTMLElement[] = [
+      filters(res),
+      pageLoading ? h('p', { class: 'muted small', role: 'status' }, 'Loading from EDHREC…') : null,
+      pageNote ? h('p', { class: 'notice small', role: 'status' }, pageNote) : null,
+      thin && thinLabel ? h('p', { class: 'notice small', role: 'status' }, `Only ${thin.decks} ${commanderName} ${thin.decks === 1 ? 'deck is' : 'decks are'} at bracket ${thin.bracket} ${thinLabel.label}${res.filter.theme ? ' with this theme' : ''}, so this shows all brackets.`) : null,
       h(
         'p',
         { class: 'small', 'data-testid': 'edhrec-source' },
         'From ',
         h('a', { href: pageUrl(res.path), target: '_blank', rel: 'noopener' }, `${res.page.numDecks.toLocaleString('en-US')} ${commanderName} decks on EDHREC`),
-        ', best fit first.',
+        range ? `, cards ${range}, best fit first.` : ', best fit first.',
       ),
-    ];
+    ].filter((x): x is HTMLElement => !!x);
     if (res.failedLookups) out.push(h('p', { class: 'notice small', role: 'status' }, "Scryfall didn't answer every lookup, so some cards may be missing. Refresh suggestions to try again."));
-    if (!groups.length) out.push(h('p', { class: 'muted small' }, 'Your deck already runs every card EDHREC lists for this commander.'));
+    if (!groups.length) out.push(h('p', { class: 'muted small' }, price === 'any' ? 'Your deck already runs every card EDHREC lists for this commander.' : 'No suggestions in this price range.'));
     for (const { category, items } of groups) {
       const limit = shown.get(category) ?? CATEGORY_STEP;
       const more = h('button', { type: 'button', class: 'button', 'aria-label': `Show more ${category}` }, 'Show more');
@@ -298,6 +400,9 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
     roles = new Map();
     rolesState = 'loading';
     edh = commanderName ? { status: 'loading' } : { status: 'failed' };
+    slug = commanderSlug([commanderName]);
+    known = new Map();
+    pageNote = null;
     shown.clear();
     poolStatus.textContent = 'Searching Scryfall…';
     find.disabled = true;
@@ -305,11 +410,22 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
 
     // What decks with this commander play (EDHREC), and v1's rules-based pool, which the price tiers
     // fall back to and swaps and cheaper replacements still use. Each draws when it arrives.
-    const fromEdhrec = !commanderName
-      ? Promise.resolve()
-      : edhrecCandidates(ctx.edhrec, ctx.client, [commanderName], profile.colorIdentity)
-          .then((r) => void (mine === run && ((edh = r), draw())))
-          .catch(() => void (mine === run && ((edh = { status: 'lookup-failed' }), draw())));
+    const fromEdhrec = !commanderName ? Promise.resolve() : (async () => {
+      // Start at the deck's saved bracket, or one estimated from its Game Changers; if that search
+      // fails, at all decks.
+      const saved = actions.bracket();
+      let bracket: number | null = null;
+      if (saved != null) {
+        bracket = saved || null;
+        bracketFrom = { kind: 'saved' };
+      } else {
+        const gameChangers = await gameChangerCount(ctx.client, cards.map((c) => c.entry.card.name));
+        if (mine !== run) return;
+        bracket = gameChangers == null ? null : estimateBracket(gameChangers);
+        bracketFrom = gameChangers == null ? { kind: 'unknown' } : { kind: 'estimated', gameChangers };
+      }
+      await loadPage({ ...ALL_DECKS, bracket, budget: price === 'budget' });
+    })();
     let done = 0;
     const tick = () => (poolStatus.textContent = `Searching Scryfall (${++done} searches done)…`);
     const fromRules = candidatePool(ctx.client, profile, (n) => n && tick())
