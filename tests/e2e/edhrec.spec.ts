@@ -210,3 +210,32 @@ test('if the Game Changer search fails, suggestions start from all decks', async
   await expect(panel.getByLabel('Bracket')).toHaveValue('0');
   await expect(panel.getByTestId('bracket-estimate')).toHaveCount(0);
 });
+
+test('types the deck is short of are named, and their categories come first', async ({ page }) => {
+  const misses = await mockScryfall(page, edgarFull, edgarEdhrec);
+  const panel = await findSuggestions(page);
+  const regionOrder = () => panel.getByRole('region').evaluateAll((els) => els.map((e) => e.getAttribute('aria-label')));
+
+  // The deck runs 30 creatures; the average Core Edgar deck runs 35. Its 8 artifacts match the average.
+  const gaps = panel.getByTestId('gaps');
+  await expect(gaps.getByRole('listitem')).toHaveText(['Creatures: you run 30, typical is 35']);
+  expect((await regionOrder())[0]).toBe('Creatures');
+
+  // Three artifacts fewer is a gap; the lists recompute without new requests.
+  for (const name of ['Sol Ring', 'Arcane Signet', 'Talisman of Hierarchy']) await page.getByRole('button', { name: `Remove ${name}` }).click();
+  await expect(gaps.getByRole('listitem')).toHaveText(['Creatures: you run 30, typical is 35', 'Artifacts: you run 5, typical is 8']);
+  expect((await regionOrder()).slice(0, 3)).toEqual(['Creatures', 'Utility Artifacts', 'Mana Artifacts']);
+  expect(misses).toEqual([]);
+});
+
+test("no gap lines when EDHREC's page has no average deck", async ({ page }) => {
+  // The recorded Core page without its average deck (panels.piechart).
+  const key = 'GET https://json.edhrec.com/pages/commanders/edgar-markov/core.json';
+  const core = structuredClone(edgarEdhrec[key]) as { status: number; body: { panels: Record<string, unknown> } };
+  delete core.body.panels.piechart;
+  const misses = await mockScryfall(page, edgarFull, { ...edgarEdhrec, [key]: core });
+  const panel = await findSuggestions(page);
+  await expect(panel.getByRole('list', { name: 'Creatures upgrades' })).toBeVisible();
+  await expect(panel.getByTestId('gaps')).toHaveCount(0);
+  expect(misses).toEqual([]);
+});
