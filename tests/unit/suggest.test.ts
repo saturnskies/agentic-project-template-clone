@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { EdhCard } from '../../src/lib/edhrec';
-import { byCategory, scoreEdhrec, scoreSuggestions, tierOf, upgradesByTier, type EdhCandidate, type PoolEntry } from '../../src/lib/suggest';
+import { byCategory, roleLookupNames, scoreEdhrec, scoreSuggestions, tierOf, upgradesByTier, type EdhCandidate, type PoolEntry } from '../../src/lib/suggest';
 import type { ScryCard } from '../../src/scryfall/types';
 
 const card = (name: string, over: Partial<ScryCard> = {}): ScryCard =>
@@ -170,5 +170,22 @@ describe('byCategory', () => {
   it('puts the categories the deck is short of first, in the order given, then the rest in order', () => {
     const groups = byCategory([s('Land', 1, 'Lands'), s('Rock', 1, 'Mana Artifacts'), s('Clamp', 1, 'Utility Artifacts'), s('Creature', 1, 'Creatures')], ['Utility Artifacts', 'Mana Artifacts', 'Enchantments']);
     expect(groups.map((g) => g.category)).toEqual(['Utility Artifacts', 'Mana Artifacts', 'Creatures', 'Lands']);
+  });
+});
+
+describe('EDHREC suggestions with roles', () => {
+  const edhCand = (name: string, inclusion: number): EdhCandidate => ({ card: card(name), edh: { name, inclusion, synergy: 0, category: 'Creatures' } });
+
+  it('adds roles looked up for a card to it and its reason, and marks which cards have known roles', () => {
+    const roles = new Map([['o-A', ['removal']], ['o-B', []]]);
+    const [a, b, c] = scoreEdhrec([edhCand('A', 0.5), edhCand('B', 0.4), edhCand('C', 0.3)], deck, new Set(), 'X', roles);
+    expect(a).toMatchObject({ roles: ['removal'], rolesKnown: true, reason: 'In 50% of X decks · removal' });
+    expect(b).toMatchObject({ roles: [], rolesKnown: true });
+    expect(c).toMatchObject({ roles: [], rolesKnown: false });
+  });
+
+  it('picks the best-scoring cards whose roles are not yet known, for one role lookup', () => {
+    const scored = scoreEdhrec([edhCand('A', 0.9), edhCand('B', 0.8), edhCand('C', 0.7), edhCand('D', 0.6)], deck, new Set(), 'X', new Map([['o-B', []]]));
+    expect(roleLookupNames(scored, 2)).toEqual([{ oracleId: 'o-A', name: 'A' }, { oracleId: 'o-C', name: 'C' }]);
   });
 });
