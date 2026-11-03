@@ -5,8 +5,8 @@ import { deckTypeCounts, gapCategories, typeGaps } from '../lib/gaps';
 import { cardImage } from '../lib/groups';
 import { deckProfile, type DeckProfile } from '../lib/profile';
 import { tcgplayerUrl } from '../lib/price';
-import { byCategory, scoreEdhrec, scoreSuggestions, tierOf, TIERS, upgradesByTier, type PoolEntry, type Suggestion, type Tier } from '../lib/suggest';
-import { cheaperReplacements, swapPairs } from '../lib/swaps';
+import { byCategory, roleLookupNames, scoreEdhrec, scoreSuggestions, tierOf, TIERS, upgradesByTier, type PoolEntry, type Suggestion, type Tier } from '../lib/suggest';
+import { cheaperReplacements, edhrecKeepScores, swapPairs } from '../lib/swaps';
 import { frontFace } from '../scryfall/cards';
 import type { PricedCard } from '../scryfall/resolve';
 import { gameChangerCount } from '../scryfall/names';
@@ -72,6 +72,12 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
   let pageLoading = false;
   /** Set when a filter's page failed and the previous list is still shown. */
   let pageNote: string | null = null;
+  /** Roles of EDHREC's best cards, looked up in the background for swaps and cheaper replacements. */
+  let candidateRoles = new Map<string, string[]>();
+  let candidateRolesState: 'idle' | 'loading' | 'ok' | 'approx' = 'idle';
+  let candidateRun = 0;
+  /** v1's rules-based searches start only when EDHREC has nothing for the commander. */
+  let poolJob: Promise<void> | null = null;
   /** How many cards each Upgrades category shows; Show more raises it. */
   const shown = new Map<string, number>();
   /** Searches that didn't answer last time, named in a note. */
@@ -99,7 +105,34 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
     body,
   );
 
-  const facts = () => deckCardFacts(priced(), roles, pool ?? [], ctx.store);
+  const facts = () => deckCardFacts(priced(), roles, pool ?? [], ctx.store, candidateRoles);
+  const ownedIds = () => new Set(ctx.store.owned);
+  /** EDHREC's cards for the page shown, scored against the deck as it is now. */
+  const edhrecScored = (res: Extract<EdhState, { status: 'ok' }>, oracleIds: Set<string>) =>
+    scoreEdhrec(res.candidates, { colorIdentity: profile!.colorIdentity, oracleIds }, ownedIds(), commanderName, candidateRoles);
+
+  /** Looks up the roles of the best EDHREC cards not yet checked (8 searches for 60 cards). */
+  const lookupCandidateRoles = () => {
+    if (edh?.status !== 'ok') return;
+    const mine = run;
+    const me = ++candidateRun;
+    const names = roleLookupNames(edhrecScored(edh, new Set(facts().map((c) => c.oracleId))));
+    if (!names.length) return;
+    candidateRolesState = 'loading';
+    deckRoles(ctx.client, names)
+      .then(({ roles: found, complete }) => {
+        if (mine !== run) return;
+        // A partial answer still proves the roles it found; cards with none found stay unknown.
+        for (const [id, r] of found) if (complete || r.length) candidateRoles.set(id, r);
+        if (me === candidateRun) candidateRolesState = complete ? 'ok' : 'approx';
+        draw();
+      })
+      .catch(() => {
+        if (mine !== run || me !== candidateRun) return;
+        candidateRolesState = 'approx';
+        draw();
+      });
+  };
 
   const segmented = <T extends string>(label: string, options: Array<{ id: T; label: string }>, current: T, onPick: (id: T) => void) =>
     h(
@@ -181,8 +214,25 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
       pageNote = "EDHREC didn't answer for that choice, so this is still the previous list. Try again.";
     } else {
       edh = res;
+      startPool();
     }
     draw();
+    if (res.status === 'ok') lookupCandidateRoles();
+  };
+
+  /** v1's rules-based pool, for when EDHREC has nothing: price tiers, swaps and cheaper replacements. */
+  const startPool = () => {
+    if (poolJob || !profile) return;
+    const mine = run;
+    let done = 0;
+    const tick = () => (poolStatus.textContent = `Searching Scryfall (${++done} searches done)…`);
+    poolJob = candidatePool(ctx.client, profile, (n) => n && tick())
+      .then((result) => {
+        if (mine !== run) return;
+        ({ pool, failed: failedSearches } = result);
+        draw();
+      })
+      .catch(() => void (mine === run && ((poolError = true), draw())));
   };
 
   const select = (label: string, options: Array<{ value: string; label: string }>, current: string, onPick: (value: string) => void) => {
@@ -290,14 +340,20 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
       ? h('p', { class: 'muted small', role: 'status' }, 'Checking what your cards do (ramp, card draw, removal, board wipes)…')
       : rolesState === 'approx'
         ? h('p', { class: 'notice small', role: 'status' }, "Couldn't check what every card in your deck does, so matching cards by job is approximate. Refresh suggestions to try again.")
-        : null;
+        : edh?.status === 'ok' && candidateRolesState === 'loading'
+          ? h('p', { class: 'muted small', role: 'status' }, 'Checking what the suggested cards do; until then, cards are matched by type.')
+          : edh?.status === 'ok' && candidateRolesState === 'approx'
+            ? h('p', { class: 'notice small', role: 'status' }, "Couldn't check what every suggested card does, so some are matched by type. Refresh suggestions to try again.")
+            : null;
 
   const draw = () => {
     drawUndo();
     if (!profile) return;
     const deck = facts();
     const oracleIds = new Set(deck.map((c) => c.oracleId));
-    const scored = pool ? scoreSuggestions(pool, { colorIdentity: profile.colorIdentity, oracleIds }, new Set(ctx.store.owned)) : [];
+    const fromEdhrec = edh?.status === 'ok' ? edh : null;
+    // Swaps and cheaper replacements use EDHREC's cards and scores when it answered, v1's pool otherwise.
+    const scored = fromEdhrec ? edhrecScored(fromEdhrec, oracleIds) : pool ? scoreSuggestions(pool, { colorIdentity: profile.colorIdentity, oracleIds }, ownedIds()) : [];
     const colors = profile.colorIdentity.map((c) => COLOR_NAMES[c] ?? c).join(', ') || 'colorless';
     const line = [`Colors: ${colors}`, profile.tribe ? `Tribe: ${profile.tribe}` : null, profile.themes.length ? `Themes: ${profile.themes.map((t) => t.label).join(', ')}` : null];
     const parts: Array<HTMLElement | null> = [
@@ -308,11 +364,11 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
       segmented('Suggestions', VIEWS, view, (v) => ((view = v), draw())),
     ];
 
-    if (view === 'upgrades' && edh?.status === 'ok') {
-      parts.push(...edhrecUpgrades(edh, oracleIds));
-    } else if (view === 'upgrades' && edh?.status === 'loading') {
+    if (view === 'upgrades' && fromEdhrec) {
+      parts.push(...edhrecUpgrades(fromEdhrec, oracleIds));
+    } else if (edh?.status === 'loading') {
       parts.push(h('p', { class: 'muted small', role: 'status' }, `Loading what ${commanderName} decks play on EDHREC…`));
-    } else if (!pool) {
+    } else if (!fromEdhrec && !pool) {
       parts.push(fallbackNote(edh), poolPending());
     } else if (view === 'upgrades') {
       parts.push(fallbackNote(edh));
@@ -326,16 +382,22 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
           : h('p', { class: 'muted small' }, 'No suggestions in this price range.'),
       );
     } else if (view === 'swaps') {
-      const pairs = swapPairs(scored, deck, profile, { tier: swapTier ?? undefined });
+      const pairs = swapPairs(scored, deck, profile, { tier: swapTier ?? undefined, ...(fromEdhrec ? { keepScores: edhrecKeepScores(deck, fromEdhrec.page), matchType: true } : {}) });
       parts.push(
         rolesNote(),
         segmented<Tier | 'any'>('Swap price', [{ id: 'any', label: 'Any price' }, ...TIERS.map((t) => ({ id: t.id, label: t.label }))], swapTier ?? 'any', (t) => ((swapTier = t === 'any' ? null : t), draw())),
-        h('p', { class: 'muted small' }, 'Each pick replaces your least-played card that does the same job, so the deck stays the same size. The commander, basic lands and cards you mark Keep are never cut.'),
+        h(
+          'p',
+          { class: 'muted small' },
+          fromEdhrec
+            ? `Each pick replaces the card ${commanderName} decks play least that does the same job, or else one of the same type, so the deck stays the same size. The commander, basic lands and cards you mark Keep are never cut.`
+            : 'Each pick replaces your least-played card that does the same job, so the deck stays the same size. The commander, basic lands and cards you mark Keep are never cut.',
+        ),
         pairs.length
           ? h(
               'ul',
               { class: 'sugg-list', 'aria-label': 'Swap pairs' },
-              ...pairs.map(({ add, cut, sharedRole }) => {
+              ...pairs.map(({ add, cut, sharedRole, sharedType }) => {
                 return h(
                   'li',
                   { class: 'sugg' },
@@ -345,7 +407,7 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
                     { class: 'sugg-body' },
                     h('p', { class: 'small swap-cut' }, 'Cut ', h('strong', {}, cut.name), cut.price != null ? ` (${usd(cut.price)})` : ''),
                     h('div', { class: 'sugg-head' }, h('span', {}, 'Add ', nameLink(add)), h('span', { class: 'sugg-price' }, usd(add.price))),
-                    h('p', { class: 'muted small sugg-reason' }, [sharedRole ? `Both ${sharedRole}.` : null, add.reason].filter(Boolean).join(' ')),
+                    h('p', { class: 'muted small sugg-reason' }, [sharedRole ? `Both ${sharedRole}.` : sharedType ? `Both ${sharedType}.` : null, add.reason].filter(Boolean).join(' ')),
                     busyButton('Swap', `Swap ${cut.name} for ${add.card.name}`, () => actions.swap(cut.oracleId, add.card)),
                   ),
                 );
@@ -354,7 +416,7 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
           : h('p', { class: 'muted small' }, 'No swaps that would improve the deck in this price range.'),
       );
     } else {
-      const replacements = cheaperReplacements(deck, scored);
+      const replacements = cheaperReplacements(deck, scored, 3, fromEdhrec ? { deckRolesKnown: rolesState === 'ok' } : {});
       parts.push(
         rolesNote(),
         h('p', { class: 'muted small' }, 'Cheaper cards that do the same job as your cards of $5 or more that you don’t own. Mark a card Keep to leave it out.'),
@@ -406,7 +468,10 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
       commander?.color_identity ?? [],
     );
     pool = null;
+    poolJob = null;
     poolError = false;
+    candidateRoles = new Map();
+    candidateRolesState = 'idle';
     failedSearches = [];
     roles = new Map();
     rolesState = 'loading';
@@ -419,8 +484,22 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
     find.disabled = true;
     draw();
 
-    // What decks with this commander play (EDHREC), and v1's rules-based pool, which the price tiers
-    // fall back to and swaps and cheaper replacements still use. Each draws when it arrives.
+    // The deck's own roles, for matching swaps and cheaper replacements by job.
+    deckRoles(ctx.client, cards.filter((c) => !c.isCommander).map((c) => ({ oracleId: c.entry.card.oracleId, name: c.entry.card.name })))
+      .then(({ roles: r, complete }) => {
+        if (mine !== run) return;
+        roles = r;
+        rolesState = complete ? 'ok' : 'approx';
+        draw();
+      })
+      .catch(() => {
+        if (mine !== run) return;
+        rolesState = 'approx';
+        draw();
+      });
+
+    // What decks with this commander play (EDHREC); v1's rules-based pool starts only if it has nothing.
+    if (!commanderName) startPool();
     const fromEdhrec = !commanderName ? Promise.resolve() : (async () => {
       // Start at the deck's saved bracket, or one estimated from its Game Changers; if that search
       // fails, at all decks.
@@ -437,30 +516,8 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
       }
       await loadPage({ ...ALL_DECKS, bracket, budget: price === 'budget' });
     })();
-    let done = 0;
-    const tick = () => (poolStatus.textContent = `Searching Scryfall (${++done} searches done)…`);
-    const fromRules = candidatePool(ctx.client, profile, (n) => n && tick())
-      .then((result) => {
-        if (mine !== run) return;
-        ({ pool, failed: failedSearches } = result);
-        draw();
-        // The deck's own roles (needed only for swaps) load afterwards; a failure there falls back
-        // to the roles the pool searches revealed.
-        deckRoles(ctx.client, cards.filter((c) => !c.isCommander).map((c) => ({ oracleId: c.entry.card.oracleId, name: c.entry.card.name })))
-          .then(({ roles: r, complete }) => {
-            if (mine !== run) return;
-            roles = r;
-            rolesState = complete ? 'ok' : 'approx';
-            draw();
-          })
-          .catch(() => {
-            if (mine !== run) return;
-            rolesState = 'approx';
-            draw();
-          });
-      })
-      .catch(() => void (mine === run && ((poolError = true), draw())));
-    await Promise.all([fromEdhrec, fromRules]);
+    await fromEdhrec;
+    await poolJob;
     if (mine === run) {
       find.disabled = false;
       find.textContent = 'Refresh suggestions';
