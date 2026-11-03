@@ -42,12 +42,13 @@ export async function mockScryfall(page: Page, recorded: FixtureMap = flows, edh
     return route.fulfill({ status: hit.status, json: hit.body });
   });
   const lookups = edhrec ? lookupIndex(edhrec) : null;
+  const roles = edhrec ? roleIndex({ ...recorded, ...edhrec }) : null;
   if (edhrec) recorded = { ...recorded, ...edhrec };
   await page.route('https://cards.scryfall.io/**', (route) => route.fulfill({ status: 200, contentType: 'image/png', body: PIXEL }));
   await page.route('https://api.scryfall.com/**', async (route) => {
     const req = route.request();
     const key = requestKey(req.method(), req.url(), req.postData());
-    const hit = recorded[key] ?? (lookups && answerLookup(lookups, req.url()));
+    const hit = recorded[key] ?? (lookups && answerLookup(lookups, req.url())) ?? (roles && answerRoles(roles, req.url()));
     if (!hit) {
       misses.push(key);
       return route.fulfill({ status: 500, json: { object: 'error', details: 'unrecorded' } });
@@ -113,3 +114,36 @@ export async function seedEdgarDeck(page: Page) {
   }, deck);
   return deck as { id: string };
 }
+
+const ROLE = /^(otag:[a-z-]+) \((.*)\)$/;
+type RoleIndex = { checked: Set<string>; byTag: Map<string, Map<string, unknown>> };
+
+/** Every card checked in a recorded role search (`otag:<tag> (!"A" or …)`), and the cards found per tag. */
+function roleIndex(map: FixtureMap): RoleIndex {
+  const index: RoleIndex = { checked: new Set(), byTag: new Map() };
+  for (const [key, rec] of Object.entries(map)) {
+    const q = key.startsWith('GET /cards/search?') ? new URLSearchParams(key.split('?')[1]).get('q') : null;
+    const m = q && ROLE.exec(q);
+    if (!m || rec.status >= 500) continue;
+    for (const [, n] of m[2].matchAll(/!"([^"]+)"/g)) index.checked.add(loose(n));
+    const found = index.byTag.get(m[1]) ?? new Map<string, unknown>();
+    for (const c of (rec.body as { data?: Array<{ name: string }> }).data ?? []) found.set(loose(c.name), c);
+    index.byTag.set(m[1], found);
+  }
+  return index;
+}
+
+/**
+ * Answers a role search over names the recordings already checked for roles, from those recorded
+ * answers; batches differ with the order a test changes filters, the cards' roles don't.
+ */
+function answerRoles(index: RoleIndex, url: string): { status: number; body: unknown } | null {
+  const m = ROLE.exec(new URL(url).searchParams.get('q') ?? '');
+  if (!m) return null;
+  const names = [...m[2].matchAll(/!"([^"]+)"/g)].map(([, n]) => loose(n));
+  if (!names.length || !names.every((n) => index.checked.has(n))) return null;
+  const found = index.byTag.get(m[1]) ?? new Map();
+  const data = names.map((n) => found.get(n)).filter(Boolean);
+  return data.length ? { status: 200, body: { object: 'list', has_more: false, total_cards: data.length, data } } : { status: 404, body: { object: 'error', status: 404, details: 'Your query didn’t match any cards.' } };
+}
+
