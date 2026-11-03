@@ -166,4 +166,9 @@ describe('byCategory', () => {
     expect(groups.map((g) => g.category)).toEqual(['Creatures', 'Enchantments', 'Lands', 'Other']);
     expect(groups[0].items.map((i) => i.card.name)).toEqual(['Creature A', 'Creature B']);
   });
+
+  it('puts the categories the deck is short of first, in the order given, then the rest in order', () => {
+    const groups = byCategory([s('Land', 1, 'Lands'), s('Rock', 1, 'Mana Artifacts'), s('Clamp', 1, 'Utility Artifacts'), s('Creature', 1, 'Creatures')], ['Utility Artifacts', 'Mana Artifacts', 'Enchantments']);
+    expect(groups.map((g) => g.category)).toEqual(['Utility Artifacts', 'Mana Artifacts', 'Creatures', 'Lands']);
+  });
 });
