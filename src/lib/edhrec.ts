@@ -27,6 +27,45 @@ export interface EdhPage {
   themes: EdhTheme[];
   /** The average deck's card-type counts, e.g. { Land: 36, Creature: 24 }. */
   typeCounts: Record<string, number>;
+  /** Decks per bracket (1–5) for this page's theme and budget; only decks that name a bracket count. */
+  bracketCounts: Record<number, number>;
+}
+
+/** Commander brackets as EDHREC names them, with their page slugs. */
+export const BRACKETS: Array<{ n: number; slug: string; label: string }> = [
+  { n: 1, slug: 'exhibition', label: 'Exhibition' },
+  { n: 2, slug: 'core', label: 'Core' },
+  { n: 3, slug: 'upgraded', label: 'Upgraded' },
+  { n: 4, slug: 'optimized', label: 'Optimized' },
+  { n: 5, slug: 'cedh', label: 'cEDH' },
+];
+
+/** A bracket page with fewer decks than this shows all brackets instead. */
+export const MIN_BRACKET_DECKS = 50;
+
+/** Which commander page to read: null bracket or theme means all of them. */
+export interface PageFilter {
+  bracket: number | null;
+  theme: string | null;
+  budget: boolean;
+}
+
+/**
+ * The page address for a filter, in the only order EDHREC serves: bracket, theme, budget
+ * (`/commanders/edgar-markov/core/vampires/budget`, checked 2026-11-03).
+ */
+export function pagePath(slug: string, f: PageFilter): string {
+  const bracket = BRACKETS.find((b) => b.n === f.bracket)?.slug;
+  const theme = f.theme && SLUG.test(f.theme) ? f.theme : null;
+  return ['/commanders', slug, bracket, theme, f.budget ? 'budget' : null].filter(Boolean).join('/');
+}
+
+/**
+ * A starting bracket from how many Game Changers the deck runs: none suggests Core (2), up to
+ * three Upgraded (3), more Optimized (4). It can't tell 1 from 2 or 4 from 5, so it's only a start.
+ */
+export function estimateBracket(gameChangers: number): number {
+  return gameChangers === 0 ? 2 : gameChangers <= 3 ? 3 : 4;
 }
 
 export type ParsedPage = { kind: 'page'; page: EdhPage } | { kind: 'redirect'; path: string };
@@ -115,7 +154,10 @@ export function parsePage(json: unknown): ParsedPage | null {
   const typeCounts: Record<string, number> = {};
   for (const p of pie) if (isObj(p) && typeof p.label === 'string' && num(p.value) != null) typeCounts[p.label] = p.value as number;
 
-  return { kind: 'page', page: { numDecks: num(card?.num_decks) ?? biggestSample, cards: [...byName.values()], themes, typeCounts } };
+  const bracketCounts: Record<number, number> = {};
+  if (isObj(json.bracket_counts)) for (const [k, v] of Object.entries(json.bracket_counts)) if (/^[1-5]$/.test(k) && num(v) != null) bracketCounts[Number(k)] = v as number;
+
+  return { kind: 'page', page: { numDecks: num(card?.num_decks) ?? biggestSample, cards: [...byName.values()], themes, typeCounts, bracketCounts } };
 }
 
 /**
