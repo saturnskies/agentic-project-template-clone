@@ -55,16 +55,17 @@ Builds the [recommendations revamp spec](../specs/2026-11-03-recommendations-rev
 - **Done 2026-11-03.** Until slices 4 and 5 land, Find still runs v1's rules pool beside EDHREC: Swaps and Cheaper use it, and Upgrades falls back to v1's price tiers when EDHREC has no page or doesn't answer. All 273 cards on Edgar's page matched on Scryfall.
 
 ### 2. Bracket, theme and price filters
-- [ ] Bracket estimate from Game Changers: one batched `is:gamechanger (!"A" or …)` search. 0 gives Core, 1–3 Upgraded, 4 or more Optimized. Unit tests cover the boundaries.
-- [ ] The deck stores its picked bracket as an optional field. Old saved decks load unchanged, and the field isn't in share links. A storage test covers a deck without it.
-- [ ] Bracket and theme dropdowns with deck counts. Price segmented control (Any, Budget, Mid, Premium). Budget with All themes uses `/budget`; theme plus budget isn't offered.
-- [ ] URL building in fixed order `<slug>/<bracket>/<theme>`, with unit tests. A bracket page under 50 decks falls back to all decks, with a note.
-- [ ] Fixtures: an Edgar bracket page, a theme page, and the budget page.
-- [ ] E2E: changing the theme reloads the list; the price filter narrows it; the estimated label shows.
+- [x] Bracket estimate from Game Changers: one batched `is:gamechanger (!"A" or …)` search. 0 gives Core, 1–3 Upgraded, 4 or more Optimized. Unit tests cover the boundaries.
+- [x] The deck stores its picked bracket as an optional field. Old saved decks load unchanged, and the field isn't in share links. A storage test covers a deck without it.
+- [x] Bracket and theme dropdowns with deck counts. Price segmented control (Any, Budget, Mid, Premium). Budget reads EDHREC's `/budget` page with any bracket and theme (theme plus budget works after all).
+- [x] URL building in fixed order `<slug>/<bracket>/<theme>/budget`, with unit tests. A bracket page under 50 decks falls back to all decks, with a note.
+- [x] Fixtures: an Edgar bracket page, a theme page, and the budget page.
+- [x] E2E: changing the theme reloads the list; the price filter narrows it; the estimated label shows.
 - **Failure paths:**
   - A filter page fails: keep the previous list and say so.
   - Two quick changes: only the newest draws.
   - The Game Changer search fails: start on All decks.
+- **Done 2026-11-03.** A filter change looks up only names not seen in this Find. The e2e mock answers EDHREC name lookups from the recorded cards, since batches depend on the order filters change. The overlap test holds back Scryfall lookups, not the EDHREC page: pages load one at a time, so only lookups can finish out of order. It fails with the page-run guard removed.
 
 ### 3. Gaps
 - [ ] `lib/gaps.ts`: deck type counts (front face, lands counted once) against the piechart average. Lines for types 3 or more below typical, with matching categories first. Unit tests cover equal, above, below by 2 (no line) and below by 3 (line).
@@ -98,5 +99,4 @@ Builds the [recommendations revamp spec](../specs/2026-11-03-recommendations-rev
 ## Follow-ups (not in this plan)
 
 - Combos from EDHREC `combocounts`
-- Theme plus budget together, if EDHREC adds it
 - Next specs: the tab bar with life counter, then Browse
