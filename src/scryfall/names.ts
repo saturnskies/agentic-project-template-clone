@@ -31,23 +31,44 @@ export function nameBatches(names: string[], filters: string): string[][] {
 
 /**
  * Finds each named card with `filters` applied (for example `prefer:usd-low` for the cheapest
- * printing), keyed by the loose form of its front face. A batch that fails is counted in `failed`
- * and the others are kept; only when every batch fails does this throw.
+ * printing), keyed by the loose form of its front face. A batch that fails is counted in `failed`,
+ * its names listed in `unanswered`, and the others are kept; only when every batch fails does this throw.
  */
-export async function cardsByNames(client: ScryfallClient, names: string[], filters: string): Promise<{ cards: Map<string, ScryCard>; failed: number }> {
+export async function cardsByNames(
+  client: ScryfallClient,
+  names: string[],
+  filters: string,
+): Promise<{ cards: Map<string, ScryCard>; failed: number; unanswered: string[] }> {
   const cards = new Map<string, ScryCard>();
   const groups = nameBatches(names, filters);
   const errors: unknown[] = [];
+  const unanswered: string[] = [];
   await Promise.all(
     groups.map(async (group) => {
       try {
         const res = await client.get<ScryList<ScryCard>>(`/cards/search?${new URLSearchParams({ q: nameQuery(filters, group) })}`);
         for (const c of res.data ?? []) cards.set(looseName(frontFace(c.name)), c);
       } catch (e) {
-        if (!(e instanceof ScryfallError && e.status === 404)) errors.push(e); // 404: none of these matched
+        if (e instanceof ScryfallError && e.status === 404) return; // none of these matched
+        errors.push(e);
+        unanswered.push(...group);
       }
     }),
   );
   if (groups.length && errors.length === groups.length) throw errors[0];
-  return { cards, failed: errors.length };
+  return { cards, failed: errors.length, unanswered };
+}
+
+/**
+ * How many of these cards are on Scryfall's Game Changers list (`is:gamechanger`, 53 cards on
+ * 2026-11-03), for the bracket estimate. Null when any batch fails, so a partial count never guesses
+ * a bracket too low.
+ */
+export async function gameChangerCount(client: ScryfallClient, names: string[]): Promise<number | null> {
+  try {
+    const { cards, failed } = await cardsByNames(client, names, 'is:gamechanger');
+    return failed ? null : cards.size;
+  } catch {
+    return null;
+  }
 }
