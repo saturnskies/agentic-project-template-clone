@@ -1,4 +1,6 @@
 import type { ScryCard } from '../scryfall/types';
+import { categoryFor, CATEGORIES, type EdhCard } from './edhrec';
+import { isBasicLand } from './format';
 import { bestPrice, type Finish } from './price';
 
 /**
@@ -25,6 +27,8 @@ export interface Suggestion {
   owned: boolean;
   score: number;
   reason: string;
+  /** Where Upgrades shows it, from EDHREC's type lists (EDHREC suggestions only). */
+  category?: string;
 }
 
 export type Tier = 'budget' | 'mid' | 'premium';
@@ -47,21 +51,22 @@ export function tierOf(price: number): Tier {
 
 const oracleIdOf = (c: ScryCard) => c.oracle_id ?? c.card_faces?.[0]?.oracle_id ?? c.id;
 
+type DeckFacts = { colorIdentity: string[]; oracleIds: Set<string> };
+
+/** Legal in Commander, inside the colors, and not already in the deck. */
+const fitsDeck = (card: ScryCard, deck: DeckFacts) =>
+  card.legalities?.commander === 'legal' && (card.color_identity ?? []).every((c) => deck.colorIdentity.includes(c)) && !deck.oracleIds.has(oracleIdOf(card));
+
 /**
  * Scores the pool: popularity (1 − EDHREC rank ÷ worst rank in the pool) + 0.5 per tribe or theme
  * match + 0.25 per role + 0.3 if owned. Cards that are banned, outside the colors, already in the deck or unpriced are dropped.
  */
 export function scoreSuggestions(
   pool: PoolEntry[],
-  deck: { colorIdentity: string[]; oracleIds: Set<string> },
+  deck: DeckFacts,
   ownedIds: Set<string>,
 ): Suggestion[] {
-  const eligible = pool.filter(
-    ({ card }) =>
-      card.legalities?.commander === 'legal' &&
-      (card.color_identity ?? []).every((c) => deck.colorIdentity.includes(c)) &&
-      !deck.oracleIds.has(oracleIdOf(card)),
-  );
+  const eligible = pool.filter(({ card }) => fitsDeck(card, deck));
   const maxRank = Math.max(1, ...eligible.map(({ card }) => card.edhrec_rank ?? 0));
   const out: Suggestion[] = [];
   for (const { card, tags, roles } of eligible) {
@@ -74,7 +79,49 @@ export function scoreSuggestions(
     const score = popularity + MATCH_WEIGHT * tags.length + ROLE_WEIGHT * roles.length + (owned ? OWNED_BONUS : 0);
     out.push({ card, oracleId, price: p.price, finish: p.finish, tags, roles, owned, score, reason });
   }
-  return out.sort((a, b) => b.score - a.score || a.card.name.localeCompare(b.card.name));
+  return out.sort(byScore);
+}
+
+const byScore = (a: Suggestion, b: Suggestion) => b.score - a.score || a.card.name.localeCompare(b.card.name);
+
+/** A card EDHREC lists for the commander, with its Scryfall data (cheapest printing). */
+export interface EdhCandidate {
+  card: ScryCard;
+  edh: EdhCard;
+}
+
+const pct = (n: number) => Math.round(n * 100);
+
+/**
+ * Scores EDHREC's cards for the commander (recommendations spec, "Scoring"): inclusion + positive
+ * synergy + 0.3 if owned, so cards special to this commander rank above staples every deck runs.
+ * The v1 guarantees hold: nothing banned, off-color, already in the deck, unpriced, or a basic land.
+ */
+export function scoreEdhrec(candidates: EdhCandidate[], deck: DeckFacts, ownedIds: Set<string>, commander: string): Suggestion[] {
+  const out: Suggestion[] = [];
+  for (const { card, edh } of candidates) {
+    if (!fitsDeck(card, deck) || isBasicLand(card.type_line ?? '')) continue;
+    const p = bestPrice(card);
+    if (!p) continue;
+    const oracleId = oracleIdOf(card);
+    const owned = ownedIds.has(oracleId);
+    const synergy = pct(edh.synergy);
+    const reason = [`In ${pct(edh.inclusion)}% of ${commander} decks`, synergy ? `${synergy > 0 ? '+' : '−'}${Math.abs(synergy)}% synergy` : null, owned ? 'owned' : null].filter(Boolean).join(' · ');
+    const score = edh.inclusion + Math.max(0, edh.synergy) + (owned ? OWNED_BONUS : 0);
+    out.push({ card, oracleId, price: p.price, finish: p.finish, tags: [], roles: [], owned, score, reason, category: categoryFor(edh.category, card.type_line ?? '') });
+  }
+  return out.sort(byScore);
+}
+
+/** Suggestions grouped by category in EDHREC's order, best first in each; empty categories left out. */
+export function byCategory(scored: Suggestion[]): Array<{ category: string; items: Suggestion[] }> {
+  const order = [...CATEGORIES, 'Other'];
+  const groups = new Map<string, Suggestion[]>();
+  for (const s of [...scored].sort(byScore)) {
+    const c = s.category ?? 'Other';
+    groups.set(c, [...(groups.get(c) ?? []), s]);
+  }
+  return [...groups].sort(([a], [b]) => order.indexOf(a) - order.indexOf(b)).map(([category, items]) => ({ category, items }));
 }
 
 /** The best suggestions in each price tier. */
