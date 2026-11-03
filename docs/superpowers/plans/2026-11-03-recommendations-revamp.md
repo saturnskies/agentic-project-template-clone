@@ -68,9 +68,10 @@ Builds the [recommendations revamp spec](../specs/2026-11-03-recommendations-rev
 - **Done 2026-11-03.** A filter change looks up only names not seen in this Find. The e2e mock answers EDHREC name lookups from the recorded cards, since batches depend on the order filters change. The overlap test holds back Scryfall lookups, not the EDHREC page: pages load one at a time, so only lookups can finish out of order. It fails with the page-run guard removed.
 
 ### 3. Gaps
-- [ ] `lib/gaps.ts`: deck type counts (front face, lands counted once) against the piechart average. Lines for types 3 or more below typical, with matching categories first. Unit tests cover equal, above, below by 2 (no line) and below by 3 (line).
-- [ ] E2E: a short-on-artifacts Edgar fixture deck shows the Artifacts line, and Utility Artifacts is listed first.
+- [x] `lib/gaps.ts`: deck type counts (front face, lands counted once) against the piechart average. Lines for types 3 or more below typical, with matching categories first. Unit tests cover equal, above, below by 2 (no line) and below by 3 (line).
+- [x] E2E: the Edgar deck shows its Creatures gap (30 against 35); removing three artifacts adds an Artifacts line, with Utility and Mana Artifacts next after Creatures. Biggest gap leads.
 - **Failure paths:** a piechart that is missing or has unknown labels shows no gap lines and doesn't throw.
+- **Done 2026-11-03.** A card counts once by its main type, creature first, then land (an artifact land is a land), matching EDHREC's average deck, which sums to 99.
 
 ### 4. Swaps and Cheaper on EDHREC scores
 - [ ] Keep score: a deck card's EDHREC score, or 0 when it isn't on the page.
