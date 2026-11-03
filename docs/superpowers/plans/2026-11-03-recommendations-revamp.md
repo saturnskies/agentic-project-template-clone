@@ -32,17 +32,17 @@ Builds the [recommendations revamp spec](../specs/2026-11-03-recommendations-rev
 ## Slices
 
 ### 1. EDHREC client, Edgar upgrades by category
-- [ ] `createClient({ base })`: the Scryfall default is unchanged, and unit tests cover the new base and spacing.
-- [ ] `lib/edhrec.ts`:
+- [x] `createClient({ base })`: the Scryfall default is unchanged, and unit tests cover the new base and spacing.
+- [x] `lib/edhrec.ts`:
   - `commanderSlug(names)`: apostrophes, commas, accents, double-faced fronts, partners in alphabetical order. Unit tests use the real slugs checked on 2026-11-03.
   - `parsePage(json)`: checks every field used (`cardlists[].cardviews[].name/num_decks/potential_decks/synergy`, `card.num_decks`, `panels.taglinks`, `panels.piechart`). It returns null on any wrong shape and follows `redirect` once.
-- [ ] `src/edhrec/page.ts`: fetch with redirect handling. A 403 becomes "not on EDHREC"; other failures become "didn't answer".
-- [ ] Scoring: `inclusion + max(0, synergy) + 0.3 owned`. Unit tests pin the spec's Edgar numbers: Captivating Vampire above Exquisite Blood above Path to Exile.
-- [ ] Name lookup: batched `prefer:usd-low … (!"A" or …)` Scryfall searches. A failed batch is named, and the others are kept.
-- [ ] Category grouping: EDHREC list order; New, Top and High Lift cards go into their type's list with no duplicates; top 5 plus **Show more**; no basics; empty categories hidden.
-- [ ] UI: the source line with the EDHREC link and deck count; the reason line "In N% of <commander> decks · +N% synergy".
-- [ ] Fixtures: Edgar main page (EDHREC), Edgar name lookups (Scryfall).
-- [ ] E2E: Edgar Find shows Skullclamp under Utility Artifacts and Exquisite Blood under Enchantments.
+- [x] `src/edhrec/page.ts`: fetch with redirect handling. A 403 becomes "not on EDHREC"; other failures become "didn't answer".
+- [x] Scoring: `inclusion + max(0, synergy) + 0.3 owned`. Unit tests pin the spec's Edgar numbers: Captivating Vampire above Exquisite Blood above Path to Exile.
+- [x] Name lookup: batched `prefer:usd-low … (!"A" or …)` Scryfall searches. A failed batch is named, and the others are kept.
+- [x] Category grouping: EDHREC list order; New, Top and High Lift cards go into their type's list with no duplicates; top 5 plus **Show more**; no basics; empty categories hidden.
+- [x] UI: the source line with the EDHREC link and deck count; the reason line "In N% of <commander> decks · +N% synergy".
+- [x] Fixtures: Edgar main page (EDHREC), Edgar name lookups (Scryfall).
+- [x] E2E: Edgar Find shows Skullclamp under Utility Artifacts and Exquisite Blood under Enchantments.
 - **Failure paths, each with a test:**
   - 403
   - network error
@@ -51,7 +51,8 @@ Builds the [recommendations revamp spec](../specs/2026-11-03-recommendations-rev
   - redirect loop (follow once only)
   - a card EDHREC names that Scryfall can't find (dropped)
   - a Scryfall batch failing
-  - a stale run reply ignored
+  - a stale run reply ignored (the existing run guard covers EDHREC replies; its test moves to slice 2, where filter changes can overlap)
+- **Done 2026-11-03.** Until slices 4 and 5 land, Find still runs v1's rules pool beside EDHREC: Swaps and Cheaper use it, and Upgrades falls back to v1's price tiers when EDHREC has no page or doesn't answer. All 273 cards on Edgar's page matched on Scryfall.
 
 ### 2. Bracket, theme and price filters
 - [ ] Bracket estimate from Game Changers: one batched `is:gamechanger (!"A" or …)` search. 0 gives Core, 1–3 Upgraded, 4 or more Optimized. Unit tests cover the boundaries.
