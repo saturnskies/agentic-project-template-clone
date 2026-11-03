@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { scoreSuggestions, tierOf, upgradesByTier, type PoolEntry } from '../../src/lib/suggest';
+import type { EdhCard } from '../../src/lib/edhrec';
+import { byCategory, scoreEdhrec, scoreSuggestions, tierOf, upgradesByTier, type EdhCandidate, type PoolEntry } from '../../src/lib/suggest';
 import type { ScryCard } from '../../src/scryfall/types';
 
 const card = (name: string, over: Partial<ScryCard> = {}): ScryCard =>
@@ -93,5 +94,76 @@ describe('upgradesByTier', () => {
     expect(tiers.budget[0].card.name).toBe('Cheap 0');
     expect(tiers.mid.map((s) => s.card.name)).toEqual(['Mid one']);
     expect(tiers.premium.map((s) => s.card.name)).toEqual(['Pricey']);
+  });
+});
+
+describe('scoreEdhrec', () => {
+  const edh = (name: string, inclusion: number, synergy: number, category: string | null = 'Creatures'): EdhCard => ({ name, inclusion, synergy, category });
+  const cand = (name: string, inclusion: number, synergy: number, over: Partial<ScryCard> = {}, category: string | null = 'Creatures'): EdhCandidate => ({ card: card(name, over), edh: edh(name, inclusion, synergy, category) });
+
+  it('ranks by inclusion plus positive synergy, so cards special to the commander beat staples (Edgar Markov page, 2026-11-03)', () => {
+    const scored = scoreEdhrec(
+      [
+        cand('Path to Exile', 0.49, 0.01, { type_line: 'Instant' }, 'Instants'),
+        // Sol Ring's numbers (the test deck already runs Sol Ring itself).
+        cand('Mana Rock', 0.92, 0.04, { type_line: 'Artifact', color_identity: [] }, 'Mana Artifacts'),
+        cand('Exquisite Blood', 0.51, 0.43, { type_line: 'Enchantment' }, 'Enchantments'),
+        cand('Captivating Vampire', 0.82, 0.72),
+        cand('Arcane Signet', 0.8, -0.05, { type_line: 'Artifact', color_identity: [] }, 'Mana Artifacts'),
+      ],
+      deck,
+      new Set(),
+      'Edgar Markov',
+    );
+    expect(scored.map((s) => s.card.name)).toEqual(['Captivating Vampire', 'Mana Rock', 'Exquisite Blood', 'Arcane Signet', 'Path to Exile']);
+    // Negative synergy doesn't push a card below its inclusion.
+    expect(scored.find((s) => s.card.name === 'Arcane Signet')!.score).toBeCloseTo(0.8);
+  });
+
+  it('explains each card by how many of the commander’s decks run it and its synergy', () => {
+    const [a, b, c] = scoreEdhrec([cand('A', 0.514, 0.426), cand('B', 0.3, -0.05), cand('C', 0.2, 0.002)], deck, new Set(['o-B']), 'Edgar Markov');
+    expect(a.reason).toBe('In 51% of Edgar Markov decks · +43% synergy');
+    expect(b.reason).toBe('In 30% of Edgar Markov decks · −5% synergy · owned');
+    expect(c.reason).toBe('In 20% of Edgar Markov decks');
+  });
+
+  it('adds the owned bonus', () => {
+    const [owned, other] = scoreEdhrec([cand('Other', 0.5, 0), cand('Owned', 0.3, 0)], deck, new Set(['o-Owned']), 'X');
+    expect(owned.card.name).toBe('Owned');
+    expect(owned.score).toBeCloseTo(0.6);
+    expect(other.owned).toBe(false);
+  });
+
+  it('never suggests a card that is banned, off-color, already in the deck, unpriced or a basic land', () => {
+    const scored = scoreEdhrec(
+      [
+        cand('Fine', 0.1, 0),
+        cand('Banned', 0.9, 0.9, { legalities: { commander: 'banned' } }),
+        cand('Blue', 0.9, 0.9, { color_identity: ['U'] }),
+        cand('Sol Ring', 0.9, 0.9),
+        cand('Unpriced', 0.9, 0.9, { prices: { usd: null, usd_foil: null, usd_etched: null } }),
+        cand('Swamp', 0.98, 0.02, { type_line: 'Basic Land — Swamp', color_identity: [] }, 'Lands'),
+        cand('Snow-Covered Swamp', 0.5, 0.02, { type_line: 'Basic Snow Land — Swamp', color_identity: [] }, 'Lands'),
+      ],
+      deck,
+      new Set(),
+      'X',
+    );
+    expect(scored.map((s) => s.card.name)).toEqual(['Fine']);
+  });
+
+  it('files a card from a mixed EDHREC list under its own type', () => {
+    const [s] = scoreEdhrec([cand('Herald', 0.3, 0.2, { type_line: 'Artifact' }, null)], deck, new Set(), 'X');
+    expect(s.category).toBe('Utility Artifacts');
+  });
+});
+
+describe('byCategory', () => {
+  const s = (name: string, score: number, category?: string) => ({ card: card(name), oracleId: name, price: 1, finish: 'nonfoil' as const, tags: [], roles: [], owned: false, score, reason: '', category });
+
+  it("groups in EDHREC's order, best first, leaving out empty categories", () => {
+    const groups = byCategory([s('Land A', 1, 'Lands'), s('Enchant', 2, 'Enchantments'), s('Creature B', 1, 'Creatures'), s('Creature A', 3, 'Creatures'), s('Odd', 5)]);
+    expect(groups.map((g) => g.category)).toEqual(['Creatures', 'Enchantments', 'Lands', 'Other']);
+    expect(groups[0].items.map((i) => i.card.name)).toEqual(['Creature A', 'Creature B']);
   });
 });
