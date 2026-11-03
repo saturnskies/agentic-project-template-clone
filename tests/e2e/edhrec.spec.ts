@@ -239,3 +239,62 @@ test("no gap lines when EDHREC's page has no average deck", async ({ page }) => 
   await expect(panel.getByTestId('gaps')).toHaveCount(0);
   expect(misses).toEqual([]);
 });
+
+test("swaps cut the card Edgar Markov decks play least for one they play more, and undo puts it back", async ({ page }) => {
+  const misses = await mockScryfall(page, edgarFull, edgarEdhrec);
+  const searches: string[] = [];
+  page.on('request', (r) => r.url().startsWith('https://api.scryfall.com/cards/search') && searches.push(decodeURIComponent(new URL(r.url()).searchParams.get('q') ?? '')));
+  const panel = await findSuggestions(page);
+  await panel.getByRole('button', { name: 'Swaps' }).click();
+  // Pairs settle once the deck's and the suggested cards' roles have loaded.
+  await expect(panel.getByText(/^Checking what/)).toHaveCount(0, { timeout: 30_000 });
+  await expect(panel).toContainText('Each pick replaces the card Edgar Markov decks play least');
+
+  const first = panel.getByRole('list', { name: 'Swap pairs' }).getByRole('listitem').first();
+  await expect(first).toContainText('Cut Kalastria Highborn');
+  await expect(first).toContainText('Add Blood Artist');
+  await expect(first).toContainText(/In \d+% of Edgar Markov decks/);
+  await first.getByRole('button', { name: 'Swap Kalastria Highborn for Blood Artist' }).click();
+
+  await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
+  await expect(page.getByRole('row').filter({ hasText: 'Blood Artist' })).toBeVisible();
+  await expect(page.getByRole('row').filter({ hasText: 'Kalastria Highborn' })).toHaveCount(0);
+  await expect(panel.getByRole('list', { name: 'Swap pairs' }).getByRole('listitem').first()).not.toContainText('Blood Artist');
+
+  await panel.getByRole('button', { name: 'Undo' }).click();
+  await expect(page.getByRole('row').filter({ hasText: 'Kalastria Highborn' })).toBeVisible();
+  await expect(page.getByRole('row').filter({ hasText: 'Blood Artist' })).toHaveCount(0);
+  await expect(page.getByTestId('deck-total')).toHaveText('$119.73');
+  // EDHREC answered, so v1's rules-based searches (tribe, themes, roles) never ran.
+  expect(searches.filter((q) => /prefer:usd-low (t:|o:|otag:|\(keyword)/.test(q))).toEqual([]);
+  expect(misses).toEqual([]);
+});
+
+test('cheaper replacements come from what Edgar Markov decks play', async ({ page }) => {
+  const misses = await mockScryfall(page, edgarFull, edgarEdhrec);
+  const panel = await findSuggestions(page);
+  await panel.getByRole('button', { name: 'Cheaper' }).click();
+  await expect(panel.getByText(/^Checking what/)).toHaveCount(0, { timeout: 30_000 });
+
+  const group = panel.getByRole('region', { name: 'Cheaper than Emeritus of Woe // Demonic Tutor' });
+  const option = group.getByRole('listitem').first();
+  await expect(option).toContainText('Preacher of the Schism');
+  await expect(option).toContainText(/Save \$\d+\.\d\d/);
+  await expect(option).toContainText(/In \d+% of Edgar Markov decks/);
+  await option.getByRole('button', { name: /^Swap Emeritus of Woe/ }).click();
+  await expect(page.getByRole('row').filter({ hasText: 'Preacher of the Schism' })).toBeVisible();
+  await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
+  expect(misses).toEqual([]);
+});
+
+test('if the role lookups fail, swaps match cards by type and say matching is approximate', async ({ page }) => {
+  await mockScryfall(page, edgarFull, edgarEdhrec);
+  // Role lookups are otag searches over exact names (`!"Name"`): the deck's and the suggested cards'.
+  await page.route(/api\.scryfall\.com\/cards\/search\?q=otag%3A[^&]*%21%22/, (route) => route.abort());
+  const panel = await findSuggestions(page);
+  await panel.getByRole('button', { name: 'Swaps' }).click();
+  await expect(panel).toContainText("Couldn't check what every card in your deck does", { timeout: 45_000 });
+  const pairs = panel.getByRole('list', { name: 'Swap pairs' }).getByRole('listitem');
+  await expect(pairs.first()).toBeVisible();
+  for (const text of await pairs.allTextContents()) expect(text).toMatch(/Both (creatures|instants|sorceries|artifacts|enchantments|planeswalkers|lands|battles)\./);
+});
