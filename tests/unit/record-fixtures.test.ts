@@ -10,7 +10,9 @@ import { scoreSuggestions, upgradesByTier } from '../../src/lib/suggest';
 import { candidatePool, deckCardFacts, rulesText } from '../../src/scryfall/suggest';
 import { deckRoles } from '../../src/scryfall/roles';
 import { cheaperReplacements, swapPairs } from '../../src/lib/swaps';
-import { requestKey, trim, type FixtureMap } from '../support/fixtures';
+import { requestKey, trim, trimEdhrec, type FixtureMap } from '../support/fixtures';
+import { commanderPage, createEdhrecClient, EDHREC_BASE } from '../../src/edhrec/page';
+import { edhrecCandidates } from '../../src/edhrec/candidates';
 
 /**
  * Re-records tests/fixtures/scryfall-e2e.json from the real Scryfall API by running the same flow the
@@ -112,6 +114,32 @@ describe.runIf(process.env.RECORD === '1')('record Scryfall fixtures', () => {
     }
     writeFileSync(new URL('../fixtures/scryfall-edgar-full.json', import.meta.url), JSON.stringify(map) + '\n');
     expect(tiers.budget.length).toBeGreaterThan(0);
+  }, 300_000);
+
+  it('records the Edgar Markov EDHREC page, its Scryfall name lookups, a partner redirect and a missing commander', async () => {
+    const map: FixtureMap = {};
+    const recording: typeof fetch = async (input, init) => {
+      const headers = { ...Object.fromEntries(new Headers(init?.headers)), 'User-Agent': 'Swapsmith-fixture-recorder/0.1' };
+      const res = await fetch(input, { ...init, headers });
+      const url = String(input);
+      // EDHREC's 403 for an unknown commander is an HTML page; the app only reads its status.
+      const body = await res.clone().json().catch(() => null);
+      map[requestKey(init?.method ?? 'GET', url, init?.body as string | undefined)] = { status: res.status, body: url.startsWith(EDHREC_BASE) ? trimEdhrec(body) : trim(body) };
+      return res;
+    };
+    const edhrec = createEdhrecClient({ fetch: recording, cache: memoryCache() });
+    const scryfall = createClient({ fetch: recording, cache: memoryCache() });
+
+    // What Find suggestions does for the seeded Edgar deck (tests/fixtures/edgar-deck.json).
+    const result = await edhrecCandidates(edhrec, scryfall, ['Edgar Markov'], ['B', 'R', 'W']);
+    if (result.status !== 'ok') throw new Error(`EDHREC page: ${result.status}`);
+    // tests/e2e/edhrec.spec.ts adds Herald's Horn, which prices its printings.
+    const horn = result.candidates.find((c) => c.card.name === "Herald's Horn")!.card;
+    await priceEntries(scryfall, [{ entry: { card: { oracleId: oracleIdOf(horn), name: horn.name }, qty: 1 }, isCommander: false }], undefined, new Map([[oracleIdOf(horn), horn]]));
+    await commanderPage(edhrec, '/commanders/tymna-the-weaver-thrasios-triton-hero');
+    await commanderPage(edhrec, '/commanders/not-a-real-commander-swapsmith');
+
+    writeFileSync(new URL('../fixtures/edhrec-edgar.json', import.meta.url), JSON.stringify(map) + '\n');
   }, 300_000);
 
   it('records lookups for the full Edgar Markov list', async () => {
