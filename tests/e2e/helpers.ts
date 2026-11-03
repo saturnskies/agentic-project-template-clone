@@ -9,9 +9,16 @@ const load = (name: string): FixtureMap => JSON.parse(readFileSync(new URL(`../f
  * times can hold the same request with different prices, so each test uses only its own flow's map.
  */
 export const flows: FixtureMap = { ...load('scryfall-e2e.json'), ...load('scryfall-new-deck.json') };
-export const edgarFull: FixtureMap = load('scryfall-edgar-full.json');
-/** The Edgar Markov EDHREC page and its Scryfall name lookups, recorded 2026-11-03. */
+/** The Edgar Markov EDHREC pages and their Scryfall name lookups, recorded 2026-11-03. */
 export const edgarEdhrec: FixtureMap = load('edhrec-edgar.json');
+/**
+ * The full Edgar deck's Scryfall replies. Every Find also counts the deck's Game Changers, so the
+ * recorded `is:gamechanger` replies (from the EDHREC recording) come with it.
+ */
+export const edgarFull: FixtureMap = {
+  ...load('scryfall-edgar-full.json'),
+  ...Object.fromEntries(Object.entries(edgarEdhrec).filter(([k]) => k.startsWith('GET /cards/search?q=is%3Agamechanger'))),
+};
 export const e2eList = readFileSync(new URL('../fixtures/e2e-list.txt', import.meta.url), 'utf8');
 
 // A 1×1 grey PNG standing in for card images, so tests never download from Scryfall's image host.
@@ -34,12 +41,13 @@ export async function mockScryfall(page: Page, recorded: FixtureMap = flows, edh
     }
     return route.fulfill({ status: hit.status, json: hit.body });
   });
+  const lookups = edhrec ? lookupIndex(edhrec) : null;
   if (edhrec) recorded = { ...recorded, ...edhrec };
   await page.route('https://cards.scryfall.io/**', (route) => route.fulfill({ status: 200, contentType: 'image/png', body: PIXEL }));
   await page.route('https://api.scryfall.com/**', async (route) => {
     const req = route.request();
     const key = requestKey(req.method(), req.url(), req.postData());
-    const hit = recorded[key];
+    const hit = recorded[key] ?? (lookups && answerLookup(lookups, req.url()));
     if (!hit) {
       misses.push(key);
       return route.fulfill({ status: 500, json: { object: 'error', details: 'unrecorded' } });
@@ -47,6 +55,33 @@ export async function mockScryfall(page: Page, recorded: FixtureMap = flows, edh
     return route.fulfill({ status: hit.status, json: hit.body });
   });
   return misses;
+}
+
+const LOOKUP = /^f:commander id<=\w+ game:paper prefer:usd-low \((.*)\)$/;
+const loose = (n: string) => n.split(' // ')[0].normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+/** Every card in the recorded EDHREC name lookups, by loose front-face name. */
+function lookupIndex(map: FixtureMap): Map<string, unknown> {
+  const index = new Map<string, unknown>();
+  for (const [key, rec] of Object.entries(map)) {
+    const q = key.startsWith('GET /cards/search?') ? new URLSearchParams(key.split('?')[1]).get('q') : null;
+    if (!q || !LOOKUP.test(q)) continue;
+    for (const c of (rec.body as { data?: Array<{ name: string }> }).data ?? []) index.set(loose(c.name), c);
+  }
+  return index;
+}
+
+/**
+ * Answers an EDHREC name lookup (`… prefer:usd-low (!"A" or !"B" …)`) from recorded cards, as Scryfall
+ * would: the cards found, or 404 when none are. The app batches names by what it has already looked
+ * up, so batches vary with the order a test changes filters; the cards themselves are all recorded.
+ */
+function answerLookup(index: Map<string, unknown>, url: string): { status: number; body: unknown } | null {
+  const q = new URL(url).searchParams.get('q') ?? '';
+  const m = LOOKUP.exec(q);
+  if (!m) return null;
+  const data = [...m[1].matchAll(/!"([^"]+)"/g)].map(([, n]) => index.get(loose(n))).filter(Boolean);
+  return data.length ? { status: 200, body: { object: 'list', has_more: false, total_cards: data.length, data } } : { status: 404, body: { object: 'error', status: 404, details: 'Your query didn’t match any cards.' } };
 }
 
 /** Pastes tests/fixtures/e2e-list.txt, fixes its two problem lines, and creates the deck. */
