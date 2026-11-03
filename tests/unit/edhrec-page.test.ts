@@ -8,6 +8,7 @@ import { fixtureFetch, type FixtureMap } from '../support/fixtures';
 // Real EDHREC and Scryfall replies recorded 2026-11-03 (tests/unit/record-fixtures.test.ts, RECORD=1).
 const recorded: FixtureMap = JSON.parse(readFileSync(new URL('../fixtures/edhrec-edgar.json', import.meta.url), 'utf8'));
 const sleep = async () => {};
+const ALL = { bracket: null, theme: null, budget: false };
 const clients = (map: FixtureMap = recorded) => {
   const f = fixtureFetch(map);
   return { f, edhrec: createEdhrecClient({ fetch: f, cache: memoryCache(), sleep }), scryfall: createClient({ fetch: f, cache: memoryCache(), sleep }) };
@@ -59,7 +60,7 @@ describe('commanderPage', () => {
 describe('edhrecCandidates', () => {
   it('pairs every card on the Edgar page with its cheapest Scryfall printing', async () => {
     const { edhrec, scryfall, f } = clients();
-    const res = await edhrecCandidates(edhrec, scryfall, ['Edgar Markov'], ['B', 'R', 'W']);
+    const res = await edhrecCandidates(edhrec, scryfall, { slug: 'edgar-markov', filter: ALL, colorIdentity: ['B', 'R', 'W'] });
     if (res.status !== 'ok') throw new Error(res.status);
     expect(res.candidates).toHaveLength(res.page.cards.length);
     expect(res.failedLookups).toBe(0);
@@ -71,7 +72,7 @@ describe('edhrecCandidates', () => {
 
   it('passes on missing and failed pages without looking anything up', async () => {
     const { edhrec, scryfall, f } = clients();
-    expect(await edhrecCandidates(edhrec, scryfall, ['Not a Real Commander Swapsmith'], ['W'])).toEqual({ status: 'missing' });
+    expect(await edhrecCandidates(edhrec, scryfall, { slug: 'not-a-real-commander-swapsmith', filter: ALL, colorIdentity: ['W'] })).toEqual({ status: 'missing' });
     expect(f.misses).toEqual([]);
   });
 
@@ -80,7 +81,7 @@ describe('edhrecCandidates', () => {
 
   it('leaves out a card Scryfall cannot find', async () => {
     const scryfall = fake(() => found(['Blood Artist', 'Cordial Vampire']));
-    const res = await edhrecCandidates(fake(() => page), scryfall, ['X'], ['B']);
+    const res = await edhrecCandidates(fake(() => page), scryfall, { slug: 'x', filter: ALL, colorIdentity: ['B'] });
     expect(res.status === 'ok' && res.candidates.map((c) => c.card.name)).toEqual(['Blood Artist', 'Cordial Vampire']);
   });
 
@@ -93,7 +94,7 @@ describe('edhrecCandidates', () => {
       const q = new URLSearchParams(path.split('?')[1]).get('q')!;
       return found(names.filter((n) => q.includes(`!"${n}"`)));
     });
-    const res = await edhrecCandidates(fake(() => big), scryfall, ['X'], ['B']);
+    const res = await edhrecCandidates(fake(() => big), scryfall, { slug: 'x', filter: ALL, colorIdentity: ['B'] });
     if (res.status !== 'ok') throw new Error(res.status);
     expect(call).toBeGreaterThan(1);
     expect(res.failedLookups).toBe(1);
@@ -103,14 +104,55 @@ describe('edhrecCandidates', () => {
 
   it('throws when every Scryfall lookup fails', async () => {
     const scryfall = fake(() => { throw new ScryfallError(0, "Couldn't reach Scryfall"); });
-    await expect(edhrecCandidates(fake(() => page), scryfall, ['X'], ['B'])).rejects.toBeInstanceOf(ScryfallError);
+    await expect(edhrecCandidates(fake(() => page), scryfall, { slug: 'x', filter: ALL, colorIdentity: ['B'] })).rejects.toBeInstanceOf(ScryfallError);
   });
 
   it('looks names up within the color identity, legal in Commander, cheapest printing', async () => {
     const queries: string[] = [];
     const scryfall = fake((path) => (queries.push(new URLSearchParams(path.split('?')[1]).get('q')!), found([])));
-    await edhrecCandidates(fake(() => page), scryfall, ['X'], ['B', 'R']);
+    await edhrecCandidates(fake(() => page), scryfall, { slug: 'x', filter: ALL, colorIdentity: ['B', 'R'] });
     expect(queries[0]).toMatch(/^f:commander id<=br game:paper prefer:usd-low \(!"Blood Artist" or /);
     expect(queries.every((q) => q.length <= 900)).toBe(true);
   });
+
+  it('reuses cards already looked up, so a filter change only looks up new names', async () => {
+    const queries: string[] = [];
+    const scryfall = fake((path) => {
+      const q = new URLSearchParams(path.split('?')[1]).get('q')!;
+      queries.push(q);
+      return found(['Blood Artist', 'Unknown Card', 'Cordial Vampire'].filter((n) => q.includes(`!"${n}"`)));
+    });
+    const known = new Map();
+    await edhrecCandidates(fake(() => page), scryfall, { slug: 'x', filter: ALL, colorIdentity: ['B'], known });
+    expect(known.size).toBe(3);
+    const again = await edhrecCandidates(fake(() => page), scryfall, { slug: 'x', filter: { ...ALL, theme: 'tokens' }, colorIdentity: ['B'], known });
+    expect(queries).toHaveLength(1);
+    expect(again.status === 'ok' && again.candidates).toHaveLength(3);
+  });
+
+  it('remembers names Scryfall had no card for, so they are not searched again', async () => {
+    const queries: string[] = [];
+    const scryfall = fake((path) => (queries.push(path), found(['Blood Artist'])));
+    const known = new Map();
+    await edhrecCandidates(fake(() => page), scryfall, { slug: 'x', filter: ALL, colorIdentity: ['B'], known });
+    await edhrecCandidates(fake(() => page), scryfall, { slug: 'x', filter: ALL, colorIdentity: ['B'], known });
+    expect(queries).toHaveLength(1);
+  });
+
+  it('shows all brackets when the chosen bracket has fewer than 50 decks, and says how many it had', async () => {
+    const sized = (n: number) => ({ container: { json_dict: { card: { num_decks: n }, cardlists: page.container.json_dict.cardlists } } });
+    const paths: string[] = [];
+    const edhrec = fake((p) => (paths.push(p), sized(p.includes('/core') ? 8 : 500)));
+    const res = await edhrecCandidates(edhrec, fake(() => found([])), { slug: 'x', filter: { bracket: 2, theme: 'vampires', budget: false }, colorIdentity: ['B'] });
+    expect(paths).toEqual(['/pages/commanders/x/core/vampires.json', '/pages/commanders/x/vampires.json']);
+    expect(res).toMatchObject({ status: 'ok', filter: { bracket: null, theme: 'vampires' }, thinBracket: { bracket: 2, decks: 8 } });
+  });
+
+  it('keeps a bracket page with 50 decks or more', async () => {
+    const edhrec = fake(() => ({ container: { json_dict: { card: { num_decks: 50 }, cardlists: page.container.json_dict.cardlists } } }));
+    const res = await edhrecCandidates(edhrec, fake(() => found([])), { slug: 'x', filter: { bracket: 2, theme: null, budget: false }, colorIdentity: ['B'] });
+    expect(res).toMatchObject({ status: 'ok', filter: { bracket: 2 }, path: '/commanders/x/core' });
+    expect(res.status === 'ok' && res.thinBracket).toBeUndefined();
+  });
 });
+
