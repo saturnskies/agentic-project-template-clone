@@ -26,7 +26,8 @@ EDHREC publishes each commander page as JSON. The endpoint is unofficial, so the
   - **Partners:** both slugs joined in alphabetical order (`thrasios-triton-hero-tymna-the-weaver`). The wrong order returns `{"redirect": "/commanders/…"}`; follow it once.
   - **Bracket:** `exhibition` (1), `core` (2), `upgraded` (3), `optimized` (4) or `cedh` (5).
   - **Theme:** a slug from the page's `panels.taglinks` (for Edgar: Vampires, Lifegain, Tokens, Aristocrats…).
-  - **Combinations:** bracket plus budget (`core/budget`, 316 decks) and bracket plus theme (`core/infect`, 331 decks) work. `infect/core` and `infect/core/budget` fail, so the order above is fixed and theme plus budget isn't offered.
+  - **Combinations:** every combination works in the order above, down to `core/vampires/budget` (8 Edgar decks). Other orders, such as `infect/core`, fail. (Corrected 2026-11-03: an earlier reading said theme plus budget wasn't served; `infect/budget` and `lifegain/budget` both are.)
+  - **Counts on every page:** `bracket_counts` (decks per bracket, for the page's theme and budget) and `panels.taglinks` (themes, for the page's bracket).
   - **Unknown commander:** returns HTTP 403.
 - **What a page gives:**
   - `container.json_dict.cardlists`: about 290 cards in lists such as New Cards, Top Cards, High Lift, Creatures, Instants, Sorceries, Utility Artifacts, Mana Artifacts, Enchantments, Planeswalkers, Utility Lands and Lands.
@@ -58,8 +59,8 @@ EDHREC publishes each commander page as JSON. The endpoint is unofficial, so the
 - **Source line:** "From 52,525 Edgar Markov decks on EDHREC", linking to the EDHREC page. This also serves as the credit.
 - **Controls:**
   - **Bracket:** All decks, or brackets 1–5 with deck counts. See Bracket for the starting value.
-  - **Theme:** All, or the page's themes with deck counts.
-  - **Price:** Any, Budget, Mid or Premium. These are the v1 tiers, now a filter. Budget plus All themes uses EDHREC's `/budget` page.
+  - **Theme:** All, or the page's 20 biggest themes with deck counts. Edgar's page lists 113.
+  - **Price:** Any, Budget, Mid or Premium. These are the v1 tiers, now a filter. Budget also reads EDHREC's `/budget` page, with any bracket and theme.
 - **Gaps:** compares the deck's card-type counts with the average deck. A type the deck has 3 or more fewer of than typical gets a line: "Artifacts: you run 3, typical is 9". Those categories show first.
 - **Categories:** EDHREC's lists in its order: Creatures, Instants, Sorceries, Utility Artifacts, Mana Artifacts, Enchantments, Planeswalkers, Utility Lands, Lands.
   - Cards from New Cards, Top Cards and High Lift go into their type's category; no card shows twice.
@@ -112,4 +113,3 @@ Used when the commander isn't on EDHREC (403), EDHREC doesn't answer, or its rep
 
 - Individual decklists (Archidekt and Moxfield block browser calls)
 - Combos (EDHREC has `combocounts`; a later idea)
-- Theme plus budget together (EDHREC doesn't serve it)
