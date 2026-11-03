@@ -29,6 +29,8 @@ export interface Suggestion {
   reason: string;
   /** Where Upgrades shows it, from EDHREC's type lists (EDHREC suggestions only). */
   category?: string;
+  /** False for an EDHREC suggestion whose roles haven't been looked up yet; unset means known. */
+  rolesKnown?: boolean;
 }
 
 export type Tier = 'budget' | 'mid' | 'premium';
@@ -97,7 +99,7 @@ const pct = (n: number) => Math.round(n * 100);
  * synergy + 0.3 if owned, so cards special to this commander rank above staples every deck runs.
  * The v1 guarantees hold: nothing banned, off-color, already in the deck, unpriced, or a basic land.
  */
-export function scoreEdhrec(candidates: EdhCandidate[], deck: DeckFacts, ownedIds: Set<string>, commander: string): Suggestion[] {
+export function scoreEdhrec(candidates: EdhCandidate[], deck: DeckFacts, ownedIds: Set<string>, commander: string, roles: Map<string, string[]> = new Map()): Suggestion[] {
   const out: Suggestion[] = [];
   for (const { card, edh } of candidates) {
     if (!fitsDeck(card, deck) || isBasicLand(card.type_line ?? '')) continue;
@@ -106,12 +108,17 @@ export function scoreEdhrec(candidates: EdhCandidate[], deck: DeckFacts, ownedId
     const oracleId = oracleIdOf(card);
     const owned = ownedIds.has(oracleId);
     const synergy = pct(edh.synergy);
-    const reason = [`In ${pct(edh.inclusion)}% of ${commander} decks`, synergy ? `${synergy > 0 ? '+' : '−'}${Math.abs(synergy)}% synergy` : null, owned ? 'owned' : null].filter(Boolean).join(' · ');
+    const cardRoles = roles.get(oracleId) ?? [];
+    const reason = [`In ${pct(edh.inclusion)}% of ${commander} decks`, synergy ? `${synergy > 0 ? '+' : '−'}${Math.abs(synergy)}% synergy` : null, ...cardRoles, owned ? 'owned' : null].filter(Boolean).join(' · ');
     const score = edh.inclusion + Math.max(0, edh.synergy) + (owned ? OWNED_BONUS : 0);
-    out.push({ card, oracleId, price: p.price, finish: p.finish, tags: [], roles: [], owned, score, reason, category: categoryFor(edh.category, card.type_line ?? '') });
+    out.push({ card, oracleId, price: p.price, finish: p.finish, tags: [], roles: cardRoles, rolesKnown: roles.has(oracleId), owned, score, reason, category: categoryFor(edh.category, card.type_line ?? '') });
   }
   return out.sort(byScore);
 }
+
+/** The best-scoring suggestions whose roles aren't known yet, for one background role lookup. */
+export const roleLookupNames = (scored: Suggestion[], n = 60): Array<{ oracleId: string; name: string }> =>
+  scored.filter((s) => s.rolesKnown === false).slice(0, n).map((s) => ({ oracleId: s.oracleId, name: s.card.name }));
 
 /**
  * Suggestions grouped by category, best first in each; empty categories left out. `first` (the
