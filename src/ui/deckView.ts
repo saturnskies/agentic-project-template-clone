@@ -1,4 +1,4 @@
-import { cleanDeckName, deckTotals, newDeckId, type Deck, type DeckEntry } from '../lib/deck';
+import { cleanDeckName, deckTotals, newDeckId, savedBracket, type Deck, type DeckEntry } from '../lib/deck';
 import { deckFileName, deckToText } from '../lib/export';
 import { decodeDeck, encodeDeck, ShareError } from '../lib/share';
 import { cardWarnings, DECK_SIZE, isBasicLand, warningText } from '../lib/format';
@@ -434,7 +434,18 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
       else {
         adder.append(search.root, warningBox, status, viewSwitch);
         columns.classList.add('with-panel');
-        panel = suggestionsPanel(ctx, () => priced, { add, swap, undo, lastSwap: () => lastSwap?.label ?? null });
+        panel = suggestionsPanel(ctx, () => priced, {
+          add,
+          swap,
+          undo,
+          lastSwap: () => lastSwap?.label ?? null,
+          bracket: () => savedBracket(deck),
+          // Saved quietly: not a deck edit, so it neither redraws the cards nor ends the Undo offer.
+          setBracket: (bracket) => {
+            deck = { ...deck, bracket };
+            persist(deck);
+          },
+        });
         columns.append(panel.root);
       }
       redraw();
