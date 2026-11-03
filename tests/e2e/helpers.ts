@@ -10,14 +10,31 @@ const load = (name: string): FixtureMap => JSON.parse(readFileSync(new URL(`../f
  */
 export const flows: FixtureMap = { ...load('scryfall-e2e.json'), ...load('scryfall-new-deck.json') };
 export const edgarFull: FixtureMap = load('scryfall-edgar-full.json');
+/** The Edgar Markov EDHREC page and its Scryfall name lookups, recorded 2026-11-03. */
+export const edgarEdhrec: FixtureMap = load('edhrec-edgar.json');
 export const e2eList = readFileSync(new URL('../fixtures/e2e-list.txt', import.meta.url), 'utf8');
 
 // A 1×1 grey PNG standing in for card images, so tests never download from Scryfall's image host.
 const PIXEL = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
 
-/** Answers Scryfall from recorded replies; returns the requests that had no recording. */
-export async function mockScryfall(page: Page, recorded: FixtureMap = flows): Promise<string[]> {
+/**
+ * Answers Scryfall and EDHREC from recorded replies; returns the requests that had no recording.
+ * EDHREC answers 403 ("no page for this commander") unless `edhrec` holds its replies, so tests that
+ * don't pass one see the rules-based fallback.
+ */
+export async function mockScryfall(page: Page, recorded: FixtureMap = flows, edhrec?: FixtureMap): Promise<string[]> {
   const misses: string[] = [];
+  await page.route('https://json.edhrec.com/**', async (route) => {
+    if (!edhrec) return route.fulfill({ status: 403, contentType: 'text/html', body: '<html>Forbidden</html>' });
+    const key = requestKey('GET', route.request().url());
+    const hit = edhrec[key];
+    if (!hit) {
+      misses.push(key);
+      return route.fulfill({ status: 500, json: { error: 'unrecorded' } });
+    }
+    return route.fulfill({ status: hit.status, json: hit.body });
+  });
+  if (edhrec) recorded = { ...recorded, ...edhrec };
   await page.route('https://cards.scryfall.io/**', (route) => route.fulfill({ status: 200, contentType: 'image/png', body: PIXEL }));
   await page.route('https://api.scryfall.com/**', async (route) => {
     const req = route.request();
