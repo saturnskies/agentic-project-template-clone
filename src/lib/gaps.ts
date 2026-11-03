@@ -25,13 +25,21 @@ export interface TypeGap {
   typical: number;
 }
 
-/** Cards per main type (front face; an artifact creature is a creature, an artifact land a land), with copies, commander left out. */
+/** A card's main type on its front face, as EDHREC's average deck counts it: an artifact creature is a creature, an artifact land a land. */
+export const mainType = (typeLine: string): string | null => {
+  const front = typeLine.split(' // ')[0];
+  return TYPES.find(([t]) => new RegExp(`\\b${t}\\b`).test(front))?.[0] ?? null;
+};
+
+/** "Artifact" → "Artifacts". */
+export const typePlural = (type: string): string => TYPES.find(([t]) => t === type)?.[1] ?? type;
+
+/** Cards per main type, with copies, commander left out. */
 export function deckTypeCounts(lines: Array<{ typeLine: string; qty: number; isCommander: boolean }>): Record<string, number> {
   const out: Record<string, number> = {};
   for (const l of lines) {
     if (l.isCommander) continue;
-    const front = l.typeLine.split(' // ')[0];
-    const type = TYPES.find(([t]) => new RegExp(`\\b${t}\\b`).test(front))?.[0];
+    const type = mainType(l.typeLine);
     if (type) out[type] = (out[type] ?? 0) + l.qty;
   }
   return out;
