@@ -113,9 +113,12 @@ export function scoreEdhrec(candidates: EdhCandidate[], deck: DeckFacts, ownedId
   return out.sort(byScore);
 }
 
-/** Suggestions grouped by category in EDHREC's order, best first in each; empty categories left out. */
-export function byCategory(scored: Suggestion[]): Array<{ category: string; items: Suggestion[] }> {
-  const order = [...CATEGORIES, 'Other'];
+/**
+ * Suggestions grouped by category, best first in each; empty categories left out. `first` (the
+ * categories the deck is short of) leads, in its order; the rest follow in EDHREC's order.
+ */
+export function byCategory(scored: Suggestion[], first: string[] = []): Array<{ category: string; items: Suggestion[] }> {
+  const order = [...first, ...[...CATEGORIES, 'Other'].filter((c) => !first.includes(c))];
   const groups = new Map<string, Suggestion[]>();
   for (const s of [...scored].sort(byScore)) {
     const c = s.category ?? 'Other';
