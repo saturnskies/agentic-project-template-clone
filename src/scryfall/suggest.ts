@@ -75,9 +75,9 @@ export const rulesText = (c: ScryCard | null) => (c ? (c.oracle_text ?? c.card_f
 
 /**
  * Facts about each priced deck card for swap rules. A card added from suggestions after the role
- * lookup takes its roles from its pool entry.
+ * lookup takes its roles from its pool entry, or from `moreRoles` (EDHREC cards' looked-up roles).
  */
-export function deckCardFacts(priced: PricedCard[], roles: Map<string, string[]>, pool: PoolEntry[], collection: Collection): DeckCardFacts[] {
+export function deckCardFacts(priced: PricedCard[], roles: Map<string, string[]>, pool: PoolEntry[], collection: Collection, moreRoles: Map<string, string[]> = new Map()): DeckCardFacts[] {
   const poolRoles = new Map(pool.map((e) => [e.card.oracle_id ?? e.card.card_faces?.[0]?.oracle_id ?? e.card.id, e.roles]));
   return priced.map((p) => {
     const id = p.entry.card.oracleId;
@@ -88,7 +88,7 @@ export function deckCardFacts(priced: PricedCard[], roles: Map<string, string[]>
       oracleText: rulesText(p.card),
       price: p.price,
       rank: p.card?.edhrec_rank ?? null,
-      roles: roles.get(id) ?? poolRoles.get(id) ?? [],
+      roles: roles.get(id) ?? poolRoles.get(id) ?? moreRoles.get(id) ?? [],
       isCommander: p.isCommander,
       // A card whose Scryfall data didn't load can't be judged, so it is never offered as a cut.
       keep: !!p.entry.keep || !p.card || !!p.failed,
