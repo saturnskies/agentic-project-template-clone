@@ -18,6 +18,7 @@ Status: **current** = in force or in progress; **draft** = proposed, not approve
 - [ADR-002-installable-pwa.md](decisions/ADR-002-installable-pwa.md) — current, 2026-11-02 — Makes Swapsmith an installable PWA (manifest, small service worker, generated icons) on the existing /swapsmith/ GitHub Pages origin, as the base for an APK later
 - [ADR-003-android-apk-capacitor.md](decisions/ADR-003-android-apk-capacitor.md) — current, 2026-11-02 — Builds the Android APK with Capacitor, bundling the built site, with debug-signed builds for sideloading and no Play Store release yet
 - [ADR-004-apk-signing-and-data-safety.md](decisions/ADR-004-apk-signing-and-data-safety.md) — current, 2026-11-02 — One permanent signing key for every Swapsmith APK, deck backup and restore in the app, and the rules that keep users' decks across updates
+- [ADR-005-edhrec-commander-data.md](decisions/ADR-005-edhrec-commander-data.md) — draft, 2026-11-03 — Uses EDHREC's unofficial per-commander JSON (inclusion, synergy, themes, brackets, average deck) as the main recommendation signal, called from the browser, with Scryfall rules as the fallback
 - [README.md](decisions/README.md) — current, 2026-10-29 — How to write ADRs: naming, front matter, status rules, never rewrite accepted ADRs
 
 ## docs/research/
@@ -28,6 +29,7 @@ Status: **current** = in force or in progress; **draft** = proposed, not approve
 ## docs/superpowers/plans/
 
 - [2026-11-02-swapsmith-v1.md](superpowers/plans/2026-11-02-swapsmith-v1.md) — current, 2026-11-02 — Swapsmith v1 build plan — eight test-gated vertical slices from skeleton and deploy to swap suggestions
+- [2026-11-03-recommendations-revamp.md](superpowers/plans/2026-11-03-recommendations-revamp.md) — draft, 2026-11-03 — Recommendations revamp build plan — five test-gated vertical slices from EDHREC client and category upgrades to filters, gaps, EDHREC-scored swaps and the wider Scryfall fallback
 
 ## docs/superpowers/specs/
 
