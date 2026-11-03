@@ -1,6 +1,7 @@
 import type { Deck } from '../lib/deck';
 import { setOwned as setOwnedIn } from '../lib/owned';
 import { browserStorage, loadStore, saveStore, type Store } from '../lib/storage';
+import { createEdhrecClient } from '../edhrec/page';
 import { createClient, type ScryfallClient } from '../scryfall/client';
 import { renderDeck, renderShared } from './deckView';
 import { h } from './dom';
@@ -11,6 +12,8 @@ import { renderPaste } from './paste';
 /** Shared state and actions every screen gets. */
 export interface AppContext {
   client: ScryfallClient;
+  /** EDHREC's commander pages (ADR-005), on its own slower queue. */
+  edhrec: ScryfallClient;
   store: Store;
   persistent: boolean;
   saveDeck(deck: Deck): void;
@@ -35,6 +38,7 @@ export function startApp(root: HTMLElement): void {
 
   const ctx: AppContext = {
     client: createClient(),
+    edhrec: createEdhrecClient(),
     store,
     persistent,
     saveDeck(deck) {
