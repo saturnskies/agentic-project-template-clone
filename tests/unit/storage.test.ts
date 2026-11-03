@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { emptyStore, loadStore, saveStore, STORE_KEY } from '../../src/lib/storage';
-import type { Deck } from '../../src/lib/deck';
+import { savedBracket, type Deck } from '../../src/lib/deck';
 
 function memoryStorage(initial: Record<string, string> = {}): Storage {
   const m = new Map(Object.entries(initial));
@@ -46,6 +46,20 @@ describe('storage', () => {
     const { store } = loadStore(memoryStorage({ [STORE_KEY]: raw }));
     expect(store.decks).toEqual([deck]);
     expect(store.owned).toEqual([]);
+  });
+
+  it("keeps a deck's bracket pick for suggestions, and still loads decks saved before it existed", () => {
+    const s = memoryStorage();
+    const store = { ...emptyStore(), decks: [{ ...deck, bracket: 3 }, { ...deck, id: 'd2' }] };
+    saveStore(s, store);
+    const loaded = loadStore(s).store.decks;
+    expect(savedBracket(loaded[0])).toBe(3);
+    expect(savedBracket(loaded[1])).toBeUndefined();
+  });
+
+  it('ignores a saved bracket that is not 0 (all decks) to 5', () => {
+    for (const bad of [6, -1, 2.5, '3', null]) expect(savedBracket({ ...deck, bracket: bad as unknown as number })).toBeUndefined();
+    expect(savedBracket({ ...deck, bracket: 0 })).toBe(0);
   });
 
   it('reports non-persistent storage when it is missing or throws', () => {
