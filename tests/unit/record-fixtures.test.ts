@@ -13,6 +13,9 @@ import { cheaperReplacements, swapPairs } from '../../src/lib/swaps';
 import { requestKey, trim, trimEdhrec, type FixtureMap } from '../support/fixtures';
 import { commanderPage, createEdhrecClient, EDHREC_BASE } from '../../src/edhrec/page';
 import { edhrecCandidates } from '../../src/edhrec/candidates';
+import { estimateBracket, type PageFilter } from '../../src/lib/edhrec';
+import type { Deck } from '../../src/lib/deck';
+import { gameChangerCount } from '../../src/scryfall/names';
 
 /**
  * Re-records tests/fixtures/scryfall-e2e.json from the real Scryfall API by running the same flow the
@@ -130,9 +133,27 @@ describe.runIf(process.env.RECORD === '1')('record Scryfall fixtures', () => {
     const edhrec = createEdhrecClient({ fetch: recording, cache: memoryCache() });
     const scryfall = createClient({ fetch: recording, cache: memoryCache() });
 
-    // What Find suggestions does for the seeded Edgar deck (tests/fixtures/edgar-deck.json).
-    const result = await edhrecCandidates(edhrec, scryfall, ['Edgar Markov'], ['B', 'R', 'W']);
+    // What Find suggestions does for the seeded Edgar deck (tests/fixtures/edgar-deck.json): count its
+    // Game Changers for the starting bracket, then load the pages tests/e2e/edhrec.spec.ts switches to.
+    // Each page's lookups start fresh, so the recording holds every listed card; the e2e mock answers
+    // any batch of names from them.
+    const seeded = JSON.parse(readFileSync(new URL('../fixtures/edgar-deck.json', import.meta.url), 'utf8')) as Deck;
+    const gameChangers = await gameChangerCount(scryfall, [seeded.commander.name, ...seeded.cards.map((c) => c.card.name)]);
+    if (gameChangers == null) throw new Error('Game Changer search failed');
+    const estimated = estimateBracket(gameChangers);
+    console.log(`Edgar deck: ${gameChangers} Game Changers, estimated bracket ${estimated}`);
+    const load = (filter: PageFilter) => edhrecCandidates(edhrec, scryfall, { slug: 'edgar-markov', filter, colorIdentity: ['B', 'R', 'W'], known: new Map() });
+    const result = await load({ bracket: estimated, theme: null, budget: false });
     if (result.status !== 'ok') throw new Error(`EDHREC page: ${result.status}`);
+    for (const filter of [
+      { bracket: null, theme: null, budget: false },
+      { bracket: estimated, theme: 'vampires', budget: false },
+      { bracket: estimated, theme: null, budget: true },
+      { bracket: 2, theme: null, budget: false },
+      { bracket: 1, theme: 'vampires', budget: false }, // too few decks, so all brackets of Vampires
+    ]) {
+      if ((await load(filter)).status !== 'ok') throw new Error(`EDHREC page ${JSON.stringify(filter)} failed`);
+    }
     // tests/e2e/edhrec.spec.ts adds Herald's Horn, which prices its printings.
     const horn = result.candidates.find((c) => c.card.name === "Herald's Horn")!.card;
     await priceEntries(scryfall, [{ entry: { card: { oracleId: oracleIdOf(horn), name: horn.name }, qty: 1 }, isCommander: false }], undefined, new Map([[oracleIdOf(horn), horn]]));
