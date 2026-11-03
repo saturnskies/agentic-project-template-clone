@@ -6,11 +6,11 @@ import { autocompleteNames, cardByName, searchCommanders } from '../../src/scryf
 import { buildDeck, commanderCandidates, oracleIdOf, priceDeck, priceEntries, resolveList } from '../../src/scryfall/resolve';
 import { fuzzyCard } from '../../src/scryfall/cards';
 import { deckProfile } from '../../src/lib/profile';
-import { scoreSuggestions, upgradesByTier } from '../../src/lib/suggest';
+import { roleLookupNames, scoreEdhrec, scoreSuggestions, upgradesByTier } from '../../src/lib/suggest';
 import { candidatePool, deckCardFacts, rulesText } from '../../src/scryfall/suggest';
 import { deckRoles } from '../../src/scryfall/roles';
-import { cheaperReplacements, swapPairs } from '../../src/lib/swaps';
-import { requestKey, trim, trimEdhrec, type FixtureMap } from '../support/fixtures';
+import { cheaperReplacements, edhrecKeepScores, swapPairs } from '../../src/lib/swaps';
+import { fixtureFetch, requestKey, trim, trimEdhrec, type FixtureMap } from '../support/fixtures';
 import { commanderPage, createEdhrecClient, EDHREC_BASE } from '../../src/edhrec/page';
 import { edhrecCandidates } from '../../src/edhrec/candidates';
 import { estimateBracket, type PageFilter } from '../../src/lib/edhrec';
@@ -145,6 +145,7 @@ describe.runIf(process.env.RECORD === '1')('record Scryfall fixtures', () => {
     const load = (filter: PageFilter) => edhrecCandidates(edhrec, scryfall, { slug: 'edgar-markov', filter, colorIdentity: ['B', 'R', 'W'], known: new Map() });
     const result = await load({ bracket: estimated, theme: null, budget: false });
     if (result.status !== 'ok') throw new Error(`EDHREC page: ${result.status}`);
+    const everyCard = new Map(result.candidates.map((c) => [oracleIdOf(c.card), c.card.name]));
     for (const filter of [
       { bracket: null, theme: null, budget: false },
       { bracket: estimated, theme: 'vampires', budget: false },
@@ -152,11 +153,37 @@ describe.runIf(process.env.RECORD === '1')('record Scryfall fixtures', () => {
       { bracket: 2, theme: null, budget: false },
       { bracket: 1, theme: 'vampires', budget: false }, // too few decks, so all brackets of Vampires
     ]) {
-      if ((await load(filter)).status !== 'ok') throw new Error(`EDHREC page ${JSON.stringify(filter)} failed`);
+      const page = await load(filter);
+      if (page.status !== 'ok') throw new Error(`EDHREC page ${JSON.stringify(filter)} failed`);
+      for (const c of page.candidates) everyCard.set(oracleIdOf(c.card), c.card.name);
     }
     // tests/e2e/edhrec.spec.ts adds Herald's Horn, which prices its printings.
     const horn = result.candidates.find((c) => c.card.name === "Herald's Horn")!.card;
     await priceEntries(scryfall, [{ entry: { card: { oracleId: oracleIdOf(horn), name: horn.name }, qty: 1 }, isCommander: false }], undefined, new Map([[oracleIdOf(horn), horn]]));
+
+    // What Swaps and Cheaper do on that page: look up the roles of the 60 best cards, then price the
+    // first swap's add and the first cheaper replacement, which the e2e tests apply. The deck's own
+    // prices and roles come from scryfall-edgar-full.json, as the e2e mock serves them.
+    const replay = createClient({ fetch: fixtureFetch(JSON.parse(readFileSync(new URL('../fixtures/scryfall-edgar-full.json', import.meta.url), 'utf8'))), cache: memoryCache(), sleep: async () => {} });
+    const priced = await priceDeck(replay, seeded);
+    const oracleIds = new Set(priced.map((p) => p.entry.card.oracleId));
+    const edgarId = ['B', 'R', 'W'];
+    const unchecked = scoreEdhrec(result.candidates, { colorIdentity: edgarId, oracleIds }, new Set(), 'Edgar Markov');
+    const { roles: candidateRoles, complete } = await deckRoles(scryfall, roleLookupNames(unchecked));
+    if (!complete) throw new Error('candidate role lookup incomplete');
+    const { roles: ownRoles } = await deckRoles(replay, priced.filter((c) => !c.isCommander).map((c) => ({ oracleId: c.entry.card.oracleId, name: c.entry.card.name })));
+    const facts = deckCardFacts(priced, ownRoles, [], { owned: [], unownedBasics: [] }, candidateRoles);
+    const scored = scoreEdhrec(result.candidates, { colorIdentity: edgarId, oracleIds }, new Set(), 'Edgar Markov', candidateRoles);
+    const profile = deckProfile(priced.map((p) => ({ name: p.entry.card.name, typeLine: p.typeLine, oracleText: rulesText(p.card), isCommander: p.isCommander })), edgarId);
+    const firstSwap = swapPairs(scored, facts, profile, { keepScores: edhrecKeepScores(facts, result.page), matchType: true })[0];
+    const firstCheaper = cheaperReplacements(facts, scored, 3, { deckRolesKnown: true })[0];
+    console.log(`EDHREC swap: ${firstSwap.cut.name} → ${firstSwap.add.card.name}; cheaper: ${firstCheaper.card.name} → ${firstCheaper.options[0].add.card.name}`);
+    for (const card of [firstSwap.add.card, firstCheaper.options[0].add.card]) {
+      await priceEntries(scryfall, [{ entry: { card: { oracleId: oracleIdOf(card), name: card.name }, qty: 1 }, isCommander: false }], undefined, new Map([[oracleIdOf(card), card]]));
+    }
+    // After a filter change the panel looks up roles for that page's best cards, batched by what it
+    // already knows. Record the roles of every card on every page, so the e2e mock can answer any batch.
+    if (!(await deckRoles(scryfall, [...everyCard].map(([oracleId, name]) => ({ oracleId, name })))).complete) throw new Error('role lookup for every card incomplete');
     await commanderPage(edhrec, '/commanders/tymna-the-weaver-thrasios-triton-hero');
     await commanderPage(edhrec, '/commanders/not-a-real-commander-swapsmith');
 
