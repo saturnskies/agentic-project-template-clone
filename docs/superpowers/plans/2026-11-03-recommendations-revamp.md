@@ -74,12 +74,17 @@ Builds the [recommendations revamp spec](../specs/2026-11-03-recommendations-rev
 - **Done 2026-11-03.** A card counts once by its main type, creature first, then land (an artifact land is a land), matching EDHREC's average deck, which sums to 99.
 
 ### 4. Swaps and Cheaper on EDHREC scores
-- [ ] Keep score: a deck card's EDHREC score, or 0 when it isn't on the page.
-- [ ] Roles for the top 60 candidates: 8 background searches after deck roles. Until they load, pairs match by EDHREC category and the reason says "Both artifacts".
-- [ ] Cheaper replacements accept a same-category match when roles are unknown.
-- [ ] Unit tests: every v1 never-cut rule still holds; an absent card is cut first; category matching works without roles; no downgrades.
-- [ ] E2E: the existing swap and undo test passes on the EDHREC flow.
+- [x] Keep score: a deck card's EDHREC score, or 0 when it isn't on the page.
+- [x] Roles for the top 60 candidates: 8 background searches after deck roles. Until they load, pairs match by EDHREC category and the reason says "Both artifacts".
+- [x] Cheaper replacements accept a same-category match when roles are unknown.
+- [x] Unit tests: every v1 never-cut rule still holds; an absent card is cut first; category matching works without roles; no downgrades.
+- [x] E2E: the existing swap and undo test passes on the EDHREC flow.
 - **Failure paths:** the role lookup fails partly or fully, giving category matching and the "approximate" notice.
+- **Done 2026-11-03.**
+  - Find no longer runs v1's rules searches when EDHREC answers; they start only when it has nothing. The deck's own roles now load at Find, not after the pool.
+  - Pairs match on a shared role, then the same main type, the same way the average deck counts cards: "Both artifacts". An add with neither is skipped, instead of cutting something unrelated.
+  - A partial role lookup keeps the roles it did find.
+  - Edgar's first EDHREC swap is Kalastria Highborn → Blood Artist.
 
 ### 5. Wider Scryfall fallback
 - [ ] Verify each new `otag` live first (tutor, recursion, protection, counterspell, mana-rock, token-generator, sacrifice-outlet), and record which exist.
