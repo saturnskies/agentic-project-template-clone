@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { categoryFor, commanderSlug, parsePage, type EdhPage } from '../../src/lib/edhrec';
+import { BRACKETS, categoryFor, commanderSlug, estimateBracket, pagePath, parsePage, type EdhPage } from '../../src/lib/edhrec';
 import type { FixtureMap } from '../support/fixtures';
 
 // Real EDHREC replies recorded 2026-11-03 by tests/unit/record-fixtures.test.ts (RECORD=1).
@@ -61,7 +61,7 @@ describe('parsePage', () => {
     expect(parsed).toEqual({ kind: 'page', page: { numDecks: 10, cards: [
       { name: 'Blood Artist', category: 'Creatures', inclusion: 0.8, synergy: 0.6 },
       { name: 'Brand New', category: null, inclusion: 0.1, synergy: 0.1 },
-    ], themes: [], typeCounts: {} } });
+    ], themes: [], typeCounts: {}, bracketCounts: {} } });
   });
 
   it('returns the redirect EDHREC sends for a partner pair named in the other order', () => {
@@ -131,5 +131,51 @@ describe('categoryFor', () => {
     [null, 'Sorcery // Land', 'Sorceries'],
   ])('EDHREC %s, type %s → %s', (edh, typeLine, want) => {
     expect(categoryFor(edh, typeLine)).toBe(want);
+  });
+});
+
+describe('pagePath', () => {
+  // Each combination answered from json.edhrec.com on 2026-11-03 (core/vampires/budget: 8 decks).
+  it.each([
+    [{ bracket: null, theme: null, budget: false }, '/commanders/edgar-markov'],
+    [{ bracket: 2, theme: null, budget: false }, '/commanders/edgar-markov/core'],
+    [{ bracket: 5, theme: null, budget: false }, '/commanders/edgar-markov/cedh'],
+    [{ bracket: null, theme: 'vampires', budget: false }, '/commanders/edgar-markov/vampires'],
+    [{ bracket: null, theme: null, budget: true }, '/commanders/edgar-markov/budget'],
+    [{ bracket: 2, theme: 'vampires', budget: true }, '/commanders/edgar-markov/core/vampires/budget'],
+  ])('%j → %s', (filter, path) => {
+    expect(pagePath('edgar-markov', filter)).toBe(path);
+  });
+
+  it('ignores a theme slug that could change the address', () => {
+    expect(pagePath('edgar-markov', { bracket: null, theme: '../cards', budget: false })).toBe('/commanders/edgar-markov');
+  });
+});
+
+describe('estimateBracket', () => {
+  it.each([
+    [0, 2],
+    [1, 3],
+    [3, 3],
+    [4, 4],
+    [12, 4],
+  ])('%i Game Changers → bracket %i', (n, bracket) => {
+    expect(estimateBracket(n)).toBe(bracket);
+  });
+});
+
+describe('bracket counts', () => {
+  it('reads decks per bracket from a real page', () => {
+    expect(Object.keys(edgar.bracketCounts).sort()).toEqual(['1', '2', '3', '4', '5']);
+    expect(edgar.bracketCounts[3]).toBeGreaterThan(1000);
+  });
+
+  it('keeps only brackets 1–5 with numeric counts', () => {
+    const parsed = parsePage({ container: { json_dict: { cardlists: [{ tag: 'lands', cardviews: [{ name: 'A', num_decks: 1, potential_decks: 2, synergy: 0 }] }] } }, bracket_counts: { '2': 9, '7': 3, x: 1, '3': 'many' } });
+    expect(parsed?.kind === 'page' && parsed.page.bracketCounts).toEqual({ 2: 9 });
+  });
+
+  it('names brackets as EDHREC does', () => {
+    expect(BRACKETS.map((b) => `${b.n} ${b.label}`)).toEqual(['1 Exhibition', '2 Core', '3 Upgraded', '4 Optimized', '5 cEDH']);
   });
 });
