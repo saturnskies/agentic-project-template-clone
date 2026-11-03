@@ -221,6 +221,9 @@ dialog.picker::backdrop { background: rgb(0 0 0 / 0.45); }
 .suggestions { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; align-content: start; }
 .suggestions .segmented { flex-wrap: wrap; }
 .profile p { margin: 0; }
+.filters { display: flex; flex-wrap: wrap; gap: 0.5rem 0.75rem; }
+.filter { display: grid; gap: 0.2rem; flex: 1 1 9rem; min-width: 0; }
+.filter select { width: 100%; }
 .sugg-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
 .sugg { display: grid; grid-template-columns: 4.25rem 1fr; gap: 0.65rem; align-items: start; }
 .sugg-thumb { width: 100%; height: auto; aspect-ratio: 146 / 204; border-radius: 4.75% / 3.5%; background: var(--tag-bg); display: block; }
