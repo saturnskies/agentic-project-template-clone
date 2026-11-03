@@ -51,6 +51,7 @@ export function trimEdhrec(body: unknown): unknown {
       },
     },
     panels: { taglinks: b.panels?.taglinks, piechart: b.panels?.piechart },
+    bracket_counts: b.bracket_counts,
   };
 }
 
