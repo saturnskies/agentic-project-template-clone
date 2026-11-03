@@ -6,7 +6,7 @@ updated: 2026-11-03
 
 # Recommendations revamp: design spec
 
-First of three specs (then the tab bar with life counter, then Browse). It replaces the v1 [suggestion rules](2026-11-02-swapsmith-design.md#suggestion-rules) when the plan for it ships; the source choice goes in a new ADR-005.
+First of three specs (then the tab bar with life counter, then Browse). It replaces the v1 [suggestion rules](2026-11-02-swapsmith-design.md#suggestion-rules) when the plan for it ships; the source choice is [ADR-005](../../decisions/ADR-005-edhrec-commander-data.md).
 
 ## Problem
 
