@@ -1,6 +1,7 @@
 import { edhrecCandidates, type EdhrecResult, type KnownCards } from '../edhrec/candidates';
 import { pageUrl } from '../edhrec/page';
 import { BRACKETS, commanderSlug, estimateBracket, type PageFilter } from '../lib/edhrec';
+import { deckTypeCounts, gapCategories, typeGaps } from '../lib/gaps';
 import { cardImage } from '../lib/groups';
 import { deckProfile, type DeckProfile } from '../lib/profile';
 import { tcgplayerUrl } from '../lib/price';
@@ -230,7 +231,9 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
 
   const edhrecUpgrades = (res: Extract<EdhState, { status: 'ok' }>, oracleIds: Set<string>): HTMLElement[] => {
     const scored = scoreEdhrec(res.candidates, { colorIdentity: profile!.colorIdentity, oracleIds }, new Set(ctx.store.owned), commanderName).filter((s) => price === 'any' || tierOf(s.price) === price);
-    const groups = byCategory(scored);
+    // Card types the deck is short of, against the average deck on the page shown; their categories lead.
+    const gaps = typeGaps(deckTypeCounts(priced().map((p) => ({ typeLine: p.typeLine, qty: p.entry.qty, isCommander: p.isCommander }))), res.page.typeCounts);
+    const groups = byCategory(scored, gapCategories(gaps));
     const range = TIERS.find((t) => t.id === price)?.range;
     const thin = res.thinBracket;
     const thinLabel = thin && BRACKETS.find((b) => b.n === thin.bracket);
@@ -246,6 +249,14 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
         h('a', { href: pageUrl(res.path), target: '_blank', rel: 'noopener' }, `${res.page.numDecks.toLocaleString('en-US')} ${commanderName} decks on EDHREC`),
         range ? `, cards ${range}, best fit first.` : ', best fit first.',
       ),
+      gaps.length
+        ? h(
+            'div',
+            { class: 'gaps', 'data-testid': 'gaps' },
+            h('p', { class: 'small' }, `Compared with the average deck on this page, your deck is short of:`),
+            h('ul', { class: 'small' }, ...gaps.map((g) => h('li', {}, `${g.label}: you run ${g.have}, typical is ${g.typical}`))),
+          )
+        : null,
     ].filter((x): x is HTMLElement => !!x);
     if (res.failedLookups) out.push(h('p', { class: 'notice small', role: 'status' }, "Scryfall didn't answer every lookup, so some cards may be missing. Refresh suggestions to try again."));
     if (!groups.length) out.push(h('p', { class: 'muted small' }, price === 'any' ? 'Your deck already runs every card EDHREC lists for this commander.' : 'No suggestions in this price range.'));
