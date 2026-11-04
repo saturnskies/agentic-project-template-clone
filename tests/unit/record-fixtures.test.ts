@@ -6,7 +6,7 @@ import { autocompleteNames, cardByName, searchCommanders } from '../../src/scryf
 import { buildDeck, commanderCandidates, oracleIdOf, priceDeck, priceEntries, resolveList } from '../../src/scryfall/resolve';
 import { fuzzyCard } from '../../src/scryfall/cards';
 import { deckProfile } from '../../src/lib/profile';
-import { roleLookupNames, scoreEdhrec, scoreSuggestions, upgradesByTier } from '../../src/lib/suggest';
+import { roleLookupNames, scoreEdhrec, scoreSuggestions, tierOf } from '../../src/lib/suggest';
 import { candidatePool, deckCardFacts, rulesText } from '../../src/scryfall/suggest';
 import { deckRoles } from '../../src/scryfall/roles';
 import { cheaperReplacements, edhrecKeepScores, swapPairs } from '../../src/lib/swaps';
@@ -91,7 +91,7 @@ describe.runIf(process.env.RECORD === '1')('record Scryfall fixtures', () => {
     writeFileSync(new URL('../fixtures/edgar-deck.json', import.meta.url), JSON.stringify(deck, null, 1) + '\n');
 
     // What the deck page does: price it, then Find suggestions, then
-    // add the top Budget pick, apply the first swap, and take the first cheaper replacement. (Same
+    // add the top pick under $3, apply the first swap, and take the first cheaper replacement. (Same
     // requests as the panel: the pool, then the deck's roles.)
     const priced = await priceDeck(client, deck);
     const commander = priced.find((p) => p.isCommander)!.card!;
@@ -99,11 +99,11 @@ describe.runIf(process.env.RECORD === '1')('record Scryfall fixtures', () => {
     const { pool } = await candidatePool(client, profile);
     const { roles } = await deckRoles(client, priced.filter((c) => !c.isCommander).map((c) => ({ oracleId: c.entry.card.oracleId, name: c.entry.card.name })));
     const scored = scoreSuggestions(pool, { colorIdentity: profile.colorIdentity, oracleIds: new Set(priced.map((p) => p.entry.card.oracleId)) }, new Set());
-    const tiers = upgradesByTier(scored, 10);
+    const topBudget = scored.find((s) => tierOf(s.price) === 'budget')!;
     const facts = deckCardFacts(priced, roles, pool, { owned: [], unownedBasics: [] });
     const firstSwap = swapPairs(scored, facts, profile)[0].add.card;
     const firstCheaper = cheaperReplacements(facts, scored)[0].options[0].add.card;
-    for (const card of [tiers.budget[0].card, firstSwap, firstCheaper]) {
+    for (const card of [topBudget.card, firstSwap, firstCheaper]) {
       await priceEntries(client, [{ entry: { card: { oracleId: oracleIdOf(card), name: card.name }, qty: 1 }, isCommander: false }], undefined, new Map([[oracleIdOf(card), card]]));
     }
 
@@ -116,7 +116,7 @@ describe.runIf(process.env.RECORD === '1')('record Scryfall fixtures', () => {
       }
     }
     writeFileSync(new URL('../fixtures/scryfall-edgar-full.json', import.meta.url), JSON.stringify(map) + '\n');
-    expect(tiers.budget.length).toBeGreaterThan(0);
+    expect(topBudget).toBeDefined();
   }, 300_000);
 
   it('records the Edgar Markov EDHREC page, its Scryfall name lookups, a partner redirect and a missing commander', async () => {
@@ -188,6 +188,48 @@ describe.runIf(process.env.RECORD === '1')('record Scryfall fixtures', () => {
     await commanderPage(edhrec, '/commanders/not-a-real-commander-swapsmith');
 
     writeFileSync(new URL('../fixtures/edhrec-edgar.json', import.meta.url), JSON.stringify(map) + '\n');
+  }, 300_000);
+
+  it('records the wider fallback searches for the Edgar deck (only those not already in scryfall-edgar-full.json)', async () => {
+    const map: FixtureMap = {};
+    const recording: typeof fetch = async (input, init) => {
+      const headers = { ...Object.fromEntries(new Headers(init?.headers)), 'User-Agent': 'Swapsmith-fixture-recorder/0.1' };
+      const res = await fetch(input, { ...init, headers });
+      map[requestKey(init?.method ?? 'GET', String(input), init?.body as string | undefined)] = { status: res.status, body: trim(await res.clone().json()) };
+      return res;
+    };
+    const full: FixtureMap = JSON.parse(readFileSync(new URL('../fixtures/scryfall-edgar-full.json', import.meta.url), 'utf8'));
+    const replay = createClient({ fetch: fixtureFetch(full), cache: memoryCache(), sleep: async () => {} });
+    const client = createClient({ fetch: recording, cache: memoryCache() });
+
+    // The deck as the e2e tests price it, then the pool Find builds when EDHREC has nothing.
+    const seeded = JSON.parse(readFileSync(new URL('../fixtures/edgar-deck.json', import.meta.url), 'utf8')) as Deck;
+    const priced = await priceDeck(replay, seeded);
+    const commander = priced.find((p) => p.isCommander)!.card!;
+    const profile = deckProfile(priced.map((p) => ({ name: p.entry.card.name, typeLine: p.typeLine, oracleText: rulesText(p.card), isCommander: p.isCommander })), commander.color_identity);
+    console.log(`Edgar themes: ${profile.themes.map((t) => t.label).join(', ')}`);
+    const { pool, failed } = await candidatePool(client, profile);
+    if (failed.length) throw new Error(`searches failed: ${failed.join(', ')}`);
+
+    // tests/e2e/suggestions.spec.ts applies the first swap and the first two cheaper options for
+    // Minas Tirith, which price their printings. The deck's roles come from the full recording.
+    const { roles } = await deckRoles(replay, priced.filter((c) => !c.isCommander).map((c) => ({ oracleId: c.entry.card.oracleId, name: c.entry.card.name })));
+    const facts = deckCardFacts(priced, roles, pool, { owned: [], unownedBasics: [] });
+    const scored = scoreSuggestions(pool, { colorIdentity: profile.colorIdentity, oracleIds: new Set(facts.map((c) => c.oracleId)) }, new Set());
+    const firstSwap = swapPairs(scored, facts, profile)[0].add.card;
+    const minas = cheaperReplacements(facts, scored).find((r) => r.card.name === 'Minas Tirith')!.options.slice(0, 2).map((o) => o.add.card);
+    console.log(`Fallback swap add: ${firstSwap.name}; Minas Tirith options: ${minas.map((c) => c.name).join(', ')}`);
+    for (const card of [firstSwap, ...minas]) {
+      await priceEntries(client, [{ entry: { card: { oracleId: oracleIdOf(card), name: card.name }, qty: 1 }, isCommander: false }], undefined, new Map([[oracleIdOf(card), card]]));
+    }
+
+    // Rules text isn't read from suggestions; drop it like the full recording does.
+    for (const [key, rec] of Object.entries(map)) {
+      if (key in full) delete map[key];
+      else for (const c of (rec.body as { data?: Array<Record<string, unknown>> }).data ?? []) delete c.oracle_text;
+    }
+    writeFileSync(new URL('../fixtures/scryfall-edgar-fallback.json', import.meta.url), JSON.stringify(map) + '\n');
+    expect(pool.length).toBeGreaterThan(100);
   }, 300_000);
 
   it('records lookups for the full Edgar Markov list', async () => {
