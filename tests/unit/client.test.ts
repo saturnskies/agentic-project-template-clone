@@ -244,6 +244,27 @@ describe('Scryfall client', () => {
     await expect(client.get('/x')).resolves.toEqual({ name: 'Kalastria Highborn' });
   });
 
+  it('can talk to another host: its base URL, its name in errors, and cache keys that never collide with Scryfall', async () => {
+    const clock = fakeClock();
+    const cache = memoryCache();
+    const f = fakeFetch([json({ from: 'scryfall' }), json({ from: 'edhrec' }), () => new Response('', { status: 403, statusText: 'Forbidden' })]);
+    const scryfall = createClient({ fetch: f.fn, cache, now: clock.now, sleep: clock.sleep });
+    const edhrec = createClient({ fetch: f.fn, cache, now: clock.now, sleep: clock.sleep, base: 'https://json.edhrec.com', service: 'EDHREC' });
+
+    await scryfall.get('/x');
+    await expect(edhrec.get('/x')).resolves.toEqual({ from: 'edhrec' });
+    expect(f.calls[1].url).toBe('https://json.edhrec.com/x');
+    await expect(edhrec.get('/missing')).rejects.toMatchObject({ status: 403, message: 'EDHREC 403: Forbidden' });
+  });
+
+  it('names the other host when it cannot be reached', async () => {
+    const clock = fakeClock();
+    const f = fakeFetch([() => { throw new TypeError('Failed to fetch'); }]);
+    const client = createClient({ fetch: f.fn, cache: memoryCache(), now: clock.now, sleep: clock.sleep, maxRetries: 0, base: 'https://json.edhrec.com', service: 'EDHREC' });
+
+    await expect(client.get('/x')).rejects.toMatchObject({ status: 0, message: "Couldn't reach EDHREC: Failed to fetch" });
+  });
+
   it('reports a non-JSON error body by HTTP status', async () => {
     const clock = fakeClock();
     const f = fakeFetch([() => new Response('<html>Bad gateway</html>', { status: 502, statusText: 'Bad Gateway' })]);

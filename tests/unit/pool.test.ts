@@ -12,7 +12,7 @@ describe('candidatePool', () => {
       get: async <T,>(path: string) => {
         const q = new URLSearchParams(path.split('?')[1]).get('q')!;
         if (q.includes('t:vampire')) return list(['Blood Artist', 'Cordial Vampire']) as T;
-        if (q.includes('sacrifice')) return list(['Blood Artist']) as T;
+        if (q.includes('o:/sacrifice')) return list(['Blood Artist']) as T;
         if (q.includes('otag:removal')) return list(['Blood Artist', 'Mortify']) as T;
         throw new ScryfallError(404, 'none');
       },
@@ -42,7 +42,16 @@ describe('candidatePool', () => {
   it('fails outright only when every search fails', async () => {
     const client: ScryfallClient = { get: async () => { throw new ScryfallError(0, 'offline'); }, post: async () => { throw new Error('unused'); } };
     await expect(candidatePool(client, profile)).rejects.toThrow('offline');
-    expect(profileSearches(profile)).toHaveLength(6);
+    expect(profileSearches(profile)).toHaveLength(12);
+  });
+
+  it('searches the tribe, the themes, and ten roles: the four core ones plus tags checked on Scryfall 2026-11-04', () => {
+    const searches = profileSearches(profile);
+    expect(searches.filter((s) => s.kind === 'theme').map((s) => s.label)).toEqual(['Vampire', 'sacrifice']);
+    expect(searches.filter((s) => s.kind === 'role').map((s) => s.query)).toEqual([
+      'otag:ramp', 'otag:card-advantage', 'otag:removal', 'otag:board-wipe',
+      'otag:tutor', 'otag:recursion', 'otag:protection', 'otag:counterspell', 'otag:mana-rock', 'otag:sacrifice-outlet',
+    ]);
   });
 });
 

@@ -39,11 +39,12 @@ describe('share links', () => {
     });
   });
 
-  it('leaves out local details: the deck id, totals and anything about owned cards', async () => {
+  it('leaves out local details: the deck id, totals, the bracket pick and anything about owned cards', async () => {
     const code = await encodeDeck(deck);
     const shared = await decodeDeck(code);
     expect(shared).not.toHaveProperty('id');
     expect(shared).not.toHaveProperty('summary');
+    expect(await decodeDeck(await encodeDeck({ ...deck, bracket: 4 }))).not.toHaveProperty('bracket');
     expect(JSON.stringify(shared)).not.toContain('6.39');
   });
 

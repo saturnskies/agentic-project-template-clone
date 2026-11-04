@@ -25,7 +25,13 @@ export interface Deck {
   updatedAt: string;
   /** Last computed totals, shown on the home screen without re-pricing. */
   summary?: { total: number; unpriced: number; count: number; toBuy?: number };
+  /** The bracket picked for EDHREC suggestions: 0 for all decks, or 1–5. Kept out of share links. */
+  bracket?: number;
 }
+
+/** The deck's bracket pick, or undefined when none was saved (or the saved value is odd). */
+export const savedBracket = (deck: Deck): number | undefined =>
+  Number.isInteger(deck.bracket) && deck.bracket! >= 0 && deck.bracket! <= 5 ? deck.bracket : undefined;
 
 export interface PricedLine {
   qty: number;

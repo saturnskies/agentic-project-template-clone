@@ -1,10 +1,12 @@
 import { expect, test } from '@playwright/test';
 import { edgarFull, mockScryfall, seedEdgarDeck } from './helpers';
 
-// The full Edgar Markov deck with Scryfall replies recorded 2026-11-02 (tests/fixtures/scryfall-edgar-full.json).
-// Prices are that recording's: re-recording moves them, so update the totals below with it.
+// The full Edgar Markov deck with Scryfall replies recorded 2026-11-02 (tests/fixtures/scryfall-edgar-full.json),
+// plus the fallback's wider searches recorded 2026-11-04 (scryfall-edgar-fallback.json). Prices are those
+// recordings': re-recording moves them, so update the totals below with it. EDHREC answers 403 here
+// (no page for the commander), so these are the rules-based fallback.
 
-test('find upgrades by price tier that fit the deck', async ({ page }) => {
+test('rules-based upgrades fit the deck, by category, with a price filter', async ({ page }) => {
   const misses = await mockScryfall(page, edgarFull);
   const deck = await seedEdgarDeck(page);
   await page.goto(`./#/deck/${deck.id}`);
@@ -14,26 +16,45 @@ test('find upgrades by price tier that fit the deck', async ({ page }) => {
   const profile = page.getByTestId('deck-profile');
   await expect(profile).toContainText('Colors: black, red, white');
   await expect(profile).toContainText('Tribe: Vampire');
-  await expect(profile).toContainText('Themes: sacrifice, lifegain, +1/+1 counters, graveyard');
+  // Tokens comes from Edgar's own text ("create a 1/1 black Vampire creature token").
+  await expect(profile).toContainText('Themes: sacrifice, lifegain, tokens, +1/+1 counters, graveyard');
 
   const panel = page.getByRole('complementary', { name: 'Suggestions' });
-  await expect(panel.getByRole('button', { name: 'Budget (10)' })).toHaveAttribute('aria-pressed', 'true');
-  const budget = panel.getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem');
-  await expect(budget).toHaveCount(10);
-  await expect(budget.first()).toContainText('Indulgent Aristocrat');
-  await expect(budget.first()).toContainText('$0.21');
-  await expect(budget.first()).toContainText('Vampire · sacrifice · lifegain · +1/+1 counters · EDHREC #2588');
-  await expect(budget.first().getByRole('link', { name: 'Indulgent Aristocrat' })).toHaveAttribute('href', /^https:\/\/www\.tcgplayer\.com\/product\/\d+$/);
+  const creatures = panel.getByRole('list', { name: 'Creatures upgrades' }).getByRole('listitem');
+  await expect(creatures).toHaveCount(5);
+  await expect(creatures.first()).toContainText('Woe Strider');
+  await expect(creatures.first()).toContainText('$0.29');
+  await expect(creatures.first()).toContainText('sacrifice · tokens · +1/+1 counters · graveyard · recursion · sacrifice outlet · EDHREC #1677');
+  await expect(creatures.first().getByRole('link', { name: 'Woe Strider' })).toHaveAttribute('href', /^https:\/\/www\.tcgplayer\.com\/product\/\d+$/);
+  // Off-tribe artifacts and enchantments get their own place.
+  await expect(panel.getByRole('list', { name: 'Utility Artifacts upgrades' })).toContainText('Trading Post');
+  await expect(panel.getByRole('list', { name: 'Enchantments upgrades' })).toContainText('Cleric Class');
 
   // Nothing suggested is already in the deck.
   for (const name of await panel.locator('.sugg-name').allTextContents()) {
     await expect(page.getByRole('row').filter({ has: page.getByRole('link', { name, exact: true }) })).toHaveCount(0);
   }
 
-  await panel.getByRole('button', { name: /^Mid/ }).click();
-  await expect(panel.getByRole('list', { name: 'Mid upgrades' }).getByRole('listitem').first()).toContainText('Carmen, Cruel Skymarcher');
-  await panel.getByRole('button', { name: /^Premium/ }).click();
-  await expect(panel.getByRole('list', { name: 'Premium upgrades' }).getByRole('listitem')).toHaveCount(10);
+  const prices = async () => (await panel.locator('.sugg-price').allTextContents()).map((p) => Number(p.replace(/[$,]/g, '')));
+  const priceButton = (name: string) => panel.getByRole('group', { name: 'Price' }).getByRole('button', { name });
+  const firstCreature = panel.getByRole('list', { name: 'Creatures upgrades' }).getByRole('listitem').first();
+  await priceButton('Budget').click();
+  await expect(panel).toContainText('Cards under $3, best fit first.');
+  await expect(panel.getByRole('heading', { name: 'Creatures (557)' })).toBeVisible();
+  await expect(firstCreature).toContainText('Woe Strider');
+  expect((await prices()).every((p) => p < 3)).toBe(true);
+  await priceButton('Mid').click();
+  await expect(panel.getByRole('heading', { name: 'Creatures (150)' })).toBeVisible();
+  await expect(firstCreature).toContainText('Carmen, Cruel Skymarcher');
+  expect((await prices()).every((p) => p >= 3 && p <= 15)).toBe(true);
+  await priceButton('Premium').click();
+  await expect(panel).toContainText('Cards over $15, best fit first.');
+  await expect(panel.getByRole('heading', { name: 'Creatures (69)' })).toBeVisible();
+  await expect(firstCreature).toContainText('Warren Soultrader');
+  expect((await prices()).every((p) => p > 15)).toBe(true);
+  // No EDHREC controls without EDHREC data.
+  await expect(panel.getByLabel('Bracket')).toHaveCount(0);
+  await expect(panel.getByTestId('gaps')).toHaveCount(0);
   expect(misses).toEqual([]);
 });
 
@@ -47,7 +68,7 @@ test('add a suggested card to the deck', async ({ page }) => {
   await expect(page.getByTestId('deck-count')).toHaveText('101 / 100 cards');
   // Now in the deck, so it drops out of the suggestions; the list refills without new searches.
   await expect(page.getByRole('button', { name: 'Add Indulgent Aristocrat' })).toHaveCount(0);
-  await expect(page.getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem')).toHaveCount(10);
+  await expect(page.getByRole('list', { name: 'Creatures upgrades' }).getByRole('listitem')).toHaveCount(5);
   await expect(page.getByRole('row').filter({ hasText: 'Indulgent Aristocrat' })).toContainText('$0.21');
   expect(misses).toEqual([]);
 });
@@ -62,19 +83,19 @@ test('swap a weak card for a suggestion, then undo it', async ({ page }) => {
 
   const first = panel.getByRole('list', { name: 'Swap pairs' }).getByRole('listitem').first();
   await expect(first).toContainText('Cut Purify');
-  await expect(first).toContainText('Add Indulgent Aristocrat');
-  await first.getByRole('button', { name: 'Swap Purify for Indulgent Aristocrat' }).click();
+  await expect(first).toContainText('Add Woe Strider');
+  await first.getByRole('button', { name: 'Swap Purify for Woe Strider' }).click();
 
   await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
-  await expect(page.getByRole('row').filter({ hasText: 'Indulgent Aristocrat' })).toBeVisible();
+  await expect(page.getByRole('row').filter({ hasText: 'Woe Strider' })).toBeVisible();
   await expect(page.getByRole('row').filter({ hasText: 'Purify' })).toHaveCount(0);
   // The list updates without new searches: the next pair moves up.
   await expect(panel.getByRole('list', { name: 'Swap pairs' }).getByRole('listitem').first()).not.toContainText('Purify');
 
-  await expect(panel).toContainText('Swapped Purify → Indulgent Aristocrat.');
+  await expect(panel).toContainText('Swapped Purify → Woe Strider.');
   await panel.getByRole('button', { name: 'Undo' }).click();
   await expect(page.getByRole('row').filter({ hasText: 'Purify' })).toBeVisible();
-  await expect(page.getByRole('row').filter({ hasText: 'Indulgent Aristocrat' })).toHaveCount(0);
+  await expect(page.getByRole('row').filter({ hasText: 'Woe Strider' })).toHaveCount(0);
   await expect(page.getByTestId('deck-total')).toHaveText('$119.73');
   expect(misses).toEqual([]);
 });
@@ -105,8 +126,8 @@ test('replace an expensive card with a cheaper one that does the same job', asyn
 
   const group = panel.getByRole('region', { name: 'Cheaper than Minas Tirith' });
   await expect(group).toContainText('Minas Tirith · $6.08');
-  await expect(group.getByRole('listitem').first()).toContainText('Buried Ruin');
-  await expect(group.getByRole('listitem').first()).toContainText('Save $5.81');
+  await expect(group.getByRole('listitem').first()).toContainText('Fountainport');
+  await expect(group.getByRole('listitem').filter({ hasText: 'Buried Ruin' })).toContainText('Save $5.81');
   await group.getByRole('button', { name: 'Swap Minas Tirith for Buried Ruin' }).click();
 
   await expect(page.getByTestId('deck-total')).toHaveText('$113.92');
@@ -125,7 +146,8 @@ test('if the role lookup fails, upgrades still show and swaps say matching is ap
   await page.getByRole('button', { name: 'Find suggestions' }).click();
 
   const panel = page.getByRole('complementary', { name: 'Suggestions' });
-  await expect(panel.getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem').first()).toContainText('Indulgent Aristocrat');
+  // Deck roles load from Find, so their failed retries queue ahead of the fallback's searches.
+  await expect(panel.getByRole('list', { name: 'Creatures upgrades' }).getByRole('listitem').first()).toContainText('Woe Strider', { timeout: 45_000 });
   await panel.getByRole('button', { name: 'Swaps' }).click();
   await expect(panel).toContainText("Couldn't check what every card in your deck does", { timeout: 30_000 });
   await expect(panel.getByRole('list', { name: 'Swap pairs' }).getByRole('listitem').first()).toBeVisible();
@@ -140,7 +162,7 @@ test('if one search fails, the rest still give suggestions and a note says what 
 
   const panel = page.getByRole('complementary', { name: 'Suggestions' });
   await expect(panel).toContainText("Scryfall didn't answer every search (ramp)", { timeout: 30_000 });
-  await expect(panel.getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem').first()).toContainText('Indulgent Aristocrat');
+  await expect(panel.getByRole('list', { name: 'Creatures upgrades' }).getByRole('listitem').first()).toContainText('Woe Strider');
 });
 
 async function openSuggestions(page: import('@playwright/test').Page, view: 'Swaps' | 'Cheaper') {
@@ -159,12 +181,13 @@ test('clicking two swaps for the same card at once swaps it only once', async ({
   await expect(group.getByRole('button', { name: /^Swap Minas Tirith for / })).toHaveCount(3);
   // Both clicks land before either swap finishes.
   await group.evaluate((el) => el.querySelectorAll<HTMLButtonElement>('button').forEach((b, i) => i < 2 && b.click()));
-  await expect(page.getByRole('row').filter({ hasText: 'Buried Ruin' })).toBeVisible();
+  // The first two options are Fountainport and Buried Ruin.
+  await expect(page.getByRole('row').filter({ hasText: 'Fountainport' })).toBeVisible();
   // Let any second swap finish too, so the checks below see the settled deck, not a moment in between.
   await page.waitForTimeout(5000);
 
   await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
-  await expect(page.getByRole('row').filter({ hasText: 'Haven of the Spirit Dragon' })).toHaveCount(0);
+  await expect(page.getByRole('row').filter({ hasText: 'Buried Ruin' })).toHaveCount(0);
   await expect(page.getByRole('row').filter({ hasText: 'Minas Tirith' })).toHaveCount(0);
 });
 
@@ -179,7 +202,7 @@ test('ticking a card as owned removes its cheaper replacements', async ({ page }
 test('the Undo offer goes away once the deck is changed another way', async ({ page }) => {
   await mockScryfall(page, edgarFull);
   const panel = await openSuggestions(page, 'Swaps');
-  await panel.getByRole('button', { name: 'Swap Purify for Indulgent Aristocrat' }).click();
+  await panel.getByRole('button', { name: 'Swap Purify for Woe Strider' }).click();
   await expect(panel.getByRole('button', { name: 'Undo' })).toBeVisible();
   await page.getByRole('button', { name: 'Keep Mortify' }).click();
   await expect(panel.getByRole('button', { name: 'Undo' })).toHaveCount(0);
