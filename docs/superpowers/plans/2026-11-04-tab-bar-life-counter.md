@@ -26,14 +26,15 @@ Builds the [tab bar and Life Counter spec](../specs/2026-11-04-tab-bar-life-coun
 ## Slices
 
 ### 1. Tab bar, routes, per-tab place
-- [ ] `lib/nav.ts`: `tabOf(route)` (Decks / Browse / Life) and `backTarget` (`#/life/game` → `#/life` → `#/` → exit). Unit tests cover every row of the spec's back table.
-- [ ] `dom.ts` `icon()`; `ui/tabs.ts` nav with links, labels, `aria-current`, safe-area padding. Page gets matching bottom padding.
-- [ ] `app.ts`: one container per tab. Browse and Life stay mounted and are `hidden` when inactive. Decks re-renders only when its route changes or a screen asks for a refresh, so coming back to it keeps the deck, its inputs and its scroll. Last route and scroll are remembered per tab. Tapping the active tab goes to its root and scrolls to the top.
-- [ ] Browse placeholder page; Life Counter empty setup screen (heading only).
-- [ ] `#/life/x` and `#/life/game` (no game exists yet) fall back to `#/life`.
-- [ ] E2E (`tabs.spec.ts`): three labelled tabs with the right one current; switching changes the route; reload on `#/life` stays; Decks keeps a half-typed form and its scroll across a visit to Life; tapping the active Decks tab returns to Your decks; hidden tab containers keep their DOM; the footer is not hidden behind the bar. Both projects.
+- [x] `lib/nav.ts`: `tabOf(route)` (Decks / Browse / Life) and `backTarget` (`#/life/game` → `#/life` → `#/` → exit). Unit tests cover every row of the spec's back table.
+- [x] `dom.ts` `icon()`; `ui/tabs.ts` nav with links, labels, `aria-current`, safe-area padding. Page gets matching bottom padding.
+- [x] `app.ts`: one container per tab. Browse and Life stay mounted and are `hidden` when inactive. Decks re-renders only when its route changes or a screen asks for a refresh, so coming back to it keeps the deck, its inputs and its scroll. Last route and scroll are remembered per tab. Tapping the active tab goes to its root and scrolls to the top.
+- [x] Browse placeholder page; Life Counter empty setup screen (heading only).
+- [x] `#/life/x` and `#/life/game` (no game exists yet) fall back to `#/life`.
+- [x] E2E (`tabs.spec.ts`): three labelled tabs with the right one current; switching changes the route; reload on `#/life` stays; Decks keeps a half-typed form and its scroll across a visit to Life; tapping the active Decks tab returns to Your decks; hidden tab containers keep their DOM; the footer is not hidden behind the bar. Both projects.
 - **Failure paths:** unknown life sub-route; empty hash; share-link route (`#d=…`) counts as Decks.
 - **Follow-up for part 2:** a deck saved from Browse while the Decks tab is hidden must refresh the Decks screen when it comes back (stale list). Test it there.
+- **Done 2026-11-04.** `npm run check`: 280 unit and 140 e2e tests pass. The Decks screen is kept as it was (not redrawn) when its route is unchanged, so a half-typed form and the scroll survive; `ctx.refresh`, `go` and `replace` force a redraw. The active tab's link points at its root and the others at the place they were left.
 
 ### 2. Setup, game screen, life, saved game
 - [ ] `lib/life.ts`: new game, change life, seating per player count, sanitize/serialize, `swapsmith:life` key. Unit tests including bad shapes, 7 players, string totals, `version: 2`.
