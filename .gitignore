@@ -31,3 +31,6 @@ playwright-report/
 android/keystore.properties
 *.keystore
 *.jks
+
+# Impeccable per-developer config
+.impeccable/config.local.json
