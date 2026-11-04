@@ -164,13 +164,39 @@ test("the price filter narrows the list, and Budget reads EDHREC's budget decks"
 
 test('if a filter page fails, the previous list stays and a note says so', async ({ page }) => {
   await mockScryfall(page, edgarFull, edgarEdhrec);
-  await page.route('https://json.edhrec.com/pages/commanders/edgar-markov/core/vampires.json', (route) => route.abort());
+  // From All decks, so there is no broader page to fall back to (a bracket page that fails falls back to all brackets).
+  await page.route('https://json.edhrec.com/pages/commanders/edgar-markov/vampires.json', (route) => route.abort());
   const panel = await findSuggestions(page);
+  await panel.getByLabel('Bracket').selectOption('0');
+  await expect(sourceLink(panel)).toHaveAttribute('href', EDGAR);
   await panel.getByLabel('Theme').selectOption('vampires');
   await expect(panel).toContainText("EDHREC didn't answer for that choice, so this is still the previous list.", { timeout: 30_000 });
-  await expect(sourceLink(panel)).toHaveAttribute('href', `${EDGAR}/core`);
+  await expect(sourceLink(panel)).toHaveAttribute('href', EDGAR);
   await expect(panel.getByLabel('Theme')).toHaveValue('');
   await expect(panel.getByRole('list', { name: 'Creatures upgrades' }).getByRole('listitem')).toHaveCount(5);
+});
+
+test('if a filter has no EDHREC page, the previous list stays and a note says so', async ({ page }) => {
+  await mockScryfall(page, edgarFull, edgarEdhrec);
+  // EDHREC answers 403 for a page it doesn't have.
+  await page.route('https://json.edhrec.com/pages/commanders/edgar-markov/vampires.json', (route) => route.fulfill({ status: 403, contentType: 'text/html', body: '<html>Forbidden</html>' }));
+  const panel = await findSuggestions(page);
+  await panel.getByLabel('Bracket').selectOption('0');
+  await expect(sourceLink(panel)).toHaveAttribute('href', EDGAR);
+  await panel.getByLabel('Theme').selectOption('vampires');
+  await expect(panel).toContainText('EDHREC has no decks for that choice, so this is still the previous list.');
+  await expect(sourceLink(panel)).toHaveAttribute('href', EDGAR);
+  await expect(panel.getByLabel('Theme')).toHaveValue('');
+});
+
+test('a chosen bracket with no page falls back to all brackets instead of losing EDHREC', async ({ page }) => {
+  const misses = await mockScryfall(page, edgarFull, edgarEdhrec);
+  await page.route('https://json.edhrec.com/pages/commanders/edgar-markov/core/vampires.json', (route) => route.fulfill({ status: 403, contentType: 'text/html', body: '<html>Forbidden</html>' }));
+  const panel = await findSuggestions(page);
+  await panel.getByLabel('Theme').selectOption('vampires');
+  await expect(panel).toContainText('No Edgar Markov decks are at bracket 2 Core with this theme, so this shows all brackets.');
+  await expect(sourceLink(panel)).toHaveAttribute('href', `${EDGAR}/vampires`);
+  expect(misses).toEqual([]);
 });
 
 test('when two filter changes overlap, only the newest page is shown', async ({ page }) => {
