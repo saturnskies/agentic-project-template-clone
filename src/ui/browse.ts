@@ -23,6 +23,11 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext): void {
   let waiting = '';
   /** The query last sent, which a change of sort repeats. */
   let lastQuery: string | null = null;
+  /** The results on screen: what they were searched with, and where the next page starts. */
+  let shown: { q: string; sort: SortKey; descending: boolean; page: number; hasMore: boolean; total: number } | null = null;
+  /** A new search is waiting (the old results stay up meanwhile), or the next page is. */
+  let searching = false;
+  let loadingMore = false;
 
   const name = h('input', { id: 'browse-name', type: 'text', autocomplete: 'off', placeholder: 'e.g. sol ring' });
   const legal = h('input', { id: 'browse-legal', type: 'checkbox', checked: true });
@@ -34,6 +39,8 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext): void {
   const count = h('p', { role: 'status', 'aria-live': 'polite' });
   const ignored = h('p', { class: 'banner', role: 'status', hidden: true });
   const results = h('ul', { class: 'card-grid' });
+  const more = h('button', { type: 'button', class: 'button', hidden: true }, 'Load more');
+  const moreError = h('p', { class: 'field-error', role: 'alert', hidden: true });
   const sortSelect = h('select', { id: 'browse-sort' }, ...SORTS.map((s) => h('option', { value: s.id }, s.label)));
   const direction = h('span');
 
@@ -70,10 +77,23 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext): void {
     );
   }
 
-  function show(page: SearchPage) {
+  const num = (n: number) => n.toLocaleString('en-US');
+
+  /** The Load more button: there only while another page exists, and idle only when nothing is being fetched. */
+  function syncMore() {
+    more.hidden = !shown?.hasMore;
+    more.disabled = searching || loadingMore;
+  }
+
+  function drawCount() {
+    count.textContent = shown && results.children.length ? `Showing ${num(results.children.length)} of ${num(shown.total)} cards` : 'No cards match.';
+  }
+
+  function show(page: SearchPage, q: string) {
     hint.hidden = true;
     results.replaceChildren(...page.cards.map(tile));
-    count.textContent = page.cards.length ? `Showing ${page.cards.length.toLocaleString('en-US')} of ${page.total.toLocaleString('en-US')} cards` : 'No cards match.';
+    shown = { q, sort, descending, page: 1, hasMore: page.hasMore, total: page.total };
+    drawCount();
     ignored.hidden = !page.warnings.length;
     ignored.replaceChildren(...(page.warnings.length ? ['Scryfall ignored part of this search, so these cards may not match it: ', page.warnings.join(' ')] : []));
   }
@@ -84,22 +104,60 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext): void {
     const mine = ++run;
     waiting = key;
     lastQuery = q;
+    // This search owns the screen now: a page still on its way for the older one will be dropped.
+    searching = true;
+    loadingMore = false;
+    moreError.hidden = true;
+    syncMore();
     query.hidden = false;
     query.querySelector('code')!.textContent = q;
     count.textContent = 'Searching…';
     try {
       const page = await searchCards(ctx.client, q, sort, descending, 1);
-      if (mine === run) show(page);
+      if (mine === run) show(page, q);
     } catch (e) {
       if (mine !== run) return;
       // The earlier results stay: one failed search shouldn't throw away what is on screen.
       const bad = e instanceof ScryfallError && e.status === 400;
       setError(bad && advanced.value.trim() ? 'advanced' : 'form', bad ? e.message : "Couldn't search Scryfall. Press Search to try again.");
-      count.textContent = results.children.length ? `Showing ${results.children.length} cards from the earlier search.` : '';
+      count.textContent = results.children.length ? `Showing ${num(results.children.length)} cards from the earlier search.` : '';
     } finally {
-      if (mine === run) waiting = '';
+      if (mine === run) {
+        waiting = '';
+        searching = false;
+        syncMore();
+      }
     }
   }
+
+  /** The next page of the results on screen. It belongs to the search that made them: a newer search drops its reply. */
+  async function loadMore() {
+    if (!shown || loadingMore || searching) return;
+    const mine = run;
+    const from = shown;
+    loadingMore = true;
+    moreError.hidden = true;
+    syncMore();
+    try {
+      const page = await searchCards(ctx.client, from.q, from.sort, from.descending, from.page + 1);
+      if (mine !== run) return;
+      results.append(...page.cards.map(tile));
+      from.page += 1;
+      from.hasMore = page.hasMore;
+      from.total = page.total;
+      drawCount();
+    } catch {
+      if (mine !== run) return;
+      moreError.textContent = "Couldn't load more cards. Press Load more to try again.";
+      moreError.hidden = false;
+    } finally {
+      if (mine === run) {
+        loadingMore = false;
+        syncMore();
+      }
+    }
+  }
+  more.addEventListener('click', () => void loadMore());
 
   function rerun() {
     if (lastQuery) void load(lastQuery);
@@ -156,6 +214,8 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext): void {
       ignored,
       count,
       results,
+      moreError,
+      h('div', { class: 'actions' }, more),
     ),
   );
 }
