@@ -59,10 +59,12 @@ Source: the impeccable critique of 2026-11-04, checked by rendering the app at P
 - [x] Added with it, from the dark-mode screenshots: a disabled button is restyled (muted label on the tag surface) instead of faded to half opacity, which left its label at about 3:1.
 
 ### 3. Touch targets (44px hit areas)
-- [ ] Failing test first, `phone` project, both schemes: for the remove button, Keep chip, Owned checkbox, `.button.small`, `.segment`, and the sort headers, a 44×44px square centred on the control resolves (`elementFromPoint` at its four corners and centre) to that control or its own label. Also assert no two adjacent controls claim the same point.
-- [ ] `src/style.css`, inside `@media (pointer: coarse)`: pseudo-element or padding hit areas; larger Owned label that wraps the checkbox; `.segment` min-height 44px (a visible change, it is a primary control).
-- [ ] `src/ui/deckView.ts`: the `×` button gets a visible text label or stays icon with the larger target; decide while building and note it. Removing a card still has no undo here; **follow-up**, not in this plan.
-- Check: the row height must not grow more than about 8px per row (the table must stay scannable at 100 rows).
+- [x] Failing test first, `phone` project: for every kind of control (links, buttons, segments, sort headers, printing links, Keep chips, remove buttons, checkboxes, text fields), a 44px square around the control, probed at its centre and four edge midpoints, lands on that control or its own label. Corners are not probed: rounded controls legitimately don't claim them. A neighbour's larger target covering a control fails the same check.
+- [x] `src/style.css`, inside `@media (pointer: coarse)`: real 44px height on buttons, segments, sort headers, printing links, text fields and the back link; 44px remove button; the Owned checkbox is tapped through a 44px label (`.own-cell` in the table, `.own-label` in the grid); the Keep chip keeps its small look and gets a taller tap area (`::after`).
+- [x] **Changed from the first plan:** hit areas alone could not work for the Keep chip, because it sat stacked between the name and the printing link, so enlarged areas overlapped. On phones, Keep now shares the printing line (`src/ui/deckView.ts`; the desktop copy is hidden under 40rem). The "rows grow at most 8px" check became height guards instead: the list may not get longer than before (9318px; now 8847px), and the grid may grow at most 15% (16542px before; now 18271px, +10%, from 44px tool rows).
+- [x] The `×` stays an icon, now 44px. Removing a card still has no undo (follow-up below).
+- [x] Grid tool rows (Owned, Keep, remove) stay on one line even with a pressed (bold) Keep chip: checked by a test that fails when the spacing fixes are undone.
+- Narrower phones (about 360px) still wrap the grid tool row onto two lines; the layout holds, just taller.
 
 ### 4. Cards | Suggestions switch below 70rem
 - [ ] Failing tests first (phone, both schemes): after Find suggestions, the switch is visible without scrolling; pressing Suggestions shows the panel in the first viewport and hides the card list; pressing Cards restores the list at the same scroll position; adding a suggested card then switching back shows the new count; Undo still works with the panel hidden; the browser back button from the deck still goes to Your decks and is not consumed by the switch; a shared read-only deck shows no switch.
@@ -85,6 +87,7 @@ Source: the impeccable critique of 2026-11-04, checked by rendering the app at P
 ## Follow-ups (not in this plan)
 
 - Undo for removing a card.
+- Pickers and dialogs (the printing picker's buttons) were not covered by the touch-target test.
 - Self-host Bricolage Grotesque (it loads from Google Fonts; the service worker only caches same-origin files, so the Android app and an offline PWA fall back to the system font), and confirm the `godofwar.ttf` logo font licence.
 - Replace Unicode glyph icons (`×`, `▾`, `←`) with one drawn icon set.
 - Explain "Keep" and "Owned" on first use (the `title` tooltip never shows on a phone).
