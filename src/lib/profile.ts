@@ -1,6 +1,6 @@
 /**
  * What a deck is about, worked out from its own cards (v1 spec, "Deck profile"): the commander's
- * colors, the main creature type, and themes found in rules text.
+ * colors, the main creature type, and themes found in rules text (or named by the commander).
  */
 
 export interface ProfileCard {
@@ -27,6 +27,13 @@ export const THEMES: Theme[] = [
   { id: 'tokens', label: 'tokens', test: /create .*\btokens?\b/i, query: 'o:/create .* token/' },
   { id: 'counters', label: '+1/+1 counters', test: /\+1\/\+1 counter/i, query: 'o:"+1/+1 counter"' },
   { id: 'graveyard', label: 'graveyard', test: /from your graveyard/i, query: 'o:"from your graveyard"' },
+  // Added for the recommendations revamp; each query checked against Scryfall on 2026-11-04.
+  { id: 'artifacts', label: 'artifacts', test: /artifacts? you control|artifact spell/i, query: 'o:/(artifacts? you control|artifact spell)/' },
+  { id: 'enchantments', label: 'enchantments', test: /enchantments? you control|enchantment spell/i, query: 'o:/(enchantments? you control|enchantment spell)/' },
+  { id: 'spells', label: 'spells', test: /instant or sorcery spell|whenever you cast an? (instant|sorcery|noncreature)/i, query: 'o:/(instant or sorcery spell|whenever you cast an? (instant|sorcery|noncreature))/' },
+  { id: 'blink', label: 'blink', test: /exile [^.]*then return (it|them|those cards|that card) to the battlefield/i, query: 'o:/exile [^.]*then return (it|them|those cards|that card) to the battlefield/' },
+  { id: 'landfall', label: 'landfall', test: /landfall|whenever a land you control enters/i, query: '(keyword:landfall or o:/whenever a land you control enters/)' },
+  { id: 'voltron', label: 'equipment and auras', test: /\bequipment\b|equipped creature|aura spell|auras you control/i, query: 'o:/(equipment|equipped creature|aura spell|auras you control)/' },
 ];
 
 export const TRIBE_MIN = 8;
@@ -57,6 +64,7 @@ export function deckProfile(cards: ProfileCard[], commanderIdentity: string[]): 
     .filter(([, n]) => n >= TRIBE_MIN)
     .sort(([a, na], [b, nb]) => nb - na || Number(commanderTypes.has(b)) - Number(commanderTypes.has(a)) || a.localeCompare(b))[0];
 
-  const themes = THEMES.filter((t) => cards.filter((c) => t.test.test(c.oracleText)).length >= THEME_MIN);
+  // A theme counts when enough cards match it, or when the commander's own text names it.
+  const themes = THEMES.filter((t) => cards.filter((c) => t.test.test(c.oracleText)).length >= THEME_MIN || cards.some((c) => c.isCommander && t.test.test(c.oracleText)));
   return { colorIdentity: [...commanderIdentity], tribe: best?.[0] ?? null, themes };
 }
