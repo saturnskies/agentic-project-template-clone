@@ -61,3 +61,12 @@ export async function seedEdgarDeck(page: Page) {
   }, deck);
   return deck as { id: string };
 }
+
+/**
+ * Below 70rem the card list and the suggestions panel share the screen and a bar switches between them;
+ * this shows one. On a wide screen both are already visible, so nothing is clicked.
+ */
+export async function showPane(page: Page, pane: 'Cards' | 'Suggestions') {
+  if ((page.viewportSize()?.width ?? 1280) >= 1120) return;
+  await page.getByRole('group', { name: 'Show' }).getByRole('button', { name: pane, exact: true }).click();
+}
