@@ -1,6 +1,8 @@
+import { keepAwake, type AwakeDeps, type AwakeState } from '../lib/awake';
 import {
   CMDR_LETHAL,
   LIFE_PRESETS,
+  MAX_NAME,
   MAX_PLAYERS,
   PALETTE,
   POISON_LETHAL,
@@ -9,9 +11,14 @@ import {
   loadLife,
   newGame,
   parseStartingLife,
+  randomSeat,
   resetGame,
   saveLife,
+  seatColor,
   seating,
+  setColor,
+  setFirst,
+  setName,
   setPartners,
   undo,
   warnings,
@@ -26,11 +33,16 @@ const HOLD_MS = 500;
 /** After a hold registers, the one click that follows its release (a few ms later) is ignored; a deliberate tap after this long is not. */
 const SWALLOW_MS = 150;
 const UNSAVED = "Your browser is blocking storage, so this game won't be saved if you close the app.";
+const AWAKE_MSG = 'Your screen may turn off during the game.';
+/** The roll highlights a tile every this many ms, around the table twice and on to the winner. */
+const ROLL_STEP_MS = 100;
 
 export interface Life {
   hasGame(): boolean;
   /** Draws the setup or the game for `route`. Drawn once per route: the container stays mounted while another tab shows. */
   render(view: HTMLElement, route: string): void;
+  /** True while the game screen is showing: keeps the screen awake then, and lets go otherwise. */
+  setAwake(on: boolean): void;
 }
 
 /** A button that changes a counter: tap = ±1, hold = ±10 once, Shift+Enter = ±10. `delta` is 1 or -1. */
@@ -66,6 +78,29 @@ function holdButton(o: { text: string; aria: string; delta: 1 | -1; cls: string;
   return b;
 }
 
+const padded = <T,>(items: T[], blank: T): T[] => Array.from({ length: MAX_PLAYERS }, (_, i) => items[i] ?? blank);
+
+/** One row per seat: a name field and the eight color swatches. The setup and the in-game edit dialog both use it. */
+function playerRows(o: { count: number; name(seat: number): string; color(seat: number): number; onName(seat: number, value: string): void; onColor(seat: number, color: number): void }): HTMLElement {
+  return h(
+    'div',
+    { class: 'player-rows' },
+    ...Array.from({ length: o.count }, (_, seat) => {
+      const input = h('input', { type: 'text', maxlength: MAX_NAME, autocomplete: 'off', placeholder: `Player ${seat + 1}`, value: o.name(seat), 'aria-label': `Name for player ${seat + 1}` });
+      input.addEventListener('input', () => o.onName(seat, input.value));
+      const buttons = PALETTE.map((c, i) => {
+        const b = h('button', { type: 'button', class: 'swatch', 'aria-label': c.name, 'aria-pressed': String(i === o.color(seat)), style: `--swatch:${c.hex}` });
+        b.addEventListener('click', () => {
+          o.onColor(seat, i);
+          buttons.forEach((x, j) => x.setAttribute('aria-pressed', String(j === i)));
+        });
+        return b;
+      });
+      return h('div', { class: 'player-row' }, h('span', { class: 'seat', 'aria-hidden': 'true' }, String(seat + 1)), input, h('div', { class: 'swatches', role: 'group', 'aria-label': `Color for player ${seat + 1}` }, ...buttons));
+    }),
+  );
+}
+
 /** A modal question with two buttons; it removes itself when closed. */
 function confirmDialog(host: HTMLElement, o: { id: string; title: string; text: string; keep: string; yes: string; onYes: () => void }) {
   const keep = h('button', { type: 'button', class: 'button' }, o.keep);
@@ -90,11 +125,15 @@ export function createLife(storage: Storage | null): Life {
   let saved = loaded.persistent;
   let drawn: string | null = null;
   let notices: HTMLElement[] = [];
+  let awakeState: AwakeState | null = null;
+  let stopAwake: (() => void) | null = null;
+  let awakeNotes: HTMLElement[] = [];
 
   // The setup being edited; it lives here so redrawing the screen keeps what was picked.
   const draft: Setup = { ...store.setup, names: [...store.setup.names] };
   let custom = !(LIFE_PRESETS as readonly number[]).includes(draft.startingLife);
   let customText = custom ? String(draft.startingLife) : '';
+  while (draft.colors.length < draft.players) draft.colors.push(-1);
 
   const notice = () => {
     const n = h('p', { class: 'banner notice', role: 'status' }, saved ? '' : UNSAVED);
@@ -107,8 +146,16 @@ export function createLife(storage: Storage | null): Life {
     for (const n of notices) n.textContent = saved ? '' : UNSAVED;
   };
 
+  /** Remembers the typed names and colors for the next game. */
+  const remember = () => (store.setup = { ...store.setup, names: padded(draft.names, ''), colors: padded(draft.colors, -1) });
+  const awakeNote = () => {
+    const n = h('p', { class: 'banner notice', role: 'status' }, awakeState === 'unsupported' || awakeState === 'denied' ? AWAKE_MSG : '');
+    awakeNotes.push(n);
+    return n;
+  };
+
   function begin() {
-    store.setup = { players: draft.players, startingLife: draft.startingLife, names: [...draft.names] };
+    store.setup = { players: draft.players, startingLife: draft.startingLife, names: padded(draft.names, ''), colors: padded(draft.colors, -1) };
     store.game = newGame(store.setup);
     future = false;
     persist();
@@ -162,6 +209,19 @@ export function createLife(storage: Storage | null): Life {
           custom ? h('label', { class: 'stack' }, 'Custom starting life', field) : null,
           custom ? hint : null,
         ),
+        h(
+          'div',
+          { class: 'stack' },
+          h('strong', {}, 'Names and colors'),
+          h('p', { class: 'small muted' }, 'Seats run clockwise from the bottom left of the table. A blank name is "Player 1", "Player 2" and so on.'),
+          playerRows({
+            count: draft.players,
+            name: (i) => draft.names[i] ?? '',
+            color: (i) => seatColor(draft.colors[i], i),
+            onName: (i, v) => (draft.names[i] = v.slice(0, MAX_NAME)),
+            onColor: (i, c) => (draft.colors[i] = c),
+          }),
+        ),
         h('div', { class: 'actions' }, go),
       ),
     );
@@ -171,7 +231,8 @@ export function createLife(storage: Storage | null): Life {
   function drawGame(view: HTMLElement) {
     notices = [];
     const seats = store.game!.players.map((_, i) => i);
-    const parts = new Map<number, { life: HTMLElement; badges: HTMLElement; warn: HTMLElement; el: HTMLElement }>();
+    awakeNotes = [];
+    const parts = new Map<number, { life: HTMLElement; badges: HTMLElement; warn: HTMLElement; el: HTMLElement; name: HTMLElement; counters: HTMLElement; minus: HTMLElement; plus: HTMLElement }>();
 
     /** Redraws everything a seat's tile shows from the saved game. */
     const updateTile = (seat: number) => {
@@ -179,8 +240,14 @@ export function createLife(storage: Storage | null): Life {
       const p = g.players[seat];
       const t = parts.get(seat)!;
       t.life.textContent = String(p.life);
+      t.name.textContent = p.name;
+      t.counters.setAttribute('aria-label', `${p.name}: poison and commander damage`);
+      t.minus.setAttribute('aria-label', `${p.name}: lose 1 life`);
+      t.plus.setAttribute('aria-label', `${p.name}: gain 1 life`);
+      t.el.style.setProperty('--tile', PALETTE[p.color].hex);
+      t.el.dataset.first = String(g.first === seat);
       const worst = Math.max(0, ...Object.values(p.cmdr));
-      t.badges.replaceChildren(...[p.poison > 0 ? `Poison ${p.poison}` : null, worst > 0 ? `Commander ${worst}` : null].filter((x): x is string => !!x).map((x) => h('span', { class: 'badge' }, x)));
+      t.badges.replaceChildren(...[g.first === seat ? 'Goes first' : null, p.poison > 0 ? `Poison ${p.poison}` : null, worst > 0 ? `Commander ${worst}` : null].filter((x): x is string => !!x).map((x) => h('span', { class: 'badge' }, x)));
       const why = warnings(g, seat);
       t.warn.textContent = why.join(' · ');
       t.el.dataset.warn = String(why.length > 0);
@@ -204,18 +271,21 @@ export function createLife(storage: Storage | null): Life {
       counters.addEventListener('click', () => openSheet(seat));
       const btn = (delta: 1 | -1) =>
         holdButton({ text: delta < 0 ? '−' : '+', aria: `${p.name}: ${delta < 0 ? 'lose' : 'gain'} 1 life`, delta, cls: `life-btn ${delta < 0 ? 'minus' : 'plus'}`, onChange: (n) => adjust(seat, { kind: 'life' }, n) });
+      const minus = btn(-1);
+      const plus = btn(1);
+      const nameEl = h('span', { class: 'tile-name' }, p.name);
       const el = h(
         'div',
-        { class: 'tile', 'data-player': seat, 'data-rotate': flipped ? '180' : '0', 'data-warn': 'false', style: `--tile:${PALETTE[seat % PALETTE.length].hex}` },
+        { class: 'tile', 'data-player': seat, 'data-rotate': flipped ? '180' : '0', 'data-warn': 'false', 'data-first': 'false', style: `--tile:${PALETTE[p.color].hex}` },
         h(
           'div',
           { class: 'tile-inner' },
-          h('div', { class: 'tile-head' }, h('span', { class: 'tile-name' }, p.name), counters),
+          h('div', { class: 'tile-head' }, nameEl, counters),
           h('div', { class: 'tile-mid' }, life, badges, warn),
-          h('div', { class: 'tile-buttons' }, btn(-1), btn(1)),
+          h('div', { class: 'tile-buttons' }, minus, plus),
         ),
       );
-      parts.set(seat, { life, badges, warn, el });
+      parts.set(seat, { life, badges, warn, el, name: nameEl, counters, minus, plus });
       return el;
     };
 
@@ -293,8 +363,74 @@ export function createLife(storage: Storage | null): Life {
         },
       }),
     );
+    const edit = h('button', { type: 'button', class: 'button' }, 'Edit names & colors');
+    edit.addEventListener('click', () => {
+      const closeEdit = h('button', { type: 'button', class: 'button' }, 'Close');
+      const dlg = h(
+        'dialog',
+        { class: 'picker sheet', 'aria-labelledby': 'edit-h' },
+        h('h2', { id: 'edit-h' }, 'Edit players'),
+        playerRows({
+          count: seats.length,
+          name: (i) => store.game!.players[i].name,
+          color: (i) => store.game!.players[i].color,
+          onName: (i, v) => {
+            store.game = setName(store.game!, i, v);
+            draft.names[i] = v.slice(0, MAX_NAME);
+            remember();
+            updateAll();
+            persist();
+          },
+          onColor: (i, c) => {
+            store.game = setColor(store.game!, i, c);
+            draft.colors[i] = c;
+            remember();
+            updateAll();
+            persist();
+          },
+        }),
+        h('div', { class: 'actions' }, closeEdit),
+      );
+      closeEdit.addEventListener('click', () => dlg.close());
+      dlg.addEventListener('close', () => dlg.remove());
+      view.append(dlg);
+      dlg.showModal();
+    });
+    /** One roll at a time: the menu closes, the table lights up seat by seat, and the winner is marked and saved. */
+    let rolling = false;
+    const rollBtn = h('button', { type: 'button', class: 'button' }, 'Roll for first player');
+    rollBtn.addEventListener('click', () => {
+      if (rolling) return;
+      rolling = true;
+      menu.close();
+      const seat = randomSeat(seats.length);
+      const finish = () => {
+        rolling = false;
+        for (const t of parts.values()) t.el.classList.remove('rolling');
+        if (!store.game || seat >= store.game.players.length) return;
+        store.game = setFirst(store.game, seat);
+        updateAll();
+        persist();
+      };
+      if (seats.length === 1 || matchMedia('(prefers-reduced-motion: reduce)').matches) return finish();
+      const steps = 2 * seats.length + seat;
+      const tick = (i: number) => {
+        for (const t of parts.values()) t.el.classList.remove('rolling');
+        if (i > steps) return finish();
+        parts.get(i % seats.length)?.el.classList.add('rolling');
+        window.setTimeout(() => tick(i + 1), ROLL_STEP_MS);
+      };
+      tick(0);
+    });
     const close = h('button', { type: 'button', class: 'button' }, 'Close');
-    const menu = h('dialog', { class: 'picker', 'aria-labelledby': 'game-menu-h' }, h('h2', { id: 'game-menu-h' }, 'Game menu'), notice(), h('div', { class: 'actions' }, undoBtn, reset, h('a', { class: 'button', href: '#/life' }, 'Leave game'), close));
+    const menu = h(
+      'dialog',
+      { class: 'picker', 'aria-labelledby': 'game-menu-h' },
+      h('h2', { id: 'game-menu-h' }, 'Game menu'),
+      notice(),
+      awakeNote(),
+      h('div', { class: 'actions' }, undoBtn, rollBtn, edit, reset, h('a', { class: 'button', href: '#/life' }, 'Leave game'), close),
+    );
     close.addEventListener('click', () => menu.close());
     const open = h('button', { type: 'button', class: `table-menu${top.length ? '' : ' corner'}`, 'aria-label': 'Game menu' }, 'Menu');
     open.addEventListener('click', () => {
@@ -310,6 +446,19 @@ export function createLife(storage: Storage | null): Life {
 
   return {
     hasGame: () => !!store.game,
+    setAwake(on) {
+      if (on && !stopAwake) {
+        awakeState = null;
+        const deps: AwakeDeps = { wakeLock: (navigator as unknown as { wakeLock?: AwakeDeps['wakeLock'] }).wakeLock, doc: document };
+        stopAwake = keepAwake(deps, (state) => {
+          awakeState = state;
+          for (const n of awakeNotes) n.textContent = state === 'unsupported' || state === 'denied' ? AWAKE_MSG : '';
+        });
+      } else if (!on && stopAwake) {
+        stopAwake();
+        stopAwake = null;
+      }
+    },
     render(view, route) {
       if (route === drawn) return;
       drawn = route;
