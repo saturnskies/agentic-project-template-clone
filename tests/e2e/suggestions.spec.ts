@@ -36,14 +36,22 @@ test('rules-based upgrades fit the deck, by category, with a price filter', asyn
   }
 
   const prices = async () => (await panel.locator('.sugg-price').allTextContents()).map((p) => Number(p.replace(/[$,]/g, '')));
-  await panel.getByRole('group', { name: 'Price' }).getByRole('button', { name: 'Budget' }).click();
+  const priceButton = (name: string) => panel.getByRole('group', { name: 'Price' }).getByRole('button', { name });
+  const firstCreature = panel.getByRole('list', { name: 'Creatures upgrades' }).getByRole('listitem').first();
+  await priceButton('Budget').click();
   await expect(panel).toContainText('Cards under $3, best fit first.');
+  await expect(panel.getByRole('heading', { name: 'Creatures (557)' })).toBeVisible();
+  await expect(firstCreature).toContainText('Woe Strider');
   expect((await prices()).every((p) => p < 3)).toBe(true);
-  await panel.getByRole('group', { name: 'Price' }).getByRole('button', { name: 'Premium' }).click();
+  await priceButton('Mid').click();
+  await expect(panel.getByRole('heading', { name: 'Creatures (150)' })).toBeVisible();
+  await expect(firstCreature).toContainText('Carmen, Cruel Skymarcher');
+  expect((await prices()).every((p) => p >= 3 && p <= 15)).toBe(true);
+  await priceButton('Premium').click();
   await expect(panel).toContainText('Cards over $15, best fit first.');
-  const premium = await prices();
-  expect(premium.length).toBeGreaterThan(0);
-  expect(premium.every((p) => p > 15)).toBe(true);
+  await expect(panel.getByRole('heading', { name: 'Creatures (69)' })).toBeVisible();
+  await expect(firstCreature).toContainText('Warren Soultrader');
+  expect((await prices()).every((p) => p > 15)).toBe(true);
   // No EDHREC controls without EDHREC data.
   await expect(panel.getByLabel('Bracket')).toHaveCount(0);
   await expect(panel.getByTestId('gaps')).toHaveCount(0);
