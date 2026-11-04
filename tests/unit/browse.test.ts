@@ -100,6 +100,12 @@ describe('buildQuery: every filter', () => {
     expect(ok({ role: 'o:/create .* token/' })).toBe('legal:commander o:/create .* token/');
   });
 
+  it('wraps a role query that has an "or" in it, so it cannot escape the other filters', () => {
+    expect(ok({ role: '(keyword:lifelink or o:/gain .* life/)' })).toBe('legal:commander (keyword:lifelink or o:/gain .* life/)');
+    expect(ok({ role: 'a or b' })).toBe('legal:commander (a or b)');
+    expect(ok({ role: 'a OR b' })).toBe('legal:commander (a OR b)');
+  });
+
   it('builds color identity three ways, in WUBRG order', () => {
     expect(ok({ colors: ['G', 'W'] })).toBe('legal:commander id<=wg');
     expect(ok({ colors: ['G', 'W'], colorMode: 'exactly' })).toBe('legal:commander id=wg');
