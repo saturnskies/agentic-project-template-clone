@@ -3,18 +3,26 @@ import { browseSearches, mockScryfall } from './helpers';
 
 const CRYPT = 'legal:commander name:"crypt"';
 /** The request key the app sends for a search, to read what Scryfall really answered. */
-const keyOf = (q: string, order = 'edhrec', dir = 'asc') => `GET /cards/search?${new URLSearchParams({ q, order, dir, unique: 'cards', page: '1' })}`;
-const recorded = (q: string, order?: string, dir?: string) => (browseSearches[keyOf(q, order, dir)].body as { data: Array<{ name: string; oracle_id: string }> }).data;
+const keyOf = (q: string, order = 'edhrec', dir = 'asc', page = 1) => `GET /cards/search?${new URLSearchParams({ q, order, dir, unique: 'cards', page: String(page) })}`;
+const recorded = (q: string, order?: string, dir?: string, page = 1) => (browseSearches[keyOf(q, order, dir, page)].body as { data: Array<{ name: string; oracle_id: string }> }).data;
+
+const SOL = 'legal:commander name:"sol"';
 
 let misses: string[];
 let searches: string[];
+/** The page number of every search request, in order. */
+let pages: string[];
 
 test.beforeEach(async ({ page }) => {
   misses = await mockScryfall(page, browseSearches);
   searches = [];
+  pages = [];
   page.on('request', (r) => {
     const u = new URL(r.url());
-    if (u.hostname === 'api.scryfall.com' && u.pathname === '/cards/search') searches.push(u.searchParams.get('q') ?? '');
+    if (u.hostname === 'api.scryfall.com' && u.pathname === '/cards/search') {
+      searches.push(u.searchParams.get('q') ?? '');
+      pages.push(u.searchParams.get('page') ?? '');
+    }
   });
 });
 
@@ -188,4 +196,131 @@ test('fits the screen width, form and results', async ({ page }) => {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(0);
   await page.screenshot({ path: test.info().outputPath(`browse-${test.info().project.name}.png`) });
+});
+
+test.describe('Load more', () => {
+  const more = (page: Page) => page.getByRole('button', { name: 'Load more' });
+  const isPage2 = (u: URL) => u.hostname === 'api.scryfall.com' && u.searchParams.get('q') === SOL && u.searchParams.get('page') === '2';
+
+  test('shows the first 175 cards, then the rest when asked, and then no button', async ({ page }) => {
+    await page.goto('./#/browse');
+    await search(page, 'sol');
+    await expect(page.locator('.card-tile')).toHaveCount(175);
+    await expect(page.getByText('Showing 175 of 187 cards')).toBeVisible();
+    await expect(more(page)).toBeVisible();
+    expect(pages).toEqual(['1']);
+    await more(page).scrollIntoViewIfNeeded();
+    await page.screenshot({ path: test.info().outputPath(`load-more-${test.info().project.name}.png`) });
+
+    await more(page).click();
+    await expect(page.locator('.card-tile')).toHaveCount(187);
+    await expect(page.getByText('Showing 187 of 187 cards')).toBeVisible();
+    await expect(more(page)).toBeHidden();
+    expect(await names(page)).toEqual([...recorded(SOL), ...recorded(SOL, 'edhrec', 'asc', 2)].map((c) => c.name));
+    expect(pages).toEqual(['1', '2']);
+    expect(misses).toEqual([]);
+  });
+
+  test('has no button when everything fit on the first page', async ({ page }) => {
+    await page.goto('./#/browse');
+    await search(page, 'crypt');
+    await expect(page.locator('.card-tile')).toHaveCount(49);
+    await expect(more(page)).toBeHidden();
+  });
+
+  test('a new search starts again from page 1', async ({ page }) => {
+    await page.goto('./#/browse');
+    await search(page, 'sol');
+    await more(page).click();
+    await expect(page.locator('.card-tile')).toHaveCount(187);
+    await search(page, 'crypt');
+    await expect(page.locator('.card-tile')).toHaveCount(49);
+    expect(pages).toEqual(['1', '2', '1']);
+  });
+
+  test('a failed page keeps the cards, says so, and a retry adds the page once', async ({ page }) => {
+    let failures = 1;
+    await page.route(isPage2, (route) => (failures-- > 0 ? route.fulfill({ status: 503, json: { object: 'error', details: 'Service Unavailable' } }) : route.fallback()));
+    await page.goto('./#/browse');
+    await search(page, 'sol');
+    await expect(page.locator('.card-tile')).toHaveCount(175);
+    await more(page).click();
+    await expect(page.getByRole('alert')).toContainText('Press Load more to try again');
+    await expect(page.locator('.card-tile')).toHaveCount(175);
+    await expect(more(page)).toBeEnabled();
+
+    await more(page).click();
+    await expect(page.locator('.card-tile')).toHaveCount(187);
+    await expect(page.getByRole('alert')).toBeHidden();
+    await expect(more(page)).toBeHidden();
+  });
+
+  test('asks for the next page once when the button is pressed twice', async ({ page }) => {
+    await page.goto('./#/browse');
+    await search(page, 'sol');
+    await expect(page.locator('.card-tile')).toHaveCount(175);
+    await more(page).dblclick();
+    await expect(page.locator('.card-tile')).toHaveCount(187);
+    await page.waitForTimeout(800);
+    expect(pages).toEqual(['1', '2']);
+  });
+
+  test('a page that arrives after a new search is dropped', async ({ page }) => {
+    let release!: () => void;
+    const held = new Promise<void>((r) => (release = r));
+    await page.route(isPage2, async (route) => {
+      await held;
+      await route.fallback();
+    });
+    await page.goto('./#/browse');
+    await search(page, 'sol');
+    await expect(page.locator('.card-tile')).toHaveCount(175);
+    await more(page).click();
+    await expect.poll(() => pages.length).toBe(2);
+    await search(page, 'crypt');
+    await expect(page.locator('.card-tile')).toHaveCount(49);
+    release();
+    await page.waitForTimeout(800);
+    await expect(page.locator('.card-tile')).toHaveCount(49);
+    await expect(page.getByText('Showing 49 of 49 cards')).toBeVisible();
+    expect(await names(page)).toEqual(recorded(CRYPT).map((c) => c.name));
+  });
+
+  test('a page that arrives after the sort changed is dropped', async ({ page }) => {
+    let release!: () => void;
+    const held = new Promise<void>((r) => (release = r));
+    await page.route(isPage2, async (route) => {
+      await held;
+      await route.fallback();
+    });
+    await page.goto('./#/browse');
+    await search(page, 'sol');
+    await expect(page.locator('.card-tile')).toHaveCount(175);
+    await more(page).click();
+    await expect.poll(() => pages.length).toBe(2);
+    await page.getByLabel('Sort by').selectOption('price');
+    await expect.poll(async () => (await names(page))[0]).toBe(recorded(SOL, 'usd', 'desc')[0].name);
+    release();
+    await page.waitForTimeout(800);
+    await expect(page.locator('.card-tile')).toHaveCount(175);
+    expect(await names(page)).toEqual(recorded(SOL, 'usd', 'desc').map((c) => c.name));
+    await expect(more(page)).toBeVisible();
+  });
+
+  test('cannot load more of the old results while a new search is waiting', async ({ page }) => {
+    let release!: () => void;
+    const held = new Promise<void>((r) => (release = r));
+    await page.route((u) => u.hostname === 'api.scryfall.com' && u.searchParams.get('q') === CRYPT, async (route) => {
+      await held;
+      await route.fallback();
+    });
+    await page.goto('./#/browse');
+    await search(page, 'sol');
+    await expect(page.locator('.card-tile')).toHaveCount(175);
+    await search(page, 'crypt');
+    await expect(more(page)).toBeDisabled();
+    release();
+    await expect(page.locator('.card-tile')).toHaveCount(49);
+    expect(pages).toEqual(['1', '1']);
+  });
 });
