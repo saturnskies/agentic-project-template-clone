@@ -87,7 +87,7 @@ The guess can't tell 1 from 2 or 4 from 5, so the label says "estimated". A pick
 
 ## Fallback: wider Scryfall rules
 
-Used when the commander isn't on EDHREC (403), EDHREC doesn't answer, or its reply isn't the expected shape. A notice says: "EDHREC has no data for this commander (or didn't answer), so these are based on card rules, not real decks."
+Used when the commander isn't on EDHREC (403), EDHREC doesn't answer, or its reply isn't the expected shape. A notice names the reason: "EDHREC has no decks for <commander>…", "EDHREC didn't answer…", or "Couldn't look up EDHREC's cards on Scryfall…", each ending "…so these come from card rules".
 
 - **Roles:** the four core roles plus `otag:` tutor, recursion, protection, counterspell, mana-rock and sacrifice-outlet, each verified on Scryfall on 2026-11-04. There is no `otag:token-generator`, so token makers come from the tokens theme. The new roles widen the pool only; swaps still match deck cards on the core four.
 - **Themes:** v1's six plus artifacts matter, enchantments matter, spells matter, ETB/blink, landfall and equipment/auras. A theme the commander's own rules text names counts even below the 5-card minimum.
