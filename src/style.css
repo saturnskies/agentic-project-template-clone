@@ -89,7 +89,8 @@ h2 { font: 500 1.25rem/1.2 var(--font-display); margin: 0; }
 .button:hover { border-color: var(--muted); }
 .button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
 .button.danger { color: var(--danger); }
-.button:disabled { opacity: 0.5; cursor: not-allowed; }
+/* Disabled controls are restyled, not faded: fading the whole button also fades its label below readable contrast. */
+.button:disabled, .button.primary:disabled { background: var(--tag-bg); border-color: var(--line); color: var(--muted); cursor: not-allowed; }
 input[type=text], textarea, select {
   font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--field-line);
   border-radius: var(--radius); padding: 0.5rem 0.65rem; min-width: 0; max-width: 100%;
@@ -105,6 +106,8 @@ h3 { font: 500 1.05rem/1.3 var(--font-display); margin: 0; }
 .banner { margin: 0; padding: 0.75rem 1rem; border-radius: var(--radius); background: var(--tag-bg); border: 1px solid var(--line); }
 .notice { margin: 0; padding: 0.75rem 1rem; border-radius: var(--radius); border: 1px solid var(--danger); }
 .notice ul { margin: 0.25rem 0 0; padding-left: 1.2rem; }
+/* A message slot that is mounted but empty (an alert waiting for an error) must take no space. */
+.notice:empty { display: none; }
 .tag { display: inline-block; margin-left: 0.4rem; font-size: 0.75rem; padding: 0 0.4rem; border-radius: 999px; background: var(--tag-bg); color: var(--muted); vertical-align: middle; }
 
 /* Home */
