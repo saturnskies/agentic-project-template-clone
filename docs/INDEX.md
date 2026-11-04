@@ -10,7 +10,7 @@ Status: **current** = in force or in progress; **draft** = proposed, not approve
 - [android-build.md](android-build.md) — current, 2026-11-02 — How to build, sign and update the Swapsmith Android APK, and what keeps users' decks safe across updates
 - [template-sync.md](template-sync.md) — current, 2026-10-29 — Workflow improvements to send back to agentic-project-template; how /go logs rows and core/pack/local triage
 - [tool-watchlist.md](tool-watchlist.md) — current, 2026-10-29 — Tools vetted but not set up or ruled out, and where to search when the toolbox has nothing
-- [toolbox.md](toolbox.md) — current, 2026-10-29 — Tools agents can use today by need (built here, installed and tested, no-account web tools); how to add a vetted tool
+- [toolbox.md](toolbox.md) — current, 2026-11-04 — Tools agents can use today by need (built here, installed and tested, no-account web tools); how to add a vetted tool
 
 ## docs/decisions/
 
