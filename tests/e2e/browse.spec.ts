@@ -143,6 +143,21 @@ test('keeps the earlier results and says to try again when Scryfall is down', as
   await expect(page.locator('.card-tile')).toHaveCount(49);
 });
 
+test('after a failed search, a sort change sorts the results still on screen, not the failed query', async ({ page }) => {
+  await page.route((u) => u.hostname === 'api.scryfall.com' && (u.searchParams.get('q') ?? '').includes('down'), (route) => route.fulfill({ status: 503, json: { object: 'error', details: 'Service Unavailable' } }));
+  await page.goto('./#/browse');
+  await search(page, 'crypt');
+  await expect(page.locator('.card-tile')).toHaveCount(49);
+  await search(page, 'crypt', 't:down');
+  await expect(page.getByRole('alert')).toContainText('Press Search to try again');
+  // The line above the results still names the search those results came from.
+  await expect(page.getByTestId('query')).toHaveText(CRYPT);
+  searches.length = 0;
+  await page.getByLabel('Sort by').selectOption('name');
+  await expect.poll(async () => (await names(page))[0]).toBe(recorded(CRYPT, 'name', 'asc')[0].name);
+  expect(searches).toEqual([CRYPT]);
+});
+
 test('a slow earlier search cannot overwrite a newer one', async ({ page }) => {
   let release!: () => void;
   const held = new Promise<void>((r) => (release = r));
