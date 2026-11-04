@@ -1,6 +1,7 @@
 import type { ScryCard } from '../scryfall/types';
 import { categoryFor, CATEGORIES, type EdhCard } from './edhrec';
 import { isBasicLand } from './format';
+import { mainType } from './gaps';
 import { bestPrice, type Finish } from './price';
 
 /**
@@ -79,7 +80,9 @@ export function scoreSuggestions(
     const popularity = card.edhrec_rank ? 1 - card.edhrec_rank / maxRank : 0;
     const reason = [...tags, ...roles, card.edhrec_rank ? `EDHREC #${card.edhrec_rank}` : null, owned ? 'owned' : null].filter(Boolean).join(' · ');
     const score = popularity + MATCH_WEIGHT * tags.length + ROLE_WEIGHT * roles.length + (owned ? OWNED_BONUS : 0);
-    out.push({ card, oracleId, price: p.price, finish: p.finish, tags, roles, owned, score, reason });
+    const typeLine = card.type_line ?? '';
+    const category = categoryFor(mainType(typeLine) === 'Artifact' && roles.includes('mana rock') ? 'Mana Artifacts' : null, typeLine);
+    out.push({ card, oracleId, price: p.price, finish: p.finish, tags, roles, owned, score, reason, category });
   }
   return out.sort(byScore);
 }
@@ -132,14 +135,4 @@ export function byCategory(scored: Suggestion[], first: string[] = []): Array<{ 
     groups.set(c, [...(groups.get(c) ?? []), s]);
   }
   return [...groups].sort(([a], [b]) => order.indexOf(a) - order.indexOf(b)).map(([category, items]) => ({ category, items }));
-}
-
-/** The best suggestions in each price tier. */
-export function upgradesByTier(scored: Suggestion[], perTier = 10): Record<Tier, Suggestion[]> {
-  const out: Record<Tier, Suggestion[]> = { budget: [], mid: [], premium: [] };
-  for (const s of scored) {
-    const t = tierOf(s.price);
-    if (out[t].length < perTier) out[t].push(s);
-  }
-  return out;
 }
