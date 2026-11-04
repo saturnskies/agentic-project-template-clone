@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
+  CMDR_LETHAL,
+  HISTORY_LIMIT,
   LIFE_KEY,
   PALETTE,
+  POISON_LETHAL,
+  applyChange,
   changeLife,
   contrastWithWhite,
   defaultSetup,
@@ -9,8 +13,13 @@ import {
   loadLife,
   newGame,
   parseStartingLife,
+  resetGame,
   saveLife,
   seating,
+  setPartners,
+  undo,
+  warnings,
+  type Game,
 } from '../../src/lib/life';
 
 /** A Storage stand-in that can be told to fail. */
@@ -188,5 +197,231 @@ describe('tile colors', () => {
   it('computes known contrast ratios', () => {
     expect(contrastWithWhite('#000000')).toBeCloseTo(21, 0);
     expect(contrastWithWhite('#ffffff')).toBeCloseTo(1, 5);
+  });
+});
+
+const three = (): Game => newGame({ players: 3, startingLife: 40, names: ['Ann', 'Ben', 'Cy'] });
+const cmdr = (from: number, slot: 0 | 1 = 0) => ({ kind: 'cmdr', from, slot }) as const;
+
+describe('poison', () => {
+  it('counts up from zero, never below, and stops at 99', () => {
+    let g = three();
+    g = applyChange(g, 0, { kind: 'poison' }, 3);
+    expect(g.players[0].poison).toBe(3);
+    g = applyChange(g, 0, { kind: 'poison' }, -10);
+    expect(g.players[0].poison).toBe(0);
+    g = applyChange(g, 0, { kind: 'poison' }, 500);
+    expect(g.players[0].poison).toBe(99);
+  });
+
+  it('leaves life alone', () => {
+    const g = applyChange(three(), 1, { kind: 'poison' }, 5);
+    expect(g.players.map((p) => p.life)).toEqual([40, 40, 40]);
+  });
+});
+
+describe('commander damage', () => {
+  it('is tracked per opponent and never touches life', () => {
+    let g = three();
+    g = applyChange(g, 0, cmdr(1), 4);
+    g = applyChange(g, 0, cmdr(2), 7);
+    expect(g.players[0].cmdr).toEqual({ '1:0': 4, '2:0': 7 });
+    expect(g.players[0].life).toBe(40);
+  });
+
+  it('refuses damage from yourself, from nobody, and from a partner that is not set', () => {
+    const g = three();
+    expect(applyChange(g, 0, cmdr(0), 1)).toBe(g);
+    expect(applyChange(g, 0, cmdr(7), 1)).toBe(g);
+    expect(applyChange(g, 0, cmdr(1, 1), 1)).toBe(g);
+  });
+
+  it('tracks a partner pair separately', () => {
+    let g = setPartners(three(), 1, true);
+    g = applyChange(g, 0, cmdr(1, 0), 12);
+    g = applyChange(g, 0, cmdr(1, 1), 3);
+    expect(g.players[0].cmdr).toEqual({ '1:0': 12, '1:1': 3 });
+  });
+
+  it('turning partners off drops that partner\'s damage and its undo entries, and keeps the rest', () => {
+    let g = setPartners(three(), 1, true);
+    g = applyChange(g, 0, cmdr(1, 0), 2);
+    g = applyChange(g, 0, cmdr(1, 1), 3);
+    g = applyChange(g, 2, cmdr(1, 1), 4);
+    g = setPartners(g, 1, false);
+    expect(g.players[0].cmdr).toEqual({ '1:0': 2 });
+    expect(g.players[2].cmdr).toEqual({});
+    expect(g.players[1].partners).toBe(false);
+    expect(g.history).toHaveLength(1);
+    expect(undo(g).players[0].cmdr).toEqual({});
+  });
+});
+
+describe('warnings (nothing is ever eliminated)', () => {
+  it.each([
+    [1, false],
+    [0, true],
+    [-3, true],
+  ])('life %i warns: %s', (life, warns) => {
+    const g = applyChange(newGame({ players: 1, startingLife: 1, names: [] }), 0, { kind: 'life' }, life - 1);
+    expect(warnings(g, 0).includes('Life 0 or below')).toBe(warns);
+  });
+
+  it(`poison warns from ${POISON_LETHAL}, not at ${POISON_LETHAL - 1}`, () => {
+    let g = applyChange(three(), 0, { kind: 'poison' }, POISON_LETHAL - 1);
+    expect(warnings(g, 0)).toEqual([]);
+    g = applyChange(g, 0, { kind: 'poison' }, 1);
+    expect(warnings(g, 0)).toEqual(['Poison 10']);
+  });
+
+  it(`commander damage warns from ${CMDR_LETHAL} per commander, not at ${CMDR_LETHAL - 1}`, () => {
+    let g = applyChange(three(), 0, cmdr(1), CMDR_LETHAL - 1);
+    expect(warnings(g, 0)).toEqual([]);
+    g = applyChange(g, 0, cmdr(1), 1);
+    expect(warnings(g, 0)).toEqual(['Commander damage 21 from Ben']);
+  });
+
+  it('judges each commander of a partner pair on its own, so 15 + 15 does not warn', () => {
+    let g = setPartners(three(), 1, true);
+    g = applyChange(g, 0, cmdr(1, 0), 15);
+    g = applyChange(g, 0, cmdr(1, 1), 15);
+    expect(warnings(g, 0)).toEqual([]);
+    g = applyChange(g, 0, cmdr(1, 1), 6);
+    expect(warnings(g, 0)).toEqual(["Commander damage 21 from Ben's partner"]);
+  });
+
+  it('keeps counting after a warning', () => {
+    let g = applyChange(three(), 0, { kind: 'poison' }, 10);
+    g = applyChange(g, 0, { kind: 'poison' }, 1);
+    expect(g.players[0].poison).toBe(11);
+  });
+});
+
+describe('undo', () => {
+  it('does nothing with an empty history', () => {
+    const g = three();
+    expect(undo(g)).toBe(g);
+  });
+
+  it('puts back the last change by anyone, most recent first', () => {
+    let g = three();
+    g = changeLife(g, 0, -3);
+    g = applyChange(g, 1, { kind: 'poison' }, 2);
+    g = applyChange(g, 2, cmdr(0), 5);
+    g = undo(g);
+    expect(g.players[2].cmdr).toEqual({});
+    g = undo(g);
+    expect(g.players[1].poison).toBe(0);
+    g = undo(g);
+    expect(g.players[0].life).toBe(40);
+    expect(g.history).toEqual([]);
+  });
+
+  it('does not record a change that did not change anything', () => {
+    let g = applyChange(three(), 0, { kind: 'poison' }, -1);
+    expect(g.history).toEqual([]);
+    g = changeLife(newGame({ players: 1, startingLife: 9999, names: [] }), 0, 5);
+    expect(g.history).toEqual([]);
+  });
+
+  it('restores the exact earlier value after a clamped change', () => {
+    let g = changeLife(newGame({ players: 1, startingLife: 9998, names: [] }), 0, 50);
+    expect(g.players[0].life).toBe(9999);
+    expect(undo(g).players[0].life).toBe(9998);
+  });
+
+  it(`keeps only the last ${HISTORY_LIMIT} changes`, () => {
+    let g = newGame({ players: 1, startingLife: 100, names: [] });
+    for (let i = 0; i < HISTORY_LIMIT + 10; i++) g = changeLife(g, 0, -1);
+    expect(g.history).toHaveLength(HISTORY_LIMIT);
+    for (let i = 0; i < HISTORY_LIMIT; i++) g = undo(g);
+    expect(g.players[0].life).toBe(100 - 10);
+    expect(undo(g)).toBe(g);
+  });
+
+  it('leaves the old game untouched', () => {
+    const g = changeLife(three(), 0, -1);
+    undo(g);
+    expect(g.players[0].life).toBe(39);
+    expect(g.history).toHaveLength(1);
+  });
+});
+
+describe('resetGame', () => {
+  it('puts every counter back, keeps names and partners, and forgets the history so undo has nothing', () => {
+    let g = setPartners(three(), 1, true);
+    g = changeLife(g, 0, -12);
+    g = applyChange(g, 0, { kind: 'poison' }, 4);
+    g = applyChange(g, 0, cmdr(1, 1), 6);
+    const r = resetGame(g);
+    expect(r.players.map((p) => [p.name, p.life, p.poison, p.cmdr, p.partners])).toEqual([
+      ['Ann', 40, 0, {}, false],
+      ['Ben', 40, 0, {}, true],
+      ['Cy', 40, 0, {}, false],
+    ]);
+    expect(r.history).toEqual([]);
+    expect(undo(r)).toBe(r);
+  });
+});
+
+describe('saved counters', () => {
+  const roundTrip = (game: unknown) => loadLife(fakeStorage({ [LIFE_KEY]: JSON.stringify({ version: 1, game, setup: {} }) })).store.game;
+
+  it('round-trips poison, commander damage, partners and the undo history', () => {
+    let g = setPartners(three(), 1, true);
+    g = applyChange(g, 0, { kind: 'poison' }, 2);
+    g = applyChange(g, 0, cmdr(1, 1), 6);
+    const s = fakeStorage();
+    const store = emptyLife();
+    store.game = g;
+    saveLife(s, store);
+    expect(loadLife(s).store.game).toEqual(g);
+  });
+
+  it('reads a game saved before these counters existed', () => {
+    const g = roundTrip({ startingLife: 40, players: [{ name: 'A', life: 38 }, { name: 'B', life: 40 }] })!;
+    expect(g.players[0]).toEqual({ name: 'A', life: 38, poison: 0, partners: false, cmdr: {} });
+    expect(g.history).toEqual([]);
+  });
+
+  it('repairs bad counters: out-of-range values are limited, impossible rows and non-boolean partners are dropped', () => {
+    const g = roundTrip({
+      startingLife: 40,
+      players: [
+        { name: 'A', life: 40, poison: 500, partners: 'yes', cmdr: { '1:0': 5, '0:0': 3, '1:1': 4, '2:1': 2, '9:0': 2, 'x': 1, '1:0 ': 1 } },
+        { name: 'B', life: 40, poison: -4, partners: true, cmdr: { '0:1': 200, '0:0': 'lots' } },
+        { name: 'C', life: 40 },
+      ],
+    })!;
+    expect(g.players[0].poison).toBe(99);
+    expect(g.players[0].partners).toBe(false);
+    // Kept: from B, whose commander has a partner. Dropped: from yourself, from C (no partner), from nobody, malformed keys.
+    expect(g.players[0].cmdr).toEqual({ '1:0': 5, '1:1': 4 });
+    expect(g.players[1].poison).toBe(0);
+    expect(g.players[1].cmdr).toEqual({});
+  });
+
+  it('drops history entries that are not valid and keeps the valid ones', () => {
+    const g = roundTrip({
+      startingLife: 40,
+      players: [{ name: 'A', life: 39 }, { name: 'B', life: 40 }],
+      history: [
+        { seat: 0, target: { kind: 'life' }, before: 40 },
+        { seat: 5, target: { kind: 'life' }, before: 40 },
+        { seat: 0, target: { kind: 'nope' }, before: 1 },
+        { seat: 0, target: { kind: 'cmdr', from: 0, slot: 0 }, before: 1 },
+        { seat: 0, target: { kind: 'life' }, before: 'x' },
+        'junk',
+      ],
+    })!;
+    expect(g.history).toEqual([{ seat: 0, target: { kind: 'life' }, before: 40 }]);
+  });
+
+  it('drops a history that is not a list, and cuts a long one to the last 50', () => {
+    expect(roundTrip({ startingLife: 40, players: [{ name: 'A', life: 40 }], history: 'many' })!.history).toEqual([]);
+    const many = Array.from({ length: 80 }, (_, i) => ({ seat: 0, target: { kind: 'life' }, before: i }));
+    const g = roundTrip({ startingLife: 40, players: [{ name: 'A', life: 40 }], history: many })!;
+    expect(g.history).toHaveLength(HISTORY_LIMIT);
+    expect(g.history[0].before).toBe(30);
   });
 });
