@@ -32,12 +32,19 @@ No other subagents. Docs-only commits get no review.
 ## Slices
 
 ### 1. First search: name, Commander-legal, advanced, grid, sort
-- [ ] `lib/browse.ts`: `buildQuery(filters)` for name, Commander-legal and advanced (advanced wrapped in parentheses and ANDed); quote and backslash escaping; length check (over 900 characters → an error naming the advanced box, never truncated); sort options → `order`/`dir`. Unit tests first, including `or` inside advanced not escaping the toggles, and 899 / 901 characters.
-- [ ] `types.ts` gains `mana_cost`, `rarity`, `cmc`, `keywords`, full `legalities`; `trim` and `CARD_KEYS` as above; record `scryfall-browse.json`.
-- [ ] `scryfall/browse.ts` `searchCards`: one call through the client with `unique=cards`; returns cards, `has_more`, `total_cards`. 404 → empty result; 400 → an error carrying Scryfall's `details`; anything else rethrown.
-- [ ] `ui/browse.ts`: form (name, Commander-legal toggle on by default, advanced box with a syntax link, Search, hint before the first search), "Searching: …" line, image grid (lazy images, name, price, Owned badge as text), sort control with direction, run number so a stale reply is dropped. `renderBrowse(view, ctx)`; `app.ts` passes `ctx`.
-- [ ] E2E (`browse.spec.ts`, both projects): opening the tab fetches nothing; Search lists the recorded cards in the grid with names and prices; changing sort re-runs from page 1; the grid and form fit at 390 px; text and results survive a visit to Decks and back (scroll too).
+- [x] `lib/browse.ts`: `buildQuery(filters)` for name, Commander-legal and advanced (advanced wrapped in parentheses and ANDed); quote and backslash escaping; length check (over 900 characters → an error naming the advanced box, never truncated); sort options → `order`/`dir`. Unit tests first, including `or` inside advanced not escaping the toggles, and 899 / 901 characters.
+- [x] `types.ts` gains `mana_cost`, `rarity`, `cmc`, `keywords`, full `legalities`; `trim` and `CARD_KEYS` as above; record `scryfall-browse.json`.
+- [x] `scryfall/browse.ts` `searchCards`: one call through the client with `unique=cards`; returns cards, `has_more`, `total_cards`. 404 → empty result; 400 → an error carrying Scryfall's `details`; anything else rethrown.
+- [x] `ui/browse.ts`: form (name, Commander-legal toggle on by default, advanced box with a syntax link, Search, hint before the first search), "Searching: …" line, image grid (lazy images, name, price, Owned badge as text), sort control with direction, run number so a stale reply is dropped. `renderBrowse(view, ctx)`; `app.ts` passes `ctx`.
+- [x] E2E (`browse.spec.ts`, both projects): opening the tab fetches nothing; Search lists the recorded cards in the grid with names and prices; changing sort re-runs from page 1; the grid and form fit at 390 px; text and results survive a visit to Decks and back (scroll too).
 - **Failure paths:** no matches (404) → "No cards match"; a 400 from the advanced box → Scryfall's message under that box and the previous results stay; network failure → retry message and previous results stay; query over 900 characters → no request is sent; **slow first search overtaken by a second**: the older reply is dropped (test holds the first reply back and fails with the run guard removed); Search pressed twice quickly asks once per distinct query; image-less cards (a double-faced card's first face, a card with no image) still render.
+- **Done 2026-11-04.** Unit: 11 query tests, 7 search tests. E2E: 15 browse tests pass in both projects; `npm run check` result below.
+  - Added to the slice: Scryfall's `warnings` (200 with an ignored term) are shown above the results, and unbalanced parentheses in the advanced box are refused before searching, because the wrapper would otherwise be escaped.
+  - A real 400 can't come from the form, so `searchCards` is tested against a recorded real 400, and the e2e test answers a form-reachable search with that recorded body. The 503 test uses Scryfall's generic error shape, not a recorded reply.
+  - Mutation checks: with the run guard removed ("slow earlier search") and with the same-search guard removed ("twice quickly") the tests fail.
+  - `trim()` keeps `mana_cost`, `cmc`, `rarity`, `keywords` and, for the Browse recording only, every legality. The fixture is 484 KB.
+  - Still to do for the live check: `searchCards` against the real API (`SCRYFALL_LIVE`), before review.
+  - On a phone the form fills most of the first screen; slice 3 must keep the extra filters compact (collapsible).
 
 ### 2. Load more
 - [ ] `searchCards` takes `page`; the UI keeps the run's query, appends the next page, shows "Showing 175 of 1,204", hides the button when `has_more` is false, disables it while a page is in flight.
