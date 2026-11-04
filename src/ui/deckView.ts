@@ -563,16 +563,18 @@ function table(priced: PricedCard[], sort: SortKey, handlers: TableHandlers): HT
         { class: 'name' },
         nameEl,
         p.isCommander ? h('span', { class: 'tag' }, 'Commander') : null,
-        c.keepToggle(),
-        // On phones the Printing column is hidden, so the printing shows under the name.
-        h('div', { class: 'show-narrow sub' }, c.printingControl(), c.finishTag()),
+        h('span', { class: 'hide-narrow' }, c.keepToggle()),
+        // On phones the Printing column is hidden, so the printing shows under the name, in one row with
+        // Keep: stacked small controls would need overlapping touch targets.
+        h('div', { class: 'show-narrow sub' }, c.printingControl(), c.keepToggle(), c.finishTag()),
       ),
       h('td', { class: 'type hide-narrow' }, p.isCommander ? 'Commander' : typeName(p.typeLine)),
       h('td', { class: 'printing hide-narrow' }, c.printingControl(), c.finishTag()),
       h('td', { class: 'num' }, p.entry.qty),
       h('td', { class: 'num' }, c.priceText),
       h('td', { class: 'num hide-narrow' }, p.price == null ? '—' : usd(p.price * p.entry.qty)),
-      handlers.readOnly ? null : h('td', { class: 'owned' }, c.own()),
+      // The label is the touch target: the checkbox alone is too small to hit reliably.
+      handlers.readOnly ? null : h('td', { class: 'owned' }, h('label', { class: 'own-cell' }, c.own())),
       handlers.readOnly ? null : h('td', { class: 'remove' }, c.remove()),
     );
   });
