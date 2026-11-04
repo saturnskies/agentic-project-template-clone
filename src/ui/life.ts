@@ -51,10 +51,11 @@ function holdButton(o: { text: string; aria: string; delta: 1 | -1; cls: string;
   let timer = 0;
   let held = false;
   let swallowUntil = 0;
-  const stop = () => {
+  /** Ends a press. Only a release over the button is followed by a click, so only then is that click swallowed. */
+  const stop = (released = false) => {
     window.clearTimeout(timer);
     timer = 0;
-    if (held) swallowUntil = performance.now() + SWALLOW_MS;
+    if (held && released) swallowUntil = performance.now() + SWALLOW_MS;
     held = false;
   };
   b.addEventListener('pointerdown', (e) => {
@@ -66,7 +67,8 @@ function holdButton(o: { text: string; aria: string; delta: 1 | -1; cls: string;
       o.onChange(o.delta * 10);
     }, HOLD_MS);
   });
-  for (const t of ['pointerup', 'pointercancel', 'pointerleave']) b.addEventListener(t, stop);
+  b.addEventListener('pointerup', () => stop(true));
+  for (const t of ['pointercancel', 'pointerleave']) b.addEventListener(t, () => stop());
   b.addEventListener('click', (e) => {
     if (performance.now() < swallowUntil) {
       swallowUntil = 0;
@@ -125,6 +127,8 @@ export function createLife(storage: Storage | null): Life {
   let saved = loaded.persistent;
   let drawn: string | null = null;
   let notices: HTMLElement[] = [];
+  /** Counts screen draws: a roll started on an older draw must not write into a newer one. */
+  let drawId = 0;
   let awakeState: AwakeState | null = null;
   let stopAwake: (() => void) | null = null;
   let awakeNotes: HTMLElement[] = [];
@@ -163,6 +167,7 @@ export function createLife(storage: Storage | null): Life {
   }
 
   function drawSetup(view: HTMLElement) {
+    drawId++;
     notices = [];
     const redraw = () => drawSetup(view);
     const startLife = custom ? parseStartingLife(customText) : draft.startingLife;
@@ -225,10 +230,10 @@ export function createLife(storage: Storage | null): Life {
         h('div', { class: 'actions' }, go),
       ),
     );
-    if (custom) check();
   }
 
   function drawGame(view: HTMLElement) {
+    const me = ++drawId;
     notices = [];
     const seats = store.game!.players.map((_, i) => i);
     awakeNotes = [];
@@ -402,12 +407,14 @@ export function createLife(storage: Storage | null): Life {
     rollBtn.addEventListener('click', () => {
       if (rolling) return;
       rolling = true;
+      open.disabled = true;
       menu.close();
       const seat = randomSeat(seats.length);
       const finish = () => {
         rolling = false;
+        open.disabled = false;
         for (const t of parts.values()) t.el.classList.remove('rolling');
-        if (!store.game || seat >= store.game.players.length) return;
+        if (me !== drawId || !store.game || seat >= store.game.players.length) return;
         store.game = setFirst(store.game, seat);
         updateAll();
         persist();
@@ -416,7 +423,7 @@ export function createLife(storage: Storage | null): Life {
       const steps = 2 * seats.length + seat;
       const tick = (i: number) => {
         for (const t of parts.values()) t.el.classList.remove('rolling');
-        if (i > steps) return finish();
+        if (me !== drawId || i > steps) return finish();
         parts.get(i % seats.length)?.el.classList.add('rolling');
         window.setTimeout(() => tick(i + 1), ROLL_STEP_MS);
       };
