@@ -441,3 +441,23 @@ dialog.sheet[open] { display: grid; gap: 0.5rem; }
 @media (max-width: 40rem) {
   .card-row { grid-template-columns: minmax(0, 1fr) auto auto auto; grid-template-areas: "name name name price" "type type type type" "cost rarity owned owned"; }
 }
+
+/* Card detail */
+:root { --ok: #1f6b3a; }
+@media (prefers-color-scheme: dark) { :root { --ok: #6fcf97; } }
+.card-tile-name button, .card-row-name button { text-align: left; text-decoration: none; font-weight: inherit; overflow-wrap: anywhere; }
+.card-tile, .card-row { cursor: pointer; }
+.card-dialog { width: min(46rem, calc(100vw - 32px)); }
+.card-detail { display: grid; gap: 1rem; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); margin-top: 0.75rem; }
+@media (max-width: 40rem) { .card-detail { grid-template-columns: minmax(0, 1fr); } .card-detail-art { max-width: 15rem; } }
+.card-detail-art { display: grid; gap: 0.5rem; align-content: start; }
+.card-detail-img { display: block; width: 100%; height: auto; aspect-ratio: 488 / 680; border-radius: 4.75% / 3.5%; background: var(--tag-bg); }
+.rules { display: grid; gap: 0.35rem; }
+.rules h4 { margin: 0; font-size: 1rem; }
+.rules p { margin: 0; white-space: pre-line; }
+.mana-cost { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.legality { margin: 0; font-weight: 600; }
+.legality.good { color: var(--ok); }
+.legality.bad { color: var(--danger); }
+.formats { columns: 2; margin: 0.5rem 0 0; padding-left: 1.1rem; font-size: 0.9rem; }
+.detail-price { font-size: 1.15rem; font-weight: 700; font-variant-numeric: tabular-nums; }
