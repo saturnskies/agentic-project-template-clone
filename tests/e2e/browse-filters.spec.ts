@@ -154,6 +154,54 @@ test.describe('bad input stops the search and says where', () => {
   });
 });
 
+test.describe('accessibility of the filters', () => {
+  test('a pair of bounds is a named group', async ({ page }) => {
+    await page.goto('./#/browse');
+    await openFilters(page);
+    await expect(page.getByRole('group', { name: 'Mana value' })).toBeVisible();
+    await expect(page.getByRole('group', { name: 'Price (USD)' })).toBeVisible();
+  });
+
+  test('a field with a problem is marked invalid and tied to its message, and cleared when fixed', async ({ page }) => {
+    await page.goto('./#/browse');
+    await openFilters(page);
+    const set = exact(page, 'Set code');
+    await expect(set).not.toHaveAttribute('aria-invalid', 'true');
+    await set.fill('toolong7');
+    await searchButton(page);
+    await expect(set).toHaveAttribute('aria-invalid', 'true');
+    const message = await set.getAttribute('aria-describedby');
+    await expect(page.locator(`#${message}`)).toContainText('set code');
+    // Only the field at fault is marked.
+    await expect(exact(page, 'Keyword')).not.toHaveAttribute('aria-invalid', 'true');
+    await set.fill('rtr');
+    await page.getByLabel('Card name').fill('crypt');
+    await searchButton(page);
+    await expect(set).not.toHaveAttribute('aria-invalid', 'true');
+  });
+
+  test('both bounds of a pair are marked when the pair is wrong', async ({ page }) => {
+    await page.goto('./#/browse');
+    await openFilters(page);
+    await exact(page, 'Mana value min').fill('5');
+    await exact(page, 'Mana value max').fill('4');
+    await searchButton(page);
+    await expect(exact(page, 'Mana value min')).toHaveAttribute('aria-invalid', 'true');
+    await expect(exact(page, 'Mana value max')).toHaveAttribute('aria-invalid', 'true');
+    await expect(exact(page, 'Price min (USD)')).not.toHaveAttribute('aria-invalid', 'true');
+  });
+
+  test('the advanced box is marked invalid and tied to its message', async ({ page }) => {
+    await page.goto('./#/browse');
+    const advanced = page.getByLabel('Advanced search');
+    await advanced.fill('t:elf) or (t:goblin');
+    await searchButton(page);
+    await expect(advanced).toHaveAttribute('aria-invalid', 'true');
+    const message = await advanced.getAttribute('aria-describedby');
+    await expect(page.locator(`#${message}`)).toContainText('parentheses');
+  });
+});
+
 test('the price filter says it leaves out cards with no USD price', async ({ page }) => {
   await page.goto('./#/browse');
   await openFilters(page);
