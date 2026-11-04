@@ -461,3 +461,7 @@ dialog.sheet[open] { display: grid; gap: 0.5rem; }
 .legality.bad { color: var(--danger); }
 .formats { columns: 2; margin: 0.5rem 0 0; padding-left: 1.1rem; font-size: 0.9rem; }
 .detail-price { font-size: 1.15rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* Add to deck */
+.add-panel { border-top: 1px solid var(--line); padding-top: 0.75rem; }
+.add-notes p { margin: 0.25rem 0 0; color: var(--danger); font-weight: 600; }
