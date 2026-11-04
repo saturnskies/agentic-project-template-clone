@@ -20,8 +20,20 @@ export type PageResult =
 export const pageUrl = (path: string) => `https://edhrec.com${path}`;
 
 /**
- * Fetches a commander page such as `/commanders/edgar-markov`. Follows one redirect (a partner pair
- * named in the other order); a second redirect counts as a failure.
+ * Whether a redirect stays on the asked-for page: the same slug words (a partner pair named in the
+ * other order) and the same bracket, theme and budget. Anything else would show another commander's
+ * cards under this one's name.
+ */
+const samePage = (from: string, to: string) => {
+  const [, , slugA = '', ...restA] = from.split('/');
+  const [, , slugB = '', ...restB] = to.split('/');
+  const words = (slug: string) => slug.split('-').sort().join('-');
+  return words(slugA) === words(slugB) && restA.join('/') === restB.join('/');
+};
+
+/**
+ * Fetches a commander page such as `/commanders/edgar-markov`. Follows one redirect to the same page
+ * (a partner pair named in the other order); a second redirect, or one elsewhere, counts as a failure.
  */
 export async function commanderPage(client: ScryfallClient, path: string): Promise<PageResult> {
   for (let hop = 0; hop < 2; hop++) {
@@ -34,6 +46,7 @@ export async function commanderPage(client: ScryfallClient, path: string): Promi
     const parsed = parsePage(body);
     if (!parsed) return { status: 'failed' };
     if (parsed.kind === 'page') return { status: 'ok', page: parsed.page, path };
+    if (!samePage(path, parsed.path)) return { status: 'failed' };
     path = parsed.path;
   }
   return { status: 'failed' };
