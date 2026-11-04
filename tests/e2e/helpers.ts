@@ -13,10 +13,13 @@ export const flows: FixtureMap = { ...load('scryfall-e2e.json'), ...load('scryfa
 export const edgarEdhrec: FixtureMap = load('edhrec-edgar.json');
 /**
  * The full Edgar deck's Scryfall replies. Every Find also counts the deck's Game Changers, so the
- * recorded `is:gamechanger` replies (from the EDHREC recording) come with it.
+ * recorded `is:gamechanger` replies (from the EDHREC recording) come with it, and the rules-based
+ * fallback's newer searches with them.
  */
 export const edgarFull: FixtureMap = {
   ...load('scryfall-edgar-full.json'),
+  // The fallback's wider searches (more roles, the tokens theme Edgar's text names), recorded 2026-11-04.
+  ...load('scryfall-edgar-fallback.json'),
   ...Object.fromEntries(Object.entries(edgarEdhrec).filter(([k]) => k.startsWith('GET /cards/search?q=is%3Agamechanger'))),
 };
 export const e2eList = readFileSync(new URL('../fixtures/e2e-list.txt', import.meta.url), 'utf8');
