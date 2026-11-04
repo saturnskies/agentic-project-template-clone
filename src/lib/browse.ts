@@ -1,4 +1,5 @@
-/** Browse tab logic that needs no browser: turning the search form into a Scryfall query, and sorting. */
+/** Browse tab logic that needs no browser: turning the search form into a Scryfall query, sorting, and what a card's detail says. */
+import type { ScryCard } from '../scryfall/types';
 
 export type ColorMode = 'within' | 'exactly' | 'includes';
 
@@ -223,4 +224,35 @@ export function savePrefs(storage: Storage | null, prefs: BrowsePrefs): boolean 
   } catch {
     return false;
   }
+}
+
+/** Scryfall's documented legality statuses, in words. Anything else is treated as unknown. */
+const STATUSES: Record<string, string> = { legal: 'Legal', not_legal: 'Not legal', banned: 'Banned', restricted: 'Restricted' };
+
+/** Commander status in words; the tone lets the screen style it, but the words carry the meaning. */
+export function legalityLabel(status: string | undefined): { text: string; tone: 'good' | 'bad' | 'unknown' } {
+  const word = status ? STATUSES[status] : undefined;
+  if (!word) return { text: 'Commander legality unknown', tone: 'unknown' };
+  return { text: `${word} in Commander`, tone: status === 'legal' ? 'good' : 'bad' };
+}
+
+/** Scryfall writes some format keys without a separator; these are how people write them. */
+const FORMAT_NAMES: Record<string, string> = { paupercommander: 'Pauper Commander', standardbrawl: 'Standard Brawl', competitivebrawl: 'Competitive Brawl', predh: 'Pre-DH', oldschool: 'Old School' };
+
+const formatName = (key: string) => FORMAT_NAMES[key] ?? key.split('_').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+/** Every format with a readable name and status: Commander first, then A to Z. Missing or odd values are skipped. */
+export function allFormats(legalities: Record<string, string | undefined>): Array<{ format: string; status: string }> {
+  return Object.entries(legalities)
+    .flatMap(([key, status]) => (status && STATUSES[status] ? [{ key, format: formatName(key), status: STATUSES[status] }] : []))
+    .sort((a, b) => (a.key === 'commander' ? -1 : b.key === 'commander' ? 1 : a.format.localeCompare(b.format)))
+    .map(({ format, status }) => ({ format, status }));
+}
+
+/**
+ * The Oracle ID the owned collection is keyed by, or null when the card has none (never the printing id:
+ * a printing id in the owned list would match nothing and could not be told apart from a real entry).
+ */
+export function ownableId(card: ScryCard): string | null {
+  return card.oracle_id || card.card_faces?.[0]?.oracle_id || null;
 }
