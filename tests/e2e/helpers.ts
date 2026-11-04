@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { expect, type Page } from '@playwright/test';
+import { frontFace, looseName } from '../../src/scryfall/cards';
 import { requestKey, type FixtureMap } from '../support/fixtures';
 
 const load = (name: string): FixtureMap => JSON.parse(readFileSync(new URL(`../fixtures/${name}`, import.meta.url), 'utf8'));
@@ -62,7 +63,8 @@ export async function mockScryfall(page: Page, recorded: FixtureMap = flows, edh
 }
 
 const LOOKUP = /^f:commander id<=\w+ game:paper prefer:usd-low \((.*)\)$/;
-const loose = (n: string) => n.split(' // ')[0].normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+/** The app's own name matching, so the mock pairs names exactly as the app does. */
+const loose = (n: string) => looseName(frontFace(n));
 
 /** Every card in the recorded EDHREC name lookups, by loose front-face name. */
 function lookupIndex(map: FixtureMap): Map<string, unknown> {
