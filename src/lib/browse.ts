@@ -85,6 +85,17 @@ function balanced(text: string): boolean {
   return depth === 0;
 }
 
+/** True for text that is already one parenthesized group, like "(a or b)"; "(a) or (b)" is not. */
+function isOneGroup(text: string): boolean {
+  if (text[0] !== '(' || text[text.length - 1] !== ')') return false;
+  let depth = 0;
+  for (let i = 0; i < text.length; i += 1) {
+    depth += text[i] === '(' ? 1 : text[i] === ')' ? -1 : 0;
+    if (depth === 0 && i < text.length - 1) return false;
+  }
+  return depth === 0;
+}
+
 type Part = { terms: string[] } | { field: Field; error: string };
 const fail = (field: Field, error: string): Part => ({ field, error });
 
@@ -111,7 +122,8 @@ function filterTerms(f: Filters): Part[] {
   const keyword = words(f.keyword.toLowerCase()).join(' ');
   if (keyword) out.push(/^[a-z][a-z -]*$/.test(keyword) ? { terms: [`kw:${quote(keyword)}`] } : fail('keyword', 'Give one keyword, letters, spaces and hyphens only, like first strike.'));
 
-  if (f.role.trim()) out.push({ terms: [f.role.trim()] });
+  const role = f.role.trim();
+  if (role) out.push({ terms: [/\bor\b/i.test(role) && !isOneGroup(role) ? `(${role})` : role] });
 
   const colors = COLORS.filter((c) => f.colors.includes(c.id)).map((c) => c.id);
   if (colors.length) {
