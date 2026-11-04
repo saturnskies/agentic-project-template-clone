@@ -4,7 +4,7 @@ import type { DeckCardFacts } from '../lib/swaps';
 import type { PricedCard } from './resolve';
 import type { PoolEntry } from '../lib/suggest';
 import { ScryfallError, type ScryfallClient } from './client';
-import { CORE_ROLES } from './roles';
+import { POOL_ROLES } from './roles';
 import type { ScryCard, ScryList } from './types';
 
 export interface PoolSearch {
@@ -14,12 +14,12 @@ export interface PoolSearch {
   kind: 'theme' | 'role';
 }
 
-/** The searches that build a deck's candidate pool: its tribe, its themes and the core roles. */
+/** The searches that build a deck's candidate pool: its tribe, its themes and the pool roles. */
 export function profileSearches(profile: DeckProfile): PoolSearch[] {
   return [
     ...(profile.tribe ? [{ label: profile.tribe, query: `t:${profile.tribe.toLowerCase()}`, kind: 'theme' as const }] : []),
     ...profile.themes.map((t) => ({ label: t.label, query: t.query, kind: 'theme' as const })),
-    ...CORE_ROLES.map((r) => ({ ...r, kind: 'role' as const })),
+    ...POOL_ROLES.map((r) => ({ ...r, kind: 'role' as const })),
   ];
 }
 
