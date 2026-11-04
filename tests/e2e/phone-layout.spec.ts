@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { contrastRatio, effectiveBackground, parseColor } from '../support/contrast';
+import { composite, contrastRatio, effectiveBackground, parseColor } from '../support/contrast';
 import { edgarFull, mockScryfall, seedEdgarDeck } from './helpers';
 
 // Phone layout fixes (docs/superpowers/plans/2026-11-04-phone-layout.md). These check what the page
@@ -12,6 +12,7 @@ interface Sample {
   outlineColor: string;
   outlineStyle: string;
   borderColor: string;
+  opacity: string;
   bgs: string[];
   parentBgs: string[];
 }
@@ -25,10 +26,21 @@ const sample = (loc: Locator): Promise<Sample> =>
       return out;
     };
     const cs = getComputedStyle(el);
-    return { color: cs.color, outlineColor: cs.outlineColor, outlineStyle: cs.outlineStyle, borderColor: cs.borderTopColor, bgs: chain(el), parentBgs: chain(el.parentElement) };
+    return { color: cs.color, outlineColor: cs.outlineColor, outlineStyle: cs.outlineStyle, borderColor: cs.borderTopColor, opacity: cs.opacity, bgs: chain(el), parentBgs: chain(el.parentElement) };
   });
 
 const ratio = (fg: string, bgs: string[]) => contrastRatio(parseColor(fg), effectiveBackground(bgs));
+
+/** Text contrast as seen, with the element's own `opacity` mixed in: dimming a whole control dims its label too. */
+function seenRatio(s: Sample): number {
+  const op = Number(s.opacity);
+  const base = effectiveBackground(s.parentBgs);
+  const own = parseColor(s.bgs[0]);
+  const fg = parseColor(s.color);
+  const seenBg = composite({ ...own, a: own.a * op }, base);
+  const seenFg = composite({ ...fg, a: fg.a * op }, base);
+  return contrastRatio(seenFg, seenBg);
+}
 
 async function openDeck(page: Page) {
   await mockScryfall(page, edgarFull);
@@ -91,6 +103,15 @@ for (const scheme of ['light', 'dark'] as const) {
       expect(ratio(s.borderColor, s.parentBgs), 'against the page').toBeGreaterThanOrEqual(3);
     });
 
+    test('a disabled primary button keeps a readable label and is not just dimmed', async ({ page }) => {
+      await page.goto('./#/new');
+      const create = page.getByRole('button', { name: 'Create deck' });
+      await expect(create).toBeDisabled();
+      const s = await sample(create);
+      expect(seenRatio(s), 'label as seen').toBeGreaterThanOrEqual(4.5);
+      expect(s.opacity, 'a disabled control is restyled, not faded').toBe('1');
+    });
+
     test('the paste box and its focus ring are visible', async ({ page }) => {
       await page.goto('./#/paste');
       const box = page.getByLabel('Decklist');
@@ -104,6 +125,16 @@ for (const scheme of ['light', 'dark'] as const) {
     });
   });
 }
+
+test('Home shows no empty alert box until there is a message to show', async ({ page }) => {
+  await seedEdgarDeck(page);
+  await page.goto('./');
+  await expect(page.getByRole('button', { name: 'Back up my decks' })).toBeVisible();
+  // Empty message elements must take no space: an empty bordered box reads as a broken control.
+  const empties = await page.locator('.notice').evaluateAll((els) => els.filter((e) => !e.textContent?.trim() && getComputedStyle(e).display !== 'none').length);
+  expect(empties).toBe(0);
+  await expect(page.getByRole('alert')).toHaveCount(0);
+});
 
 test('the browser bar colour follows the colour scheme', async ({ page }) => {
   await page.goto('./');
