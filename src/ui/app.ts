@@ -137,6 +137,8 @@ export function startApp(root: HTMLElement): void {
       if (!switched) restore = false;
     }
     window.scrollTo(0, restore ? scroll[tab] : 0);
+    // The screen stays awake only while a game is showing.
+    life.setAwake(tab === 'life' && hash === '#/life/game' && life.hasGame());
   }
 
   function drawDecks(hash: string) {
