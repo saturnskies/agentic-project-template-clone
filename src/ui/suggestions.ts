@@ -5,7 +5,7 @@ import { deckTypeCounts, gapCategories, typeGaps } from '../lib/gaps';
 import { cardImage } from '../lib/groups';
 import { deckProfile, type DeckProfile } from '../lib/profile';
 import { tcgplayerUrl } from '../lib/price';
-import { byCategory, roleLookupNames, scoreEdhrec, scoreSuggestions, tierOf, TIERS, upgradesByTier, type PoolEntry, type Suggestion, type Tier } from '../lib/suggest';
+import { byCategory, roleLookupNames, scoreEdhrec, scoreSuggestions, tierOf, TIERS, type PoolEntry, type Suggestion, type Tier } from '../lib/suggest';
 import { cheaperReplacements, edhrecKeepScores, swapPairs } from '../lib/swaps';
 import { frontFace } from '../scryfall/cards';
 import type { PricedCard } from '../scryfall/resolve';
@@ -89,7 +89,6 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
   let run = 0;
   let profile: DeckProfile | null = null;
   let view: View = 'upgrades';
-  let tier: Tier = 'budget';
   let swapTier: Tier | null = null;
 
   const find = h('button', { type: 'button', class: 'button primary' }, 'Find suggestions');
@@ -270,17 +269,39 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
       { class: 'stack' },
       h('div', { class: 'filters' }, bracketMenu, themeMenu),
       estimate,
-      segmented<Tier | 'any'>('Price', [{ id: 'any', label: 'Any price' }, ...TIERS.map((t) => ({ id: t.id, label: t.label }))], price, (p) => {
-        price = p;
-        const budget = p === 'budget';
+      priceControl(() => {
+        const budget = price === 'budget';
         if (budget !== filter.budget) void loadPage({ ...filter, budget });
         else draw();
       }),
     );
   };
 
+  /** Upgrades price filter; `onPick` runs after `price` is set. */
+  const priceControl = (onPick: () => void) =>
+    segmented<Tier | 'any'>('Price', [{ id: 'any', label: 'Any price' }, ...TIERS.map((t) => ({ id: t.id, label: t.label }))], price, (p) => {
+      price = p;
+      onPick();
+    });
+  const inPrice = (s: Suggestion) => price === 'any' || tierOf(s.price) === price;
+
+  /** Upgrades grouped by category: the top few of each, with Show more. */
+  const categorySections = (groups: Array<{ category: string; items: Suggestion[] }>): HTMLElement[] =>
+    groups.map(({ category, items }) => {
+      const limit = shown.get(category) ?? CATEGORY_STEP;
+      const more = h('button', { type: 'button', class: 'button', 'aria-label': `Show more ${category}` }, 'Show more');
+      more.addEventListener('click', () => (shown.set(category, limit + CATEGORY_STEP), draw()));
+      return h(
+        'section',
+        { class: 'sugg-group stack', 'aria-label': category },
+        h('h4', {}, `${category} (${items.length})`),
+        h('ul', { class: 'sugg-list', 'aria-label': `${category} upgrades` }, ...items.slice(0, limit).map(suggItem)),
+        items.length > limit ? more : null,
+      );
+    });
+
   const edhrecUpgrades = (res: Extract<EdhState, { status: 'ok' }>, oracleIds: Set<string>): HTMLElement[] => {
-    const scored = scoreEdhrec(res.candidates, { colorIdentity: profile!.colorIdentity, oracleIds }, new Set(ctx.store.owned), commanderName).filter((s) => price === 'any' || tierOf(s.price) === price);
+    const scored = edhrecScored(res, oracleIds).filter(inPrice);
     // Card types the deck is short of, against the average deck on the page shown; their categories lead.
     const gaps = typeGaps(deckTypeCounts(priced().map((p) => ({ typeLine: p.typeLine, qty: p.entry.qty, isCommander: p.isCommander }))), res.page.typeCounts);
     const groups = byCategory(scored, gapCategories(gaps));
@@ -310,20 +331,7 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
     ].filter((x): x is HTMLElement => !!x);
     if (res.failedLookups) out.push(h('p', { class: 'notice small', role: 'status' }, "Scryfall didn't answer every lookup, so some cards may be missing. Refresh suggestions to try again."));
     if (!groups.length) out.push(h('p', { class: 'muted small' }, price === 'any' ? 'Your deck already runs every card EDHREC lists for this commander.' : 'No suggestions in this price range.'));
-    for (const { category, items } of groups) {
-      const limit = shown.get(category) ?? CATEGORY_STEP;
-      const more = h('button', { type: 'button', class: 'button', 'aria-label': `Show more ${category}` }, 'Show more');
-      more.addEventListener('click', () => (shown.set(category, limit + CATEGORY_STEP), draw()));
-      out.push(
-        h(
-          'section',
-          { class: 'sugg-group stack', 'aria-label': category },
-          h('h4', {}, `${category} (${items.length})`),
-          h('ul', { class: 'sugg-list', 'aria-label': `${category} upgrades` }, ...items.slice(0, limit).map(suggItem)),
-          items.length > limit ? more : null,
-        ),
-      );
-    }
+    out.push(...categorySections(groups));
     return out;
   };
 
@@ -371,15 +379,14 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
     } else if (!fromEdhrec && !pool) {
       parts.push(fallbackNote(edh), poolPending());
     } else if (view === 'upgrades') {
-      parts.push(fallbackNote(edh));
-      const tiers = upgradesByTier(scored, 10);
-      const range = TIERS.find((t) => t.id === tier)!;
+      // Rules-based upgrades: the same categories and price filter as EDHREC's, without its controls.
+      const groups = byCategory(scored.filter(inPrice));
+      const range = TIERS.find((t) => t.id === price)?.range;
       parts.push(
-        segmented('Price tier', TIERS.map((t) => ({ id: t.id, label: `${t.label} (${tiers[t.id].length})` })), tier, (t) => ((tier = t), draw())),
-        h('p', { class: 'muted small' }, `Cards ${range.range}, best fit first.`),
-        tiers[tier].length
-          ? h('ul', { class: 'sugg-list', 'aria-label': `${range.label} upgrades` }, ...tiers[tier].map(suggItem))
-          : h('p', { class: 'muted small' }, 'No suggestions in this price range.'),
+        fallbackNote(edh),
+        priceControl(draw),
+        h('p', { class: 'muted small' }, range ? `Cards ${range}, best fit first.` : 'Best fit first.'),
+        ...(groups.length ? categorySections(groups) : [h('p', { class: 'muted small' }, price === 'any' ? 'No suggestions found for this deck.' : 'No suggestions in this price range.')]),
       );
     } else if (view === 'swaps') {
       const pairs = swapPairs(scored, deck, profile, { tier: swapTier ?? undefined, ...(fromEdhrec ? { keepScores: edhrecKeepScores(deck, fromEdhrec.page), matchType: true } : {}) });
