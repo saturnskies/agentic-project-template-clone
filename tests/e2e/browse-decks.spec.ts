@@ -190,6 +190,43 @@ test.describe('Add to an existing deck', () => {
   });
 });
 
+test('a pricing run still going on the Decks tab does not overwrite a card added from Browse', async ({ page }) => {
+  // The deck is opened on Decks (its pricing starts and is held), then Browse adds a card to it, then pricing finishes.
+  let holding = true;
+  let release!: () => void;
+  const held = new Promise<void>((r) => (release = r));
+  await page.route(
+    (u) => u.hostname === 'api.scryfall.com' && (u.pathname === '/cards/collection' || (u.searchParams.get('q') ?? '').includes('oracleid:')),
+    async (route) => {
+      if (holding) await held;
+      await route.fallback();
+    },
+  );
+  await seed(page, [BLACK]);
+  await page.goto('./#/deck/b1');
+  await expect(page.getByLabel('Pricing progress')).toBeVisible();
+
+  await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Browse' }).click();
+  holding = false;
+  const dialog = await openAdd(page, 'Crypt Ghast');
+  await choose(dialog, 'b1');
+  await addButton(dialog).click();
+  await expect(dialog.getByText('Added to Black deck.')).toBeVisible();
+  expect((await savedDecks(page))[0].cards).toHaveLength(1);
+
+  release();
+  await page.waitForTimeout(800);
+  // Pricing for the old copy of the deck finished; it must not have put that copy back.
+  expect((await savedDecks(page))[0].cards).toEqual([{ card: { oracleId: GHAST, name: 'Crypt Ghast' }, qty: 1 }]);
+
+  await dialog.getByRole('button', { name: 'Close' }).click();
+  await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Decks' }).click();
+  await expect(page.getByRole('heading', { name: 'Black deck' })).toBeVisible();
+  // Coming back redraws the deck from the store and prices it again; that must not drop the card either.
+  await page.waitForTimeout(800);
+  expect((await savedDecks(page))[0].cards).toHaveLength(1);
+});
+
 test.describe('New deck from Browse', () => {
   const pickCommander = async (dialog: ReturnType<Page['getByRole']>, page: Page, typed: string, option: string) => {
     await dialog.getByRole('combobox', { name: 'Commander' }).fill(typed);
@@ -217,6 +254,16 @@ test.describe('New deck from Browse', () => {
     await dialog.getByRole('button', { name: 'Close' }).click();
     await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Decks' }).click();
     await expect(page.getByRole('listitem').filter({ hasText: 'Ghast pile' })).toContainText('Edgar Markov');
+  });
+
+  test('says when the card is outside the new deck\'s commander colors, and still makes the deck', async ({ page }) => {
+    await seed(page, []);
+    const dialog = await openAdd(page, 'Crypt Ghast');
+    await pickCommander(dialog, page, COMMANDER_TYPED.green, 'Selvala, Heart of the Wilds');
+    await dialog.getByRole('button', { name: 'Create deck and add' }).click();
+    await expect(dialog.getByText('Added to Selvala, Heart of the Wilds deck.')).toBeVisible();
+    await expect(dialog.getByText("Crypt Ghast is outside Selvala, Heart of the Wilds's colors.")).toBeVisible();
+    expect((await savedDecks(page))[0].cards).toHaveLength(1);
   });
 
   test('a name is optional', async ({ page }) => {
