@@ -50,9 +50,15 @@ Builds the [tab bar and Life Counter spec](../specs/2026-11-04-tab-bar-life-coun
   - An out-of-range saved player count falls back to 4 instead of clamping.
 
 ### 3. Poison, commander damage, warnings, undo
-- [ ] Reducers for poison and commander damage (partners tracked separately), lethal checks at 0 / 10 / 21, undo with a 50-entry history. Unit tests at both sides of each threshold.
-- [ ] Per-player sheet (`<dialog>`), warning styles (text plus color), game menu with Undo.
+- [x] Reducers for poison and commander damage (partners tracked separately), lethal checks at 0 / 10 / 21, undo with a 50-entry history. Unit tests at both sides of each threshold.
+- [x] Per-player sheet (`<dialog>`), warning styles (text plus color), game menu with Undo.
 - **Failure paths:** undo with nothing to undo; history cap; undo after reset; nothing is ever eliminated.
+- **Done 2026-11-04.** `npm run check`: 346 unit and 192 e2e tests pass.
+  - Reset life totals landed here, not in slice 4: the plan's "undo after reset" path needs it. Reset clears the undo history.
+  - The "Has a partner commander" toggle lives in the player's sheet only; there is no setup toggle. Turning it off drops that partner's damage and its undo entries.
+  - Each commander of a pair is judged on its own against 21; 15 + 15 does not warn.
+  - A saved game from before these counters loads with zeros and an empty history.
+  - The click that ends a hold is swallowed once, within 150 ms. A longer window also swallowed a deliberate quick tap after a hold. The "release does not also tap" test fails without the guard.
 
 ### 4. Names, colors, first player, Wake Lock
 - [ ] Names (24 chars) and 8 swatches, remembered for the next game; contrast unit test for the swatches.
