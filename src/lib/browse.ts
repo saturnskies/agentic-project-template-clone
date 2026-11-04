@@ -1,5 +1,8 @@
 /** Browse tab logic that needs no browser: turning the search form into a Scryfall query, sorting, and what a card's detail says. */
+import { isLegendaryCreature } from '../scryfall/resolve';
 import type { ScryCard } from '../scryfall/types';
+import { mergeEntries, type Deck } from './deck';
+import { cardWarnings, warningText } from './format';
 
 export type ColorMode = 'within' | 'exactly' | 'includes';
 
@@ -255,4 +258,46 @@ export function allFormats(legalities: Record<string, string | undefined>): Arra
  */
 export function ownableId(card: ScryCard): string | null {
   return card.oracle_id || card.card_faces?.[0]?.oracle_id || null;
+}
+
+const typeLineOf = (card: ScryCard) => card.type_line ?? card.card_faces?.map((f) => f.type_line ?? '').join(' // ') ?? '';
+
+/** A legendary creature, or a card whose text says it can be your commander. */
+export function canBeCommander(card: ScryCard): boolean {
+  const text = card.oracle_text ?? card.card_faces?.map((f) => f.oracle_text ?? '').join('\n') ?? '';
+  return isLegendaryCreature(card) || /can be your commander/i.test(text);
+}
+
+export interface AddCheck {
+  /** Why the card cannot go in this deck; null when it can. */
+  blocked: string | null;
+  /** Things worth knowing that do not stop the add (colors, legality). */
+  notes: string[];
+}
+
+/**
+ * Whether a card may be added to a deck from Browse. A second copy (except basic lands), the commander
+ * itself and a card with no Oracle ID are blocked; colors and legality only warn, like everywhere else in
+ * the app. `identity` is the commander's color identity, or null when it could not be looked up.
+ */
+export function checkAdd(deck: Deck, card: ScryCard, identity: string[] | null): AddCheck {
+  const oracleId = card.oracle_id || card.card_faces?.[0]?.oracle_id;
+  if (!oracleId) return { blocked: `${card.name} can't be added: Scryfall gave it no Oracle ID.`, notes: [] };
+  const warnings = cardWarnings(
+    { oracleId, name: card.name, typeLine: typeLineOf(card), colorIdentity: card.color_identity ?? [], commanderLegality: card.legalities?.commander },
+    { colorIdentity: identity ?? card.color_identity ?? [], oracleIds: new Set([deck.commander.oracleId, ...deck.cards.map((e) => e.card.oracleId)]) },
+  );
+  const say = (w: (typeof warnings)[number]) => warningText(w, card.name, deck.commander.name);
+  return {
+    blocked: warnings.includes('duplicate') ? say('duplicate') : null,
+    notes: [...warnings.filter((w) => w !== 'duplicate').map(say), ...(identity ? [] : [`Couldn't check ${deck.commander.name}'s colors.`])],
+  };
+}
+
+/** The deck with one more copy of the card. Saved prices are dropped: they no longer match, and opening the deck prices it again. */
+export function addCardToDeck(deck: Deck, card: ScryCard, now = new Date()): Deck {
+  const oracleId = (card.oracle_id || card.card_faces?.[0]?.oracle_id) as string;
+  const next: Deck = { ...deck, cards: mergeEntries([...deck.cards, { card: { oracleId, name: card.name }, qty: 1 }]), updatedAt: now.toISOString() };
+  delete next.summary;
+  return next;
 }
