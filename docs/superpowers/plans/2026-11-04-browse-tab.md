@@ -38,7 +38,7 @@ No other subagents. Docs-only commits get no review.
 - [x] `ui/browse.ts`: form (name, Commander-legal toggle on by default, advanced box with a syntax link, Search, hint before the first search), "Searching: …" line, image grid (lazy images, name, price, Owned badge as text), sort control with direction, run number so a stale reply is dropped. `renderBrowse(view, ctx)`; `app.ts` passes `ctx`.
 - [x] E2E (`browse.spec.ts`, both projects): opening the tab fetches nothing; Search lists the recorded cards in the grid with names and prices; changing sort re-runs from page 1; the grid and form fit at 390 px; text and results survive a visit to Decks and back (scroll too).
 - **Failure paths:** no matches (404) → "No cards match"; a 400 from the advanced box → Scryfall's message under that box and the previous results stay; network failure → retry message and previous results stay; query over 900 characters → no request is sent; **slow first search overtaken by a second**: the older reply is dropped (test holds the first reply back and fails with the run guard removed); Search pressed twice quickly asks once per distinct query; image-less cards (a double-faced card's first face, a card with no image) still render.
-- **Done 2026-11-04.** Unit: 11 query tests, 7 search tests. E2E: 15 browse tests pass in both projects; `npm run check` result below.
+- **Done 2026-11-04.** Unit: 11 query tests, 7 search tests. E2E: 15 browse tests pass in both projects. `npm run check`: 386 unit and 264 e2e tests pass.
   - Added to the slice: Scryfall's `warnings` (200 with an ignored term) are shown above the results, and unbalanced parentheses in the advanced box are refused before searching, because the wrapper would otherwise be escaped.
   - A real 400 can't come from the form, so `searchCards` is tested against a recorded real 400, and the e2e test answers a form-reachable search with that recorded body. The 503 test uses Scryfall's generic error shape, not a recorded reply.
   - Mutation checks: with the run guard removed ("slow earlier search") and with the same-search guard removed ("twice quickly") the tests fail.
@@ -47,9 +47,16 @@ No other subagents. Docs-only commits get no review.
   - On a phone the form fills most of the first screen; slice 3 must keep the extra filters compact (collapsible).
 
 ### 2. Load more
-- [ ] `searchCards` takes `page`; the UI keeps the run's query, appends the next page, shows "Showing 175 of 1,204", hides the button when `has_more` is false, disables it while a page is in flight.
-- [ ] E2E: page 1 then Load more appends page 2 (counts pinned at the recorded values, not ranges); the button disappears on the last page.
+- [x] `searchCards` takes `page`; the UI keeps the run's query, appends the next page, shows "Showing 175 of 1,204", hides the button when `has_more` is false, disables it while a page is in flight.
+- [x] E2E: page 1 then Load more appends page 2 (counts pinned at the recorded values, not ranges); the button disappears on the last page.
 - **Failure paths:** page 2 fails → the loaded cards stay, a message and a retry show, and a retry that succeeds appends once; a new search while a page is in flight → the late page is dropped and does not append to the new results (fails with the run guard removed); Load more clicked twice → one request; changing sort while a page loads → same drop.
+- **Done 2026-11-04.** `npm run check`: 386 unit (11 live ones skipped) and 280 e2e tests pass; 8 new Load more tests in each project.
+  - The button belongs to the results on screen. It is disabled while a new search is waiting (the old results stay up meanwhile) and while a page is in flight, and any new search or sort change drops a page still on its way.
+  - A search fits on one page when it has 175 matches or fewer, and then there is no button. The recorded multi-page search is `name:"sol"` (187 matches: 175, then 12), plus the same search by price; `scryfall-browse.json` is now 813 KB, the big searches recorded with Commander legality only.
+  - The failed-page test answers page 2 with Scryfall's generic 503 error shape (not a recorded reply), once, then lets the recorded page through.
+  - Mutation checks, each failing its test: the run guard in `loadMore` removed (new-search and sort-change tests); both the in-flight guard and the disabled state removed (pressed twice; either alone is enough to hold, so both go); the button always shown (page-one and last-page tests); not disabled during a waiting search.
+  - Not built: dropping a card Scryfall repeats across pages if prices reorder the list between requests.
+
 
 ### 3. Every filter, list view, preferences
 - [ ] `buildQuery` for set (code), type, tribe, keyword, role (`POOL_ROLES` plus the `tokens` theme query), color identity (within / exactly / includes, Colorless), mana value range, rarity set, price range. Unit tests at both sides of each bound, and the escaped forms.
