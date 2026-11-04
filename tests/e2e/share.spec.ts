@@ -34,6 +34,7 @@ test('share a deck by link; a friend sees it read-only and can save a copy', asy
   await expect(friend.getByRole('combobox', { name: 'Add a card' })).toHaveCount(0);
   await expect(friend.getByRole('button', { name: 'Delete deck' })).toHaveCount(0);
   await expect(friend.getByRole('button', { name: 'Share' })).toHaveCount(0);
+  await expect(friend.getByRole('group', { name: 'Show' })).toHaveCount(0); // no suggestions, so no Cards | Suggestions switch
 
   await friend.getByRole('button', { name: 'Save to my decks' }).click();
   await expect(friend).toHaveURL(/#\/deck\//);
