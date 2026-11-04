@@ -67,10 +67,12 @@ Source: the impeccable critique of 2026-11-04, checked by rendering the app at P
 - Narrower phones (about 360px) still wrap the grid tool row onto two lines; the layout holds, just taller.
 
 ### 4. Cards | Suggestions switch below 70rem
-- [ ] Failing tests first (phone, both schemes): after Find suggestions, the switch is visible without scrolling; pressing Suggestions shows the panel in the first viewport and hides the card list; pressing Cards restores the list at the same scroll position; adding a suggested card then switching back shows the new count; Undo still works with the panel hidden; the browser back button from the deck still goes to Your decks and is not consumed by the switch; a shared read-only deck shows no switch.
-- [ ] `src/ui/deckView.ts`: the switch and a `data-pane` attribute on `.deck-columns`; panel stays mounted. A `matchMedia('(min-width: 70rem)')` listener resets to the two-column layout on rotate or resize.
-- [ ] `src/style.css`: hide the inactive pane with `hidden` or `[data-pane]` rules, sticky bottom bar with safe-area padding, and bottom padding on `main` so the bar never covers the last row.
-- Failure paths: a Find that is still running when the user switches away (the `run` guard in `suggestions.ts` already drops stale replies; add a test that the status text is still there on return); focus returns to the pressed switch button.
+- [x] Failing tests first (phone, 10 tests, all failing before the code existed): the bar is on screen without scrolling and stays on screen while the list scrolls; Suggestions shows the panel in the first viewport and hides the list; Cards brings the list back at the same scroll position; a card added from suggestions is in the list when you switch back; ticking Owned in the list updates suggestions while they are hidden; Undo is still offered after leaving and returning; leaving while a search runs does not lose it; switching does not change history length or the URL hash; the pressed button keeps focus; a wide screen shows both with no bar, and narrowing again keeps the chosen pane.
+- [x] `src/ui/panes.ts` (new): the bar. It only sets `data-pane` on `.deck-columns`; each pane keeps its own scroll position, and Suggestions opens with the panel at the top the first time. Neither pane is removed, so the panel keeps refreshing while hidden.
+- [x] `src/style.css`: below 70rem a fixed bottom bar (safe-area padding, `body:has(.pane-bar)` bottom padding so the last card and footer stay reachable) and the inactive pane is hidden; from 70rem up the bar is hidden and both panes show. CSS alone decides this, so resizing or rotating needs no script and no `matchMedia` listener.
+- [x] A shared read-only deck has no bar: `share.spec.ts` asserts it.
+- [x] Existing specs updated, not weakened: `suggestions.spec.ts` now opens the pane it needs (a `showPane` helper that does nothing on wide screens) and looks at the list while the list is showing, so "this row is gone" checks are not vacuous against a hidden list.
+- The `Add a card` field and the List/Grid switch stay visible above the Suggestions panel; List/Grid controls a hidden list there. Left as is; see follow-ups.
 
 ### 5. Deck header hierarchy (optional; see decisions)
 - [ ] Failing tests first: `deck-to-buy` is the largest text in the stats area; `deck-total` and `deck-count` stay (testids unchanged); no stray empty gap: `exportMsg`, `shareBox` and `note` take no height when empty (`:empty { display: none }`).
@@ -87,6 +89,7 @@ Source: the impeccable critique of 2026-11-04, checked by rendering the app at P
 ## Follow-ups (not in this plan)
 
 - Undo for removing a card.
+- Hide the List/Grid switch (and maybe Add a card) while the Suggestions pane is showing.
 - Pickers and dialogs (the printing picker's buttons) were not covered by the touch-target test.
 - Self-host Bricolage Grotesque (it loads from Google Fonts; the service worker only caches same-origin files, so the Android app and an offline PWA fall back to the system font), and confirm the `godofwar.ttf` logo font licence.
 - Replace Unicode glyph icons (`×`, `▾`, `←`) with one drawn icon set.
