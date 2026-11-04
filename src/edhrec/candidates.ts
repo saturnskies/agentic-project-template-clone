@@ -16,7 +16,7 @@ export type EdhrecResult =
       filter: PageFilter;
       candidates: EdhCandidate[];
       failedLookups: number;
-      /** Set when the asked-for bracket had fewer than MIN_BRACKET_DECKS decks. */
+      /** Set when the asked-for bracket had fewer than MIN_BRACKET_DECKS decks, or no page. */
       thinBracket?: { bracket: number; decks: number };
     }
   | { status: 'missing' }
@@ -34,8 +34,8 @@ const keyOf = (name: string) => looseName(frontFace(name));
  * What decks with this commander play: the EDHREC page for `filter`, then each listed card looked
  * up on Scryfall for its price (and to re-check legality and colors). Cards Scryfall can't find are
  * left out. `known` carries lookups across filter changes, so only new names are searched. A bracket
- * with fewer than 50 decks is dropped in favor of all brackets. Throws only when every Scryfall
- * lookup fails.
+ * with fewer than 50 decks, or no page, is dropped in favor of all brackets. Throws only when every
+ * Scryfall lookup fails.
  */
 export async function edhrecCandidates(
   edhrec: ScryfallClient,
@@ -46,8 +46,10 @@ export async function edhrecCandidates(
   let filter = opts.filter;
   let res = await commanderPage(edhrec, pagePath(opts.slug, filter));
   let thinBracket: { bracket: number; decks: number } | undefined;
-  if (res.status === 'ok' && filter.bracket != null && res.page.numDecks < MIN_BRACKET_DECKS) {
-    thinBracket = { bracket: filter.bracket, decks: res.page.numDecks };
+  // A bracket with too few decks, none (EDHREC then lists no cards) or no page at all (403, e.g. with
+  // a theme) shows all brackets instead.
+  if (filter.bracket != null && (res.status !== 'ok' || res.page.numDecks < MIN_BRACKET_DECKS)) {
+    thinBracket = { bracket: filter.bracket, decks: res.status === 'ok' ? res.page.numDecks : 0 };
     filter = { ...filter, bracket: null };
     res = await commanderPage(edhrec, pagePath(opts.slug, filter));
   }
