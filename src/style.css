@@ -410,3 +410,8 @@ dialog.sheet[open] { display: grid; gap: 0.5rem; }
 .tile.rolling { outline: 6px solid #fff; outline-offset: -6px; }
 .tile[data-first='true'] .tile-badges .badge:first-child { background: #fff; color: #222; }
 @media (prefers-reduced-motion: reduce) { .tile.rolling { outline-width: 3px; } }
+
+/* Browse */
+.browse-form { max-width: 40rem; }
+.browse-form input[type=text] { width: 100%; }
+.field-error { color: var(--danger); margin: 0; font-weight: 600; }
