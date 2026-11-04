@@ -67,7 +67,7 @@ for (const scheme of ['light', 'dark'] as const) {
       await openDeck(page);
       const keep = page.getByRole('button', { name: /^Keep / }).first();
       await keep.click();
-      const pressed = page.locator('.keep-toggle[aria-pressed="true"]').first();
+      const pressed = page.locator('.keep-toggle[aria-pressed="true"]:visible').first();
       await expect(pressed).toBeVisible();
       const s = await sample(pressed);
       expect(ratio(s.color, s.bgs)).toBeGreaterThanOrEqual(4.5);
@@ -134,6 +134,83 @@ test('Home shows no empty alert box until there is a message to show', async ({ 
   const empties = await page.locator('.notice').evaluateAll((els) => els.filter((e) => !e.textContent?.trim() && getComputedStyle(e).display !== 'none').length);
   expect(empties).toBe(0);
   await expect(page.getByRole('alert')).toHaveCount(0);
+});
+
+// ---- Touch targets (slice 3) ------------------------------------------------------------------
+
+const TARGETS = ['a.back', '.button', '.segment', '.sort', '.link-button', '.keep-toggle', '.icon-button', 'input[type=checkbox]', 'input[type=text]'];
+
+/**
+ * For the first and last few visible controls of each kind, taps a 44px square around the control
+ * (centre and the four edge midpoints, 21.5px out; corners are left out because rounded controls
+ * legitimately don't claim them) and reports every spot that lands on something else. That
+ * catches a target that is too small and also one that a neighbour's larger target covers.
+ */
+async function missedTaps(page: Page): Promise<string[]> {
+  return page.evaluate((targets) => {
+    const bad: string[] = [];
+    const HALF = 21.5;
+    for (const sel of targets) {
+      const all = [...document.querySelectorAll<HTMLElement>(sel)].filter((e) => e.getClientRects().length > 0 && getComputedStyle(e).visibility !== 'hidden');
+      for (const el of new Set([...all.slice(0, 6), ...all.slice(-2)])) {
+        el.scrollIntoView({ block: 'center' });
+        // A checkbox is tapped through the label that wraps it, so the label's box is the target.
+        const label = el.closest('label');
+        const r = (label ?? el).getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+        for (const [dx, dy] of [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1]]) {
+          const hit = document.elementFromPoint(cx + dx * HALF, cy + dy * HALF);
+          const ok = !!hit && (hit === el || el.contains(hit) || (!!label && (hit === label || label.contains(hit))));
+          if (!ok) {
+            const name = (el.getAttribute('aria-label') ?? el.textContent ?? '').trim().slice(0, 28);
+            bad.push(`${sel} "${name}" tap ${dx},${dy} lands on ${hit ? `${hit.tagName}.${hit.className}` : 'nothing'}`);
+            break;
+          }
+        }
+      }
+    }
+    return bad;
+  }, TARGETS);
+}
+
+test.describe('touch targets', () => {
+  test('the phone is treated as a touch device', async ({ page }) => {
+    await page.goto('./');
+    expect(await page.evaluate(() => matchMedia('(pointer: coarse)').matches)).toBe(true);
+  });
+
+  test('every control in the card list has a 44px target of its own', async ({ page }) => {
+    await openDeck(page);
+    await page.getByRole('button', { name: 'Find suggestions' }).click();
+    await expect(page.getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem').first()).toBeVisible();
+    expect(await missedTaps(page)).toEqual([]);
+  });
+
+  test('every control in the card grid has a 44px target of its own', async ({ page }) => {
+    await openDeck(page);
+    await page.getByRole('button', { name: 'Grid' }).click();
+    await expect(page.locator('.card-tile').first()).toBeVisible();
+    // Owned, Keep and remove share one line under each tile; a taller row means one of them wrapped.
+    // A pressed Keep chip is bold, so it is the widest case: press one first.
+    await page.getByRole('button', { name: /^Keep / }).first().click();
+    await expect(page.locator('.keep-toggle[aria-pressed="true"]:visible')).toHaveCount(1);
+    const tallest = await page.locator('.card-tools').evaluateAll((rows) => Math.max(...rows.map((r) => r.getBoundingClientRect().height)));
+    expect(tallest, 'tallest tool row').toBeLessThanOrEqual(48);
+    expect(await missedTaps(page)).toEqual([]);
+  });
+
+  test('bigger targets do not make the screen longer to scroll', async ({ page }) => {
+    await openDeck(page);
+    await expect(page.locator('table.cards tbody tr').first()).toBeVisible();
+    // Measured before this slice on the seeded 100-card deck at Pixel 7 width: list 9318px, grid 16542px.
+    // The list must not grow (Keep now shares the printing line); the grid may grow 15% for 44px tool rows.
+    const height = () => page.evaluate(() => document.documentElement.scrollHeight);
+    expect(await height(), 'list view').toBeLessThanOrEqual(9400);
+    await page.getByRole('button', { name: 'Grid' }).click();
+    await expect(page.locator('.card-tile').first()).toBeVisible();
+    expect(await height(), 'grid view').toBeLessThanOrEqual(19_000);
+  });
 });
 
 test('the browser bar colour follows the colour scheme', async ({ page }) => {
