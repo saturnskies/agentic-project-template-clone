@@ -1,7 +1,7 @@
 ---
 description: Workflow improvements to send back to agentic-project-template; how /go logs rows and core/pack/local triage
 status: current
-updated: 2026-10-29
+updated: 2026-11-04
 ---
 # Template Sync
 
@@ -20,3 +20,6 @@ Only the review changes the template. Never edit the template directly from a pr
 | Date | Change | Files | Belongs in | Synced |
 |---|---|---|---|---|
 | 2026-11-02 | New path rule for async UI state (re-find after await, guard concurrent actions, drop stale replies); external-tools rule: partial results from parallel calls, silent truncation; testing rule: retrying assertions can pass on in-between states | `.claude/rules/ui-state.md`, `.claude/rules/external-tools.md`, `.claude/rules/testing.md` | core (ui-state could be a frontend pack) | |
+| 2026-11-04 | external-tools rules: a failed optional variant falls back to the broader request; follow a redirect only to the same resource | `.claude/rules/external-tools.md` | core | |
+| 2026-11-04 | ui-state rules: bump a run counter only when the action starts; an overlap test must delay a step that can finish out of order | `.claude/rules/ui-state.md` | core | |
+| 2026-11-04 | testing rules: re-pin moved assertions at new values instead of loosening them; Playwright `route.fetch()` hits the real network | `.claude/rules/testing.md` | core | |
