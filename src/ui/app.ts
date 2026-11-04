@@ -120,7 +120,11 @@ export function startApp(root: HTMLElement): void {
     if (active && switched) scroll[active] = window.scrollY;
     active = tab;
     last[tab] = hash;
-    for (const t of Object.keys(views) as Tab[]) views[t].hidden = t !== tab;
+    for (const t of Object.keys(views) as Tab[]) {
+      // A modal dialog left open in a view we hide would still block the whole page, unseen.
+      if (t !== tab) views[t].querySelectorAll<HTMLDialogElement>('dialog[open]').forEach((d) => d.close());
+      views[t].hidden = t !== tab;
+    }
     bar.update(tab, last);
 
     let restore = switched;
