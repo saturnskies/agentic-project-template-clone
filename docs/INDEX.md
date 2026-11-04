@@ -30,6 +30,7 @@ Status: **current** = in force or in progress; **draft** = proposed, not approve
 
 - [2026-11-02-swapsmith-v1.md](superpowers/plans/2026-11-02-swapsmith-v1.md) — current, 2026-11-02 — Swapsmith v1 build plan — eight test-gated vertical slices from skeleton and deploy to swap suggestions
 - [2026-11-03-recommendations-revamp.md](superpowers/plans/2026-11-03-recommendations-revamp.md) — current, 2026-11-04 — Recommendations revamp build plan — five test-gated vertical slices from EDHREC client and category upgrades to filters, gaps, EDHREC-scored swaps and the wider Scryfall fallback
+- [2026-11-04-browse-tab.md](superpowers/plans/2026-11-04-browse-tab.md) — current, 2026-11-04 — Browse tab build plan — five test-gated vertical slices from a first search with a result grid to every filter, Load more, the card detail, and Add to deck with New deck
 - [2026-11-04-tab-bar-life-counter.md](superpowers/plans/2026-11-04-tab-bar-life-counter.md) — current, 2026-11-04 — Tab bar and Life Counter build plan — four test-gated vertical slices from the bottom tab bar and routes to a playable, saved, awake life counter
 
 ## docs/superpowers/specs/
