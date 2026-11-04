@@ -111,3 +111,40 @@ test('the bar does not cover the end of the page', async ({ page }) => {
   const nav = await bar(page).boundingBox();
   expect(footer && nav && footer.y + footer.height <= nav.y + 1).toBe(true);
 });
+
+test.describe('an open dialog never outlives its tab', () => {
+  /** Whatever is open, going to another tab (browser back, a link) must leave the bar and page usable. */
+  const usableAfterLeaving = async (page: Page) => {
+    await page.evaluate(() => (location.hash = '#/'));
+    await expect(page.getByRole('heading', { name: 'Your decks' })).toBeVisible();
+    await expect(page.locator('dialog[open]')).toHaveCount(0);
+    await tab(page, 'Browse').click();
+    await expect(page).toHaveURL(/#\/browse$/);
+  };
+
+  test('the game menu', async ({ page }) => {
+    await page.goto('./#/life');
+    await page.getByRole('button', { name: 'Start game' }).click();
+    await page.getByRole('button', { name: 'Game menu' }).click();
+    await expect(page.getByRole('dialog', { name: 'Game menu' })).toBeVisible();
+    await usableAfterLeaving(page);
+  });
+
+  test("a player's counters sheet", async ({ page }) => {
+    await page.goto('./#/life');
+    await page.getByRole('button', { name: 'Start game' }).click();
+    await page.getByRole('button', { name: 'Player 1: poison and commander damage' }).click();
+    await expect(page.getByRole('dialog', { name: 'Player 1: counters' })).toBeVisible();
+    await usableAfterLeaving(page);
+  });
+
+  test('the replace-game question on the setup screen', async ({ page }) => {
+    await page.goto('./#/life');
+    await page.getByRole('button', { name: 'Start game' }).click();
+    await page.getByRole('button', { name: 'Game menu' }).click();
+    await page.getByRole('link', { name: 'Leave game' }).click();
+    await page.getByRole('button', { name: 'New game' }).click();
+    await expect(page.getByRole('dialog', { name: 'Replace the game in progress?' })).toBeVisible();
+    await usableAfterLeaving(page);
+  });
+});
