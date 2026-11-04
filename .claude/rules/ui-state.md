@@ -12,4 +12,6 @@ For screen code with async actions (fetching, pricing, swapping):
 - **Ignore replies from an older request.** Give each user-started load a run number and drop results whose run is no longer current, so a slow earlier reply can't overwrite a newer one.
 - **Redraw everything a change feeds.** When a toggle changes data another panel reads (owned cards → cheaper replacements), refresh that panel too.
 - **Bump a run counter only when the action starts.** Bumping before an early return orphans the action still in flight: it sees itself as stale and never clears its "loading" state.
+- **Close a modal `<dialog>` when its container is hidden or redrawn.** A modal left open in a hidden tab or a replaced view still blocks the whole page, unseen. Close open dialogs in the views you hide; redrawing removes them.
+- **Timers and animations belong to a draw.** Give each screen draw an id and have a delayed step (a roll, a countdown) bail when the id has moved on, and lock the controls that could change state mid-step.
 - **An overlap test must delay the step that can finish out of order.** Requests queued one at a time can't overtake each other; hold back a parallel step (lookups, not the serial page fetch), and prove the test fails with the guard removed.

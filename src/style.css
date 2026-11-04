@@ -257,3 +257,156 @@ dialog.picker::backdrop { background: rgb(0 0 0 / 0.45); }
 .backup { display: grid; gap: 0.5rem; }
 .backup .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 .backup p { margin: 0; }
+
+/* Bottom tab bar (Decks, Browse, Life Counter). The body pads the page so the footer is not hidden behind it. */
+[hidden] { display: none !important; }
+body { padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px)); }
+.tabbar {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+  padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+}
+.tabbar a {
+  flex: 1;
+  max-width: 12rem;
+  min-height: 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.tabbar svg { width: 24px; height: 24px; }
+.tabbar a[aria-current='page'] { color: var(--ink); box-shadow: inset 0 3px 0 var(--accent); }
+
+/* Life Counter: setup, then a full-screen table with one tile per player (top row turned to face the far side). */
+.banner:empty { display: none; }
+body.in-game { padding-bottom: 0; overflow: hidden; }
+body.in-game .site-header, body.in-game .site-footer, body.in-game .tabbar { display: none; }
+body.in-game main.wrap { max-width: none; padding: 0; display: block; }
+.table {
+  position: relative;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: max(6px, env(safe-area-inset-top, 0px)) max(6px, env(safe-area-inset-right, 0px)) max(6px, env(safe-area-inset-bottom, 0px)) max(6px, env(safe-area-inset-left, 0px));
+}
+.table-row { flex: 1; display: flex; gap: 6px; min-height: 0; }
+.tile { flex: 1; min-width: 0; display: flex; background: var(--tile); color: #fff; border-radius: 14px; }
+.tile-inner { flex: 1; min-width: 0; display: grid; grid-template-rows: auto 1fr auto; justify-items: center; align-items: center; gap: 0.4rem; padding: 0.6rem; }
+.table-row.top .tile-inner { transform: rotate(180deg); }
+.tile-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.tile-life { font: 700 clamp(3rem, 15vw, 6.5rem)/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.tile-buttons { display: flex; gap: 0.5rem; width: 100%; }
+.life-btn {
+  flex: 1;
+  min-height: 3.5rem;
+  font: 700 1.9rem/1 var(--font-body);
+  color: #fff;
+  background: rgb(255 255 255 / 0.18);
+  border: 1px solid rgb(255 255 255 / 0.55);
+  border-radius: 12px;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.life-btn:active { background: rgb(255 255 255 / 0.34); }
+.life-btn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.table-menu {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: var(--panel);
+  color: var(--ink);
+  font: 600 0.75rem var(--font-body);
+  cursor: pointer;
+  z-index: 2;
+}
+.table-menu.corner { left: auto; top: max(10px, env(safe-area-inset-top, 0px)); right: max(10px, env(safe-area-inset-right, 0px)); transform: none; }
+.table-menu:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* Life Counter: counters, warnings and the per-player sheet. */
+.tile-head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; width: 100%; min-width: 0; }
+.tile-counters {
+  flex: none;
+  min-height: 2.25rem;
+  padding: 0.2rem 0.6rem;
+  font: 600 0.75rem var(--font-body);
+  color: #fff;
+  background: rgb(255 255 255 / 0.18);
+  border: 1px solid rgb(255 255 255 / 0.55);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.tile-counters:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.tile-mid { display: grid; justify-items: center; gap: 0.3rem; min-width: 0; }
+.tile-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 600; }
+.tile-badges .badge { padding: 0.05rem 0.5rem; border-radius: 999px; background: rgb(0 0 0 / 0.32); }
+.tile-warn { margin: 0; padding: 0.15rem 0.5rem; border-radius: 8px; background: #ffe082; color: #3d2a00; font-size: 0.8rem; font-weight: 700; text-align: center; }
+.tile-warn:empty { display: none; }
+.tile[data-warn='true'] { outline: 4px solid #ffe082; outline-offset: -4px; }
+dialog.sheet { display: none; }
+dialog.sheet[open] { display: grid; gap: 0.5rem; }
+.counter-row { display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 0.5rem; padding: 0.35rem 0; border-bottom: 1px solid var(--line); }
+.counter-label { min-width: 0; overflow-wrap: anywhere; }
+.counter-row .lethal { margin-left: 0.5rem; font-weight: 700; color: var(--danger); }
+.counter-row[data-warn='true'] { border-bottom-color: var(--danger); }
+.counter-value { min-width: 2.5ch; text-align: center; font: 700 1.3rem var(--font-body); font-variant-numeric: tabular-nums; }
+.counter-btn {
+  min-width: 3rem;
+  min-height: 2.75rem;
+  font: 700 1.4rem/1 var(--font-body);
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.counter-btn:active { border-color: var(--muted); }
+.check { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0; }
+.check input { width: 1.25rem; height: 1.25rem; }
+
+/* Life Counter: names and colors, the first-player mark and the roll. */
+.player-rows { display: grid; gap: 0.6rem; }
+.player-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.4rem 0.6rem; align-items: center; }
+.player-row .seat { font-weight: 700; color: var(--muted); min-width: 1.2ch; text-align: center; }
+.player-row input { font: inherit; padding: 0.45rem 0.6rem; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--ink); min-width: 0; }
+.swatches { grid-column: 2; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.swatch {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: var(--swatch);
+  color: #fff;
+  font: 700 1rem/1 var(--font-body);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.swatch[aria-pressed='true'] { border-color: var(--ink); box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--ink); }
+.swatch[aria-pressed='true']::after { content: '✓'; }
+.tile.rolling { outline: 6px solid #fff; outline-offset: -6px; }
+.tile[data-first='true'] .tile-badges .badge:first-child { background: #fff; color: #222; }
+@media (prefers-reduced-motion: reduce) { .tile.rolling { outline-width: 3px; } }
