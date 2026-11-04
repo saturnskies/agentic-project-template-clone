@@ -23,6 +23,8 @@ export const edgarFull: FixtureMap = {
   ...load('scryfall-edgar-fallback.json'),
   ...Object.fromEntries(Object.entries(edgarEdhrec).filter(([k]) => k.startsWith('GET /cards/search?q=is%3Agamechanger'))),
 };
+/** The Browse tab's searches (every sort, no match, an ignored term, a bad query), recorded 2026-11-04. */
+export const browseSearches: FixtureMap = load('scryfall-browse.json');
 export const e2eList = readFileSync(new URL('../fixtures/e2e-list.txt', import.meta.url), 'utf8');
 
 // A 1×1 grey PNG standing in for card images, so tests never download from Scryfall's image host.

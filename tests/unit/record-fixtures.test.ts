@@ -16,6 +16,10 @@ import { edhrecCandidates } from '../../src/edhrec/candidates';
 import { estimateBracket, type PageFilter } from '../../src/lib/edhrec';
 import type { Deck } from '../../src/lib/deck';
 import { gameChangerCount } from '../../src/scryfall/names';
+import { searchCards } from '../../src/scryfall/browse';
+import { cardsByOracleId, printings } from '../../src/scryfall/cards';
+import { SORTS } from '../../src/lib/browse';
+import { BASIC_SWAMP_QUERY, COMMANDER_TYPED, SAMPLES, SOLPHIM_TYPED } from '../support/browse-samples';
 
 /**
  * Re-records tests/fixtures/scryfall-e2e.json from the real Scryfall API by running the same flow the
@@ -244,5 +248,55 @@ describe.runIf(process.env.RECORD === '1')('record Scryfall fixtures', () => {
     await resolveList(client, parseDeckList(readFileSync(new URL('../fixtures/edgar-list.txt', import.meta.url), 'utf8')).entries);
     writeFileSync(new URL('../fixtures/scryfall-edgar-resolve.json', import.meta.url), JSON.stringify(map, null, 1) + '\n');
     expect(Object.keys(map).length).toBeGreaterThan(2);
+  }, 120_000);
+});
+
+describe.runIf(process.env.RECORD === '1')('record Browse fixtures', () => {
+  it('records the Browse searches: every sort, no match, an ignored term, a bad query', async () => {
+    const map: FixtureMap = {};
+    const recording: typeof fetch = async (input, init) => {
+      const headers = { ...Object.fromEntries(new Headers(init?.headers)), 'User-Agent': 'Swapsmith-fixture-recorder/0.1' };
+      const res = await fetch(input, { ...init, headers });
+      const body = await res.clone().json();
+      map[requestKey(init?.method ?? 'GET', String(input), init?.body as string | undefined)] = { status: res.status, body: trim(body, { allLegalities: full }) };
+      return res;
+    };
+    // The card detail reads every format's legality; the big searches below only need Commander, which keeps the file small.
+    let full = true;
+    const client = createClient({ fetch: recording, cache: memoryCache() });
+    const crypt = 'legal:commander name:"crypt"';
+    for (const s of SORTS) await searchCards(client, crypt, s.id, s.descending, 1);
+    // The same search the other way round, for the direction toggle.
+    await searchCards(client, crypt, 'popularity', true, 1);
+    await searchCards(client, 'legal:commander name:"zzzzqq"', 'popularity', false, 1);
+    // Scryfall ignores an unknown keyword and answers 200 with a warning.
+    await searchCards(client, `${crypt} (bogus:thing)`, 'popularity', false, 1);
+    // An advanced term that narrows the same search.
+    await searchCards(client, `${crypt} (t:land)`, 'popularity', false, 1);
+    // A 400 can't come from the form (it refuses unbalanced parentheses first), so it is recorded straight from the API.
+    await searchCards(client, 'legal:commander (t:elf', 'popularity', false, 1).catch(() => undefined);
+    // A search with more than one page (187 matches: 175 then 12), and the same search sorted by price.
+    full = false;
+    const sol = 'legal:commander name:"sol"';
+    await searchCards(client, sol, 'popularity', false, 1);
+    await searchCards(client, sol, 'popularity', false, 2);
+    await searchCards(client, sol, 'price', true, 1);
+    // One real search per filter (tests/support/browse-samples.ts).
+    for (const sample of SAMPLES) await searchCards(client, sample.q, 'popularity', false, 1);
+    // Printings of the cards the e2e tests open in the card detail: Sol Ring (several pages of printings), a spell, and a double-faced card.
+    const pick = async (q: string, cardName: string) => (await searchCards(client, q, 'popularity', false, 1)).cards.find((c) => c.name === cardName)!;
+    for (const [q, cardName] of [[sol, 'Sol Ring'], [crypt, 'Crypt Ghast'], [crypt, "Agadeem's Awakening // Agadeem, the Undercrypt"]] as const) {
+      const card = await pick(q, cardName);
+      await printings(client, card.oracle_id ?? card.card_faces![0].oracle_id!);
+    }
+    // Add to deck…: basic lands to repeat, and the commanders New deck… finds and Add to deck… looks up (one lookup per commander, as the app asks).
+    await searchCards(client, BASIC_SWAMP_QUERY, 'popularity', false, 1);
+    await searchCommanders(client, SOLPHIM_TYPED);
+    for (const [typed, wanted] of [[COMMANDER_TYPED.green, 'Selvala, Heart of the Wilds'], [COMMANDER_TYPED.black, 'Edgar Markov']] as const) {
+      const found = (await searchCommanders(client, typed)).find((c) => c.name === wanted)!;
+      await cardsByOracleId(client, [found.oracle_id!]);
+    }
+    writeFileSync(new URL('../fixtures/scryfall-browse.json', import.meta.url), JSON.stringify(map));
+    console.log(`recorded ${Object.keys(map).length} Browse requests`);
   }, 120_000);
 });

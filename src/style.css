@@ -410,3 +410,58 @@ dialog.sheet[open] { display: grid; gap: 0.5rem; }
 .tile.rolling { outline: 6px solid #fff; outline-offset: -6px; }
 .tile[data-first='true'] .tile-badges .badge:first-child { background: #fff; color: #222; }
 @media (prefers-reduced-motion: reduce) { .tile.rolling { outline-width: 3px; } }
+
+/* Browse */
+.browse-form { max-width: 40rem; }
+.browse-form input[type=text] { width: 100%; }
+.field-error { color: var(--danger); margin: 0; font-weight: 600; }
+.more-filters { border: 1px solid var(--line); border-radius: var(--radius); padding: 0.5rem 0.75rem; background: var(--panel); }
+.more-filters summary { cursor: pointer; font-weight: 600; }
+.filter-grid { display: grid; gap: 0.9rem; margin-top: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); }
+.checks { border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.35rem 1rem; min-width: 0; }
+.checks legend { font-weight: 600; padding: 0; margin-bottom: 0.35rem; }
+.label-text { font-weight: 600; }
+.range { display: flex; gap: 0.5rem; align-items: center; }
+.range input { width: 100%; min-width: 0; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.more-filters .field-error { margin-top: 0.5rem; }
+.card-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3rem; }
+.card-row {
+  display: grid; gap: 0.25rem 0.75rem; align-items: baseline; padding: 0.5rem 0.7rem; min-width: 0;
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  grid-template-columns: minmax(0, 2fr) minmax(3.5rem, auto) minmax(0, 2fr) 5.5rem 3.5rem 4.5rem;
+  grid-template-areas: "name cost type rarity owned price";
+}
+.card-row-name { grid-area: name; font-weight: 600; overflow-wrap: anywhere; }
+.card-row-cost { grid-area: cost; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.85rem; }
+.card-row-type { grid-area: type; color: var(--muted); font-size: 0.9rem; overflow-wrap: anywhere; }
+.card-row-rarity { grid-area: rarity; font-size: 0.85rem; color: var(--muted); }
+.card-row-owned { grid-area: owned; font-size: 0.8rem; font-weight: 700; }
+.card-row-price { grid-area: price; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+@media (max-width: 40rem) {
+  .card-row { grid-template-columns: minmax(0, 1fr) auto auto auto; grid-template-areas: "name name name price" "type type type type" "cost rarity owned owned"; }
+}
+
+/* Card detail */
+:root { --ok: #1f6b3a; }
+@media (prefers-color-scheme: dark) { :root { --ok: #6fcf97; } }
+.card-tile-name button, .card-row-name button { text-align: left; text-decoration: none; font-weight: inherit; overflow-wrap: anywhere; }
+.card-tile, .card-row { cursor: pointer; }
+.card-dialog { width: min(46rem, calc(100vw - 32px)); }
+.card-detail { display: grid; gap: 1rem; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); margin-top: 0.75rem; }
+@media (max-width: 40rem) { .card-detail { grid-template-columns: minmax(0, 1fr); } .card-detail-art { max-width: 15rem; } }
+.card-detail-art { display: grid; gap: 0.5rem; align-content: start; }
+.card-detail-img { display: block; width: 100%; height: auto; aspect-ratio: 488 / 680; border-radius: 4.75% / 3.5%; background: var(--tag-bg); }
+.rules { display: grid; gap: 0.35rem; }
+.rules h4 { margin: 0; font-size: 1rem; }
+.rules p { margin: 0; white-space: pre-line; }
+.mana-cost { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.legality { margin: 0; font-weight: 600; }
+.legality.good { color: var(--ok); }
+.legality.bad { color: var(--danger); }
+.formats { columns: 2; margin: 0.5rem 0 0; padding-left: 1.1rem; font-size: 0.9rem; }
+.detail-price { font-size: 1.15rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* Add to deck */
+.add-panel { border-top: 1px solid var(--line); padding-top: 0.75rem; }
+.add-notes p { margin: 0.25rem 0 0; color: var(--danger); font-weight: 600; }

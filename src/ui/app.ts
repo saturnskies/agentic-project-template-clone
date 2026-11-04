@@ -39,6 +39,13 @@ export function startApp(root: HTMLElement): void {
   const storage = browserStorage();
   const { store, persistent } = loadStore(storage);
   const save = () => void saveStore(storage, store);
+  /** The Decks screen draws from the store: a change made while another tab shows (a card marked owned in Browse) must redraw it on return. */
+  let decksStale = false;
+  const touch = () => {
+    if (active !== 'decks') decksStale = true;
+  };
+
+  let active: Tab | null = null;
 
   const ctx: AppContext = {
     client: createClient(),
@@ -50,12 +57,14 @@ export function startApp(root: HTMLElement): void {
       if (i >= 0) store.decks[i] = deck;
       else store.decks.unshift(deck);
       save();
+      touch();
     },
     setOwned(oracleId, typeLine, owned) {
       const next = setOwnedIn(store, oracleId, typeLine, owned);
       store.owned = next.owned;
       store.unownedBasics = next.unownedBasics;
       save();
+      touch();
     },
     setView(view) {
       store.prefs = { ...store.prefs, view };
@@ -64,6 +73,7 @@ export function startApp(root: HTMLElement): void {
     deleteDeck(id) {
       store.decks = store.decks.filter((d) => d.id !== id);
       save();
+      touch();
     },
     go(route) {
       if (location.hash === route) render(true);
@@ -80,6 +90,7 @@ export function startApp(root: HTMLElement): void {
       store.unownedBasics = next.unownedBasics;
       store.prefs = next.prefs;
       save();
+      touch();
     },
   };
 
@@ -97,13 +108,12 @@ export function startApp(root: HTMLElement): void {
   root.replaceChildren(...(banner ? [banner] : []), ...Object.values(views));
   const bar = createTabBar();
   document.body.append(bar.el);
-  renderBrowse(views.browse);
+  renderBrowse(views.browse, ctx, storage);
   const life = createLife(storage);
 
   /** Where each tab was left (its last route and window scroll), for coming back to it. */
   const last: Record<Tab, string> = { decks: '#/', browse: '#/browse', life: '#/life' };
   const scroll: Record<Tab, number> = { decks: 0, browse: 0, life: 0 };
-  let active: Tab | null = null;
   let decksDrawn: string | null = null;
 
   /** `force` redraws the Decks screen even when its route is unchanged (the store changed underneath it). */
@@ -129,11 +139,12 @@ export function startApp(root: HTMLElement): void {
 
     let restore = switched;
     if (tab === 'decks') {
-      if (hash === decksDrawn && !force) {
+      if (hash === decksDrawn && !force && !decksStale) {
         // Same screen as when we left: keep it as it is.
       } else {
         drawDecks(hash);
         decksDrawn = hash;
+        decksStale = false;
         restore = false;
       }
     } else {
