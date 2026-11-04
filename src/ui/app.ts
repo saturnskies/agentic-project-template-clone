@@ -8,7 +8,7 @@ import { lifeRoute, tabOf, type Tab } from '../lib/nav';
 import { renderBrowse } from './browse';
 import { h } from './dom';
 import { renderHome } from './home';
-import { renderLife } from './life';
+import { createLife } from './life';
 import { renderNewDeck } from './newDeck';
 import { renderPaste } from './paste';
 import { createTabBar } from './tabs';
@@ -98,6 +98,7 @@ export function startApp(root: HTMLElement): void {
   const bar = createTabBar();
   document.body.append(bar.el);
   renderBrowse(views.browse);
+  const life = createLife(storage);
 
   /** Where each tab was left (its last route and window scroll), for coming back to it. */
   const last: Record<Tab, string> = { decks: '#/', browse: '#/browse', life: '#/life' };
@@ -109,10 +110,12 @@ export function startApp(root: HTMLElement): void {
   function render(force = false) {
     const hash = location.hash || '#/';
     const tab = tabOf(hash);
-    if (tab === 'life' && lifeRoute(hash) !== hash) {
-      location.replace(lifeRoute(hash));
+    if (tab === 'life' && lifeRoute(hash, life.hasGame()) !== hash) {
+      location.replace(lifeRoute(hash, life.hasGame()));
       return;
     }
+    // A game fills the screen: the stylesheet hides the header, footer and tab bar while this is set.
+    document.body.classList.toggle('in-game', tab === 'life' && hash === '#/life/game');
     const switched = tab !== active;
     if (active && switched) scroll[active] = window.scrollY;
     active = tab;
@@ -130,7 +133,7 @@ export function startApp(root: HTMLElement): void {
         restore = false;
       }
     } else {
-      if (tab === 'life') renderLife(views.life);
+      if (tab === 'life') life.render(views.life, hash);
       if (!switched) restore = false;
     }
     window.scrollTo(0, restore ? scroll[tab] : 0);
