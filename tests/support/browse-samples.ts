@@ -23,3 +23,10 @@ export const SAMPLES: Array<{ id: string; filters: Partial<Filters>; q: string }
   { id: 'rarity', filters: { name: 'crypt', rarities: ['rare', 'mythic'] }, q: `${CRYPT} (r:r or r:m)` },
   { id: 'price', filters: { name: 'crypt', priceMin: '1', priceMax: '5' }, q: `${CRYPT} usd>=1 usd<=5` },
 ];
+
+/** A search whose results include basic lands, which a deck may hold many of. */
+export const BASIC_SWAMP_QUERY = 'legal:commander name:"swamp" t:basic';
+/** Typed into the commander search of New deck…: a mono-green commander (a black card is off-color for her) and one that plays black. */
+export const COMMANDER_TYPED = { green: 'selvala', black: 'edgar markov' } as const;
+/** Typed to pick, as commander, a card that was opened from the results. */
+export const SOLPHIM_TYPED = 'solphim';
