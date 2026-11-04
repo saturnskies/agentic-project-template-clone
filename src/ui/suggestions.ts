@@ -114,9 +114,10 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
   const lookupCandidateRoles = () => {
     if (edh?.status !== 'ok') return;
     const mine = run;
-    const me = ++candidateRun;
     const names = roleLookupNames(edhrecScored(edh, new Set(facts().map((c) => c.oracleId))));
     if (!names.length) return;
+    // Bumped only when a lookup starts, so an earlier one still in flight can settle the state.
+    const me = ++candidateRun;
     candidateRolesState = 'loading';
     deckRoles(ctx.client, names)
       .then(({ roles: found, complete }) => {
@@ -210,7 +211,12 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
       filter = res.filter;
     } else if (edh?.status === 'ok') {
       filter = edh.filter;
-      pageNote = "EDHREC didn't answer for that choice, so this is still the previous list. Try again.";
+      // Keep the price buttons in step with the page still shown.
+      if (price === 'budget' && !filter.budget) price = 'any';
+      pageNote =
+        res.status === 'missing'
+          ? 'EDHREC has no decks for that choice, so this is still the previous list.'
+          : "EDHREC didn't answer for that choice, so this is still the previous list. Try again.";
     } else {
       edh = res;
       startPool();
@@ -312,7 +318,13 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
       filters(res),
       pageLoading ? h('p', { class: 'muted small', role: 'status' }, 'Loading from EDHREC…') : null,
       pageNote ? h('p', { class: 'notice small', role: 'status' }, pageNote) : null,
-      thin && thinLabel ? h('p', { class: 'notice small', role: 'status' }, `Only ${thin.decks} ${commanderName} ${thin.decks === 1 ? 'deck is' : 'decks are'} at bracket ${thin.bracket} ${thinLabel.label}${res.filter.theme ? ' with this theme' : ''}, so this shows all brackets.`) : null,
+      thin && thinLabel
+        ? h(
+            'p',
+            { class: 'notice small', role: 'status' },
+            `${thin.decks ? `Only ${thin.decks}` : 'No'} ${commanderName} ${thin.decks === 1 ? 'deck is' : 'decks are'} at bracket ${thin.bracket} ${thinLabel.label}${res.filter.theme ? ' with this theme' : ''}, so this shows all brackets.`,
+          )
+        : null,
       h(
         'p',
         { class: 'small', 'data-testid': 'edhrec-source' },
@@ -482,6 +494,8 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
     failedSearches = [];
     roles = new Map();
     rolesState = 'loading';
+    // Without the commander's Scryfall data its colors are unknown, so EDHREC's cards can't be checked.
+    if (!commander) commanderName = '';
     edh = commanderName ? { status: 'loading' } : { status: 'failed' };
     slug = commanderSlug([commanderName]);
     known = new Map();
