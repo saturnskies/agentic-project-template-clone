@@ -17,6 +17,8 @@ export interface Player {
   name: string;
   life: number;
   poison: number;
+  /** Index into PALETTE. */
+  color: number;
   /** This player's commander has a partner: opponents track damage from each separately. */
   partners: boolean;
   /** Commander damage this player has taken, by `${seat}:${slot}` of the dealing commander (slot 1 = the partner). Zero entries are absent. */
@@ -38,6 +40,8 @@ export interface Game {
   players: Player[];
   /** The last changes, oldest first, at most HISTORY_LIMIT. */
   history: Change[];
+  /** Who goes first, once rolled. Not an undoable change. */
+  first: number | null;
 }
 
 /** What the setup screen remembers for the next game. */
@@ -46,6 +50,8 @@ export interface Setup {
   startingLife: number;
   /** Typed names by seat; '' means the default "Player N". */
   names: string[];
+  /** Typed colors by seat: a PALETTE index, or -1 for the seat's own default. */
+  colors: number[];
 }
 
 export interface LifeStore {
@@ -77,7 +83,7 @@ export function contrastWithWhite(hex: string): number {
 }
 
 export function defaultSetup(): Setup {
-  return { players: DEFAULT_PLAYERS, startingLife: DEFAULT_LIFE, names: [] };
+  return { players: DEFAULT_PLAYERS, startingLife: DEFAULT_LIFE, names: [], colors: [] };
 }
 
 export function emptyLife(): LifeStore {
@@ -94,12 +100,20 @@ export function parseStartingLife(text: string): number | null {
 
 const cleanName = (name: string, seat: number) => name.trim().slice(0, MAX_NAME) || `Player ${seat + 1}`;
 
+const isSwatch = (c: unknown): c is number => typeof c === 'number' && Number.isInteger(c) && c >= 0 && c < PALETTE.length;
+
+/** A swatch index, or the seat's own default color when `c` isn't one. */
+export function seatColor(c: unknown, seat: number): number {
+  return isSwatch(c) ? c : seat % PALETTE.length;
+}
+
 export function newGame(setup: Setup): Game {
   const n = clamp(Math.round(setup.players), 1, MAX_PLAYERS);
   return {
     startingLife: setup.startingLife,
-    players: Array.from({ length: n }, (_, i) => ({ name: cleanName(setup.names[i] ?? '', i), life: setup.startingLife, poison: 0, partners: false, cmdr: {} })),
+    players: Array.from({ length: n }, (_, i) => ({ name: cleanName(setup.names[i] ?? '', i), life: setup.startingLife, poison: 0, color: seatColor(setup.colors[i], i), partners: false, cmdr: {} })),
     history: [],
+    first: null,
   };
 }
 
@@ -178,9 +192,37 @@ export function setPartners(game: Game, seat: number, on: boolean): Game {
   };
 }
 
-/** Starts the same game over: life back to the starting total, no poison or commander damage, no undo. Names and partners stay. */
+/** Starts the same game over: life back to the starting total, no poison or commander damage, no undo, nobody first yet. Names, colors and partners stay. */
 export function resetGame(game: Game): Game {
-  return { ...game, players: game.players.map((p) => ({ ...p, life: game.startingLife, poison: 0, cmdr: {} })), history: [] };
+  return { ...game, players: game.players.map((p) => ({ ...p, life: game.startingLife, poison: 0, cmdr: {} })), history: [], first: null };
+}
+
+/** Renames a player (trimmed, at most 24 characters; blank gives the default "Player N"). Not an undoable change. */
+export function setName(game: Game, seat: number, name: string): Game {
+  if (!game.players[seat]) return game;
+  return { ...game, players: game.players.map((p, i) => (i === seat ? { ...p, name: cleanName(name, seat) } : p)) };
+}
+
+/** Gives a player a swatch from PALETTE; anything else changes nothing. Not an undoable change. */
+export function setColor(game: Game, seat: number, color: number): Game {
+  if (!game.players[seat] || !isSwatch(color)) return game;
+  return { ...game, players: game.players.map((p, i) => (i === seat ? { ...p, color } : p)) };
+}
+
+/** Marks who goes first (or nobody); a seat that doesn't exist changes nothing. */
+export function setFirst(game: Game, seat: number | null): Game {
+  if (seat != null && !(Number.isInteger(seat) && game.players[seat])) return game;
+  return { ...game, first: seat };
+}
+
+const uint32 = () => crypto.getRandomValues(new Uint32Array(1))[0];
+
+/** A fair random seat in 0..n-1. Numbers from the uneven tail of the 32-bit range are redrawn so no seat is favoured. */
+export function randomSeat(n: number, draw: () => number = uint32): number {
+  const limit = Math.floor(2 ** 32 / n) * n;
+  let x = draw();
+  while (x >= limit) x = draw();
+  return x % n;
 }
 
 /** Why a player is in danger, if they are. Only a warning: nobody is ever eliminated automatically. */
@@ -225,6 +267,7 @@ function sanitizeGame(raw: unknown): Game | null {
       name: p.name.trim().slice(0, MAX_NAME) || `Player ${players.length + 1}`,
       life,
       poison: whole(p.poison, 0, COUNTER_LIMIT) ?? 0,
+      color: seatColor(p.color, players.length),
       partners: p.partners === true,
       cmdr: {},
     });
@@ -241,7 +284,7 @@ function sanitizeGame(raw: unknown): Game | null {
       players[seat].cmdr[k] = n;
     }
   });
-  const game: Game = { startingLife: whole(raw.startingLife, 1, 999) ?? DEFAULT_LIFE, players, history: [] };
+  const game: Game = { startingLife: whole(raw.startingLife, 1, 999) ?? DEFAULT_LIFE, players, history: [], first: typeof raw.first === 'number' && Number.isInteger(raw.first) && raw.first >= 0 && raw.first < players.length ? raw.first : null };
   if (Array.isArray(raw.history)) {
     for (const c of raw.history) {
       const t = isObject(c) && isObject(c.target) ? c.target : null;
@@ -262,7 +305,8 @@ function sanitizeSetup(raw: unknown): Setup {
   const r = isObject(raw) ? raw : {};
   const names = Array.isArray(r.names) ? r.names.slice(0, MAX_PLAYERS).map((n) => (typeof n === 'string' ? n.slice(0, MAX_NAME) : '')) : [];
   const players = whole(r.players, 0, 1000);
-  return { players: players != null && players >= 1 && players <= MAX_PLAYERS ? players : DEFAULT_PLAYERS, startingLife: whole(r.startingLife, 1, 999) ?? DEFAULT_LIFE, names };
+  const colors = Array.isArray(r.colors) ? r.colors.slice(0, MAX_PLAYERS).map((c) => (isSwatch(c) ? c : -1)) : [];
+  return { players: players != null && players >= 1 && players <= MAX_PLAYERS ? players : DEFAULT_PLAYERS, startingLife: whole(r.startingLife, 1, 999) ?? DEFAULT_LIFE, names, colors };
 }
 
 export interface LifeLoad {
