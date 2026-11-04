@@ -18,6 +18,7 @@ import type { Deck } from '../../src/lib/deck';
 import { gameChangerCount } from '../../src/scryfall/names';
 import { searchCards } from '../../src/scryfall/browse';
 import { SORTS } from '../../src/lib/browse';
+import { SAMPLES } from '../support/browse-samples';
 
 /**
  * Re-records tests/fixtures/scryfall-e2e.json from the real Scryfall API by running the same flow the
@@ -279,6 +280,8 @@ describe.runIf(process.env.RECORD === '1')('record Browse fixtures', () => {
     await searchCards(client, sol, 'popularity', false, 1);
     await searchCards(client, sol, 'popularity', false, 2);
     await searchCards(client, sol, 'price', true, 1);
+    // One real search per filter (tests/support/browse-samples.ts).
+    for (const sample of SAMPLES) await searchCards(client, sample.q, 'popularity', false, 1);
     writeFileSync(new URL('../fixtures/scryfall-browse.json', import.meta.url), JSON.stringify(map));
     console.log(`recorded ${Object.keys(map).length} Browse requests`);
   }, 120_000);
