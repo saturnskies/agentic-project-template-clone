@@ -126,9 +126,10 @@ test.describe('Mark as owned', () => {
     const ghast = named(CRYPT, 'Crypt Ghast');
     const { dialog } = await open(page, 'Crypt Ghast');
     const toggle = dialog.getByRole('button', { name: 'Mark as owned' });
-    await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+    // One signal only: the label says the state, so there is no aria-pressed on top of it.
+    await expect(toggle).not.toHaveAttribute('aria-pressed');
     await toggle.click();
-    await expect(dialog.getByRole('button', { name: 'Owned', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    await expect(dialog.getByRole('button', { name: 'Owned', exact: true })).not.toHaveAttribute('aria-pressed');
     expect(await owned(page)).toEqual([ghast.oracle_id]);
     await dialog.getByRole('button', { name: 'Close' }).click();
     await expect(page.locator('.card-tile').filter({ hasText: 'Crypt Ghast' }).getByText('Owned')).toBeVisible();
