@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { ScryfallError, createClient, memoryCache } from '../../src/scryfall/client';
 import { searchCards } from '../../src/scryfall/browse';
+import { SAMPLES } from '../support/browse-samples';
 import { fixtureFetch, type FixtureMap } from '../support/fixtures';
 
 // Real Scryfall replies for the Browse searches, recorded 2026-11-04 (RECORD=1 ... -t Browse).
@@ -91,6 +92,15 @@ describe.runIf(process.env.SCRYFALL_LIVE === '1')('live Browse searches (SCRYFAL
     expect((await searchCards(client, `${CRYPT} (bogus:thing)`, 'popularity', false, 1)).warnings.length).toBeGreaterThan(0);
     await expect(searchCards(client, 'legal:commander (t:elf', 'popularity', false, 1)).rejects.toMatchObject({ status: 400 });
   }, 60_000);
+
+  it('is accepted by Scryfall for every filter, with no ignored-term warning', async () => {
+    const client = live();
+    for (const sample of SAMPLES) {
+      const r = await searchCards(client, sample.q, 'popularity', false, 1);
+      expect(r.warnings, sample.id).toEqual([]);
+      expect(r.cards.length, sample.id).toBeGreaterThan(0);
+    }
+  }, 120_000);
 
   it('answers page 2 of a big search and refuses a page past the end', async () => {
     const client = live();
