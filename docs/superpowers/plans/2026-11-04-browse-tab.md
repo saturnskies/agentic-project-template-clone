@@ -76,12 +76,21 @@ No other subagents. Docs-only commits get no review.
 
 
 ### 4. Card detail, Mark as owned, Decks stays in step
-- [ ] Detail `<dialog>`: image with Flip for double-faced cards, name, mana cost, type line, rules text for every face, Commander legality (text plus color) and an "All formats" disclosure, price with **Buy on TCGplayer**. The cheapest printing loads through `printings()`; if that fails the result's own price shows.
-- [ ] **Mark as owned / Owned** through `ctx.setOwned`; the result's Owned badge updates.
-- [ ] `app.ts`: `saveDeck`, `deleteDeck`, `setOwned` and `replaceStore` mark the Decks screen stale when another tab is showing; coming back redraws it once. (Part 1's known follow-up.)
-- [ ] The dialog closes with Escape, Close, the Android back gesture (existing `dialog[open]` handling), and when the tab is hidden.
-- [ ] E2E: open a card, see its text, legality and price; Mark as owned, switch to Decks, open the deck that holds that card and the owned count is right; Decks list shows the change without a reload (fails with the stale flag removed); an open detail is closed after switching to Decks, and Decks is clickable; phone screenshot of the detail looked at.
+- [x] Detail `<dialog>`: image with Flip for double-faced cards, name, mana cost, type line, rules text for every face, Commander legality (text plus color) and an "All formats" disclosure, price with **Buy on TCGplayer**. The cheapest printing loads through `printings()`; if that fails the result's own price shows.
+- [x] **Mark as owned / Owned** through `ctx.setOwned`; the result's Owned badge updates.
+- [x] `app.ts`: `saveDeck`, `deleteDeck`, `setOwned` and `replaceStore` mark the Decks screen stale when another tab is showing; coming back redraws it once. (Part 1's known follow-up.)
+- [x] The dialog closes with Escape, Close, the Android back gesture (existing `dialog[open]` handling), and when the tab is hidden.
+- [x] E2E: open a card, see its text, legality and price; Mark as owned, switch to Decks, open the deck that holds that card and the owned count is right; Decks list shows the change without a reload (fails with the stale flag removed); an open detail is closed after switching to Decks, and Decks is clickable; phone screenshot of the detail looked at.
 - **Failure paths:** the printings lookup fails or is empty → result price used, no crash; a card with no price → "No price" and no TCGplayer link to nowhere; no Commander legality value → "Unknown"; a double-faced card with only one face image; a card that is a token or has no `oracle_id` (marking owned is disabled with a reason, never a bad id stored); detail opened for card A, then B before A's printings return → A's late reply does not change B (run guard, test fails without it).
+- **Done 2026-11-04.** `npm run check`: 420 unit (12 live ones skipped) and 378 e2e tests pass; 14 new detail e2e tests in each project.
+  - Each card name is a real button, and the whole tile or row opens the detail for a mouse or finger. Each open builds its own `<dialog>` inside the Browse container (so the app's hidden-tab closing finds it), which makes a late printings reply for a closed card harmless by construction; that test pins the behaviour but has no guard to remove.
+  - The price shown first is the result's own (its cheapest finish); then "Cheapest printing: $X" with its set, from `printings()`. A failed lookup keeps the first price and says so.
+  - Pure helpers in `lib/browse.ts`: `legalityLabel` (words, tone only styles them), `allFormats` (readable names; Scryfall's separator-less keys such as `paupercommander` and `predh` are mapped by hand), `ownableId` (Oracle ID or null, never the printing id).
+  - `app.ts` marks the Decks screen stale when `saveDeck`, `deleteDeck`, `setOwned` or `replaceStore` run while another tab shows, and redraws it once on return. Changes made on Decks itself do not mark it. The e2e test marks Sol Ring owned in Browse and sees the deck's to-buy go from $35.47 to $34.37 on return.
+  - Mutation checks, each failing its test: the stale flag removed; hidden-tab dialog closing removed; the no-Oracle-ID guard removed; `ownableId` falling back to the printing id; no redraw after an owned change; no focus move after a redraw. The browser already returns focus to the opener, so that test covers the redraw case, where the opener is replaced.
+  - Slice 5 adds "Add to deck…" to this dialog's actions.
+  - Not checked: the Android back gesture with the detail open (relies on `native.ts` closing `dialog[open]`).
+
 
 ### 5. Add to deck… and New deck…
 - [ ] "Add to deck…" in the detail: a deck select (newest first, nothing chosen), **New deck…** as the last option, Add disabled until a choice is made. Browse reads no state from the deck open on the Decks tab (a test opens a deck, then adds to a different one).
