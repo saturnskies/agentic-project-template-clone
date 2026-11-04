@@ -13,9 +13,14 @@ import {
   loadLife,
   newGame,
   parseStartingLife,
+  randomSeat,
   resetGame,
   saveLife,
+  seatColor,
   seating,
+  setColor,
+  setFirst,
+  setName,
   setPartners,
   undo,
   warnings,
@@ -60,14 +65,14 @@ describe('seating', () => {
 
 describe('newGame', () => {
   it('starts every player at the starting life with default names', () => {
-    const g = newGame({ players: 3, startingLife: 30, names: [] });
+    const g = newGame({ players: 3, startingLife: 30, names: [], colors: [] });
     expect(g.players.map((p) => p.life)).toEqual([30, 30, 30]);
     expect(g.players.map((p) => p.name)).toEqual(['Player 1', 'Player 2', 'Player 3']);
     expect(g.startingLife).toBe(30);
   });
 
   it('uses set names, falls back for blank ones, and cuts long ones to 24 characters', () => {
-    const g = newGame({ players: 3, startingLife: 40, names: ['Alex', '   ', 'x'.repeat(40)] });
+    const g = newGame({ players: 3, startingLife: 40, names: ['Alex', '   ', 'x'.repeat(40)], colors: [] });
     expect(g.players[0].name).toBe('Alex');
     expect(g.players[1].name).toBe('Player 2');
     expect(g.players[2].name).toBe('x'.repeat(24));
@@ -83,7 +88,7 @@ describe('changeLife', () => {
   });
 
   it('goes below zero (nobody is eliminated automatically) and stops at the limits', () => {
-    let g = newGame({ players: 1, startingLife: 1, names: [] });
+    let g = newGame({ players: 1, startingLife: 1, names: [], colors: [] });
     g = changeLife(g, 0, -5);
     expect(g.players[0].life).toBe(-4);
     g = changeLife(g, 0, -100000);
@@ -120,7 +125,7 @@ describe('loadLife and saveLife', () => {
   it('round-trips a game and the setup', () => {
     const s = fakeStorage();
     const store = emptyLife();
-    store.setup = { players: 3, startingLife: 30, names: ['A', 'B', 'C'] };
+    store.setup = { players: 3, startingLife: 30, names: ['A', 'B', 'C'], colors: [2, 0, 7] };
     store.game = changeLife(newGame(store.setup), 1, -4);
     expect(saveLife(s, store)).toBe(true);
     const back = loadLife(s).store;
@@ -176,6 +181,7 @@ describe('loadLife and saveLife', () => {
     expect(setup.players).toBe(4);
     expect(setup.startingLife).toBe(40);
     expect(setup.names).toEqual(['', 'ok']);
+    expect(setup.colors).toEqual([]);
   });
 
   it('ignores a game saved by a newer version, and says so, without touching it', () => {
@@ -200,7 +206,7 @@ describe('tile colors', () => {
   });
 });
 
-const three = (): Game => newGame({ players: 3, startingLife: 40, names: ['Ann', 'Ben', 'Cy'] });
+const three = (): Game => newGame({ players: 3, startingLife: 40, names: ['Ann', 'Ben', 'Cy'], colors: [] });
 const cmdr = (from: number, slot: 0 | 1 = 0) => ({ kind: 'cmdr', from, slot }) as const;
 
 describe('poison', () => {
@@ -263,7 +269,7 @@ describe('warnings (nothing is ever eliminated)', () => {
     [0, true],
     [-3, true],
   ])('life %i warns: %s', (life, warns) => {
-    const g = applyChange(newGame({ players: 1, startingLife: 1, names: [] }), 0, { kind: 'life' }, life - 1);
+    const g = applyChange(newGame({ players: 1, startingLife: 1, names: [], colors: [] }), 0, { kind: 'life' }, life - 1);
     expect(warnings(g, 0).includes('Life 0 or below')).toBe(warns);
   });
 
@@ -320,18 +326,18 @@ describe('undo', () => {
   it('does not record a change that did not change anything', () => {
     let g = applyChange(three(), 0, { kind: 'poison' }, -1);
     expect(g.history).toEqual([]);
-    g = changeLife(newGame({ players: 1, startingLife: 9999, names: [] }), 0, 5);
+    g = changeLife(newGame({ players: 1, startingLife: 9999, names: [], colors: [] }), 0, 5);
     expect(g.history).toEqual([]);
   });
 
   it('restores the exact earlier value after a clamped change', () => {
-    let g = changeLife(newGame({ players: 1, startingLife: 9998, names: [] }), 0, 50);
+    let g = changeLife(newGame({ players: 1, startingLife: 9998, names: [], colors: [] }), 0, 50);
     expect(g.players[0].life).toBe(9999);
     expect(undo(g).players[0].life).toBe(9998);
   });
 
   it(`keeps only the last ${HISTORY_LIMIT} changes`, () => {
-    let g = newGame({ players: 1, startingLife: 100, names: [] });
+    let g = newGame({ players: 1, startingLife: 100, names: [], colors: [] });
     for (let i = 0; i < HISTORY_LIMIT + 10; i++) g = changeLife(g, 0, -1);
     expect(g.history).toHaveLength(HISTORY_LIMIT);
     for (let i = 0; i < HISTORY_LIMIT; i++) g = undo(g);
@@ -380,7 +386,8 @@ describe('saved counters', () => {
 
   it('reads a game saved before these counters existed', () => {
     const g = roundTrip({ startingLife: 40, players: [{ name: 'A', life: 38 }, { name: 'B', life: 40 }] })!;
-    expect(g.players[0]).toEqual({ name: 'A', life: 38, poison: 0, partners: false, cmdr: {} });
+    expect(g.players[0]).toEqual({ name: 'A', life: 38, poison: 0, partners: false, cmdr: {}, color: 0 });
+    expect(g.first).toBeNull();
     expect(g.history).toEqual([]);
   });
 
@@ -423,5 +430,113 @@ describe('saved counters', () => {
     const g = roundTrip({ startingLife: 40, players: [{ name: 'A', life: 40 }], history: many })!;
     expect(g.history).toHaveLength(HISTORY_LIMIT);
     expect(g.history[0].before).toBe(30);
+  });
+});
+
+describe('names and colors', () => {
+  it('gives each seat its own color by default, and uses the setup colors when they are valid', () => {
+    const g = newGame({ players: 4, startingLife: 40, names: [], colors: [] });
+    expect(g.players.map((p) => p.color)).toEqual([0, 1, 2, 3]);
+    const picked = newGame({ players: 4, startingLife: 40, names: [], colors: [5, 5, 99, -1] });
+    expect(picked.players.map((p) => p.color)).toEqual([5, 5, 2, 3]);
+  });
+
+  it('seatColor falls back to the seat for anything that is not a swatch index', () => {
+    for (const bad of [-1, 8, 1.5, NaN, '3', null, undefined]) expect(seatColor(bad, 4)).toBe(4);
+    expect(seatColor(7, 0)).toBe(7);
+    expect(seatColor(0, 5)).toBe(0);
+  });
+
+  it('setName trims, cuts to 24 characters, and falls back to the default for a blank name', () => {
+    let g = setName(three(), 0, '  Zed  ');
+    expect(g.players[0].name).toBe('Zed');
+    g = setName(g, 1, 'y'.repeat(40));
+    expect(g.players[1].name).toBe('y'.repeat(24));
+    g = setName(g, 2, '   ');
+    expect(g.players[2].name).toBe('Player 3');
+    expect(setName(g, 9, 'x')).toBe(g);
+  });
+
+  it('setColor changes only the color, ignores a bad index, and is not undoable', () => {
+    const g = three();
+    const next = setColor(g, 1, 6);
+    expect(next.players[1].color).toBe(6);
+    expect(next.players[0].color).toBe(0);
+    expect(next.history).toEqual([]);
+    expect(setColor(g, 1, 8)).toBe(g);
+    expect(setColor(g, 1, -1)).toBe(g);
+    expect(setColor(g, 9, 2)).toBe(g);
+  });
+
+  it('keeps names and colors through undo and reset', () => {
+    let g = setColor(setName(three(), 0, 'Zed'), 0, 4);
+    g = changeLife(g, 0, -3);
+    g = undo(g);
+    expect(g.players[0]).toMatchObject({ name: 'Zed', color: 4 });
+    expect(resetGame(g).players[0]).toMatchObject({ name: 'Zed', color: 4 });
+  });
+
+  it('saves and repairs names, colors and the setup colors', () => {
+    const raw = { version: 1, game: { startingLife: 40, players: [{ name: 'A', life: 40, color: 6 }, { name: 'B', life: 40, color: 'red' }, { name: 'C', life: 40, color: 40 }] }, setup: { colors: [1, 'x', 9, 3], names: [] } };
+    const { store } = loadLife(fakeStorage({ [LIFE_KEY]: JSON.stringify(raw) }));
+    expect(store.game!.players.map((p) => p.color)).toEqual([6, 1, 2]);
+    expect(store.setup.colors).toEqual([1, -1, -1, 3]);
+  });
+});
+
+describe('first player', () => {
+  it('is nobody until rolled, and setFirst names a seat or clears it', () => {
+    const g = three();
+    expect(g.first).toBeNull();
+    expect(setFirst(g, 2).first).toBe(2);
+    expect(setFirst(setFirst(g, 2), null).first).toBeNull();
+    expect(setFirst(g, 3)).toBe(g);
+    expect(setFirst(g, -1)).toBe(g);
+    expect(setFirst(g, 1.5)).toBe(g);
+  });
+
+  it('is not an undoable change, and a reset clears it (a restarted game rolls again)', () => {
+    const g = setFirst(changeLife(three(), 0, -1), 1);
+    expect(g.history).toHaveLength(1);
+    expect(undo(g).first).toBe(1);
+    expect(resetGame(g).first).toBeNull();
+  });
+
+  it('is saved, and dropped when it points at a seat that does not exist', () => {
+    const base = { startingLife: 40, players: [{ name: 'A', life: 40 }, { name: 'B', life: 40 }] };
+    const load = (first: unknown) => loadLife(fakeStorage({ [LIFE_KEY]: JSON.stringify({ version: 1, game: { ...base, first }, setup: {} }) })).store.game!.first;
+    expect(load(1)).toBe(1);
+    expect(load(2)).toBeNull();
+    expect(load(-1)).toBeNull();
+    expect(load('1')).toBeNull();
+    expect(load(0.5)).toBeNull();
+    expect(load(undefined)).toBeNull();
+  });
+});
+
+describe('randomSeat', () => {
+  it('picks the seat the random number lands on', () => {
+    expect(randomSeat(6, () => 0)).toBe(0);
+    expect(randomSeat(6, () => 5)).toBe(5);
+    expect(randomSeat(6, () => 7)).toBe(1);
+    expect(randomSeat(1, () => 123456)).toBe(0);
+  });
+
+  it('throws away numbers from the uneven tail so no seat is favoured', () => {
+    // 2^32 is not a multiple of 6: 4294967292.. are rejected, the next draw is used.
+    const draws = [4294967295, 4294967292, 8];
+    expect(randomSeat(6, () => draws.shift()!)).toBe(2);
+    expect(draws).toEqual([]);
+  });
+
+  it('reaches every seat and stays in range with the real random source', () => {
+    const seen = new Set<number>();
+    for (let i = 0; i < 400; i++) {
+      const n = randomSeat(4);
+      expect(n).toBeGreaterThanOrEqual(0);
+      expect(n).toBeLessThan(4);
+      seen.add(n);
+    }
+    expect(seen.size).toBe(4);
   });
 });
