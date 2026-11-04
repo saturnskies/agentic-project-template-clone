@@ -17,6 +17,7 @@ import { estimateBracket, type PageFilter } from '../../src/lib/edhrec';
 import type { Deck } from '../../src/lib/deck';
 import { gameChangerCount } from '../../src/scryfall/names';
 import { searchCards } from '../../src/scryfall/browse';
+import { printings } from '../../src/scryfall/cards';
 import { SORTS } from '../../src/lib/browse';
 import { SAMPLES } from '../support/browse-samples';
 
@@ -282,6 +283,12 @@ describe.runIf(process.env.RECORD === '1')('record Browse fixtures', () => {
     await searchCards(client, sol, 'price', true, 1);
     // One real search per filter (tests/support/browse-samples.ts).
     for (const sample of SAMPLES) await searchCards(client, sample.q, 'popularity', false, 1);
+    // Printings of the cards the e2e tests open in the card detail: Sol Ring (several pages of printings), a spell, and a double-faced card.
+    const pick = async (q: string, cardName: string) => (await searchCards(client, q, 'popularity', false, 1)).cards.find((c) => c.name === cardName)!;
+    for (const [q, cardName] of [[sol, 'Sol Ring'], [crypt, 'Crypt Ghast'], [crypt, "Agadeem's Awakening // Agadeem, the Undercrypt"]] as const) {
+      const card = await pick(q, cardName);
+      await printings(client, card.oracle_id ?? card.card_faces![0].oracle_id!);
+    }
     writeFileSync(new URL('../fixtures/scryfall-browse.json', import.meta.url), JSON.stringify(map));
     console.log(`recorded ${Object.keys(map).length} Browse requests`);
   }, 120_000);
