@@ -1,7 +1,7 @@
 ---
 description: Swapsmith v1 design spec — free static Commander deckbuilder with live TCGplayer prices via Scryfall, owned-card tracking, and rules-based swap/upgrade/cheaper-replacement suggestions
 status: current
-updated: 2026-11-02
+updated: 2026-11-04
 ---
 
 # Swapsmith v1: design spec
@@ -142,6 +142,8 @@ A share link holds the deck in the URL hash (`#d=<data>`), so no server is neede
 A panel beside the editor on wide screens, or a tab on phones, with three sections.
 
 ## Suggestion rules
+
+> **Replaced 2026-11-04** by the [recommendations revamp spec](2026-11-03-recommendations-revamp.md). Upgrades, swaps and cheaper replacements now come from EDHREC's data for the commander. The rules below are the fallback when EDHREC has nothing, widened there with more roles and themes and shown in categories instead of price tiers. The revamp also brings in gap lines, which were out of scope here.
 
 All rules are pure functions over card data, so unit tests can cover them without the network. Every suggestion shows a short reason built from the rule that produced it.
 
