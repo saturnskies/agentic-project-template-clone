@@ -1,14 +1,16 @@
-import { allFormats, buildQuery, COLORS, defaultFilters, legalityLabel, loadPrefs, ownableId, RARITIES, savePrefs, SORTS, type ColorMode, type Field, type Filters, type SortKey } from '../lib/browse';
+import { addCardToDeck, allFormats, buildQuery, COLORS, defaultFilters, canBeCommander, checkAdd, legalityLabel, loadPrefs, ownableId, RARITIES, savePrefs, SORTS, type ColorMode, type Field, type Filters, type SortKey } from '../lib/browse';
 import { cardImage } from '../lib/groups';
 import { isOwned } from '../lib/owned';
 import { bestPrice, cheapestPrinting, tcgplayerUrl } from '../lib/price';
 import { THEMES } from '../lib/profile';
 import { searchCards, type SearchPage } from '../scryfall/browse';
-import { printings } from '../scryfall/cards';
+import { cardsByOracleId, printings, searchCommanders } from '../scryfall/cards';
 import { ScryfallError } from '../scryfall/client';
 import { POOL_ROLES } from '../scryfall/roles';
+import { buildDeck, oracleIdOf } from '../scryfall/resolve';
 import type { ScryCard } from '../scryfall/types';
 import type { AppContext } from './app';
+import { combobox } from './combobox';
 import { segmented } from './controls';
 import { h, usd } from './dom';
 
@@ -305,6 +307,142 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext, storage: Storag
       drawOwn();
     });
 
+
+    // ---- Add to deck… -------------------------------------------------------------------------
+    // Browse is independent of the Decks tab: it asks which deck every time and preselects nothing.
+    const NEW = '__new';
+    const deckSelect = h('select', { id: 'add-deck-select' });
+    const notes = h('div', { class: 'add-notes', role: 'status', 'aria-live': 'polite' });
+    const done = h('div', { role: 'status', 'aria-live': 'polite' });
+    const addBtn = h('button', { type: 'button', class: 'button primary', disabled: true }, 'Add');
+    const createBtn = h('button', { type: 'button', class: 'button primary', disabled: true, hidden: true }, 'Create deck and add');
+    const nameInput = h('input', { id: 'add-deck-name', type: 'text', autocomplete: 'off', placeholder: 'Optional' });
+    const chosen = h('p', { class: 'muted small' }, 'Search for a legendary creature, or any card that can be your commander.');
+    let commander: ScryCard | null = null;
+    const pickCommander = (c: ScryCard) => {
+      commander = c;
+      search.input.value = c.name;
+      chosen.replaceChildren(h('strong', {}, `Commander: ${c.name}`));
+      sync();
+    };
+    const search = combobox<ScryCard>({
+      id: 'add-commander-search',
+      label: 'Commander',
+      placeholder: 'Start typing a name, e.g. Edgar',
+      search: (typed) => searchCommanders(ctx.client, typed),
+      render: (c) => ({ label: c.name, detail: c.type_line ?? c.card_faces?.[0]?.type_line }),
+      onPick: pickCommander,
+    });
+    const useThis = canBeCommander(card) ? h('button', { type: 'button', class: 'button' }, 'Use this card as commander') : null;
+    useThis?.addEventListener('click', () => pickCommander(card));
+    const newPanel = h('div', { class: 'stack', hidden: true }, h('div', { class: 'field' }, h('label', { for: 'add-deck-name' }, 'Deck name (optional)'), nameInput), search.root, chosen, useThis);
+
+    /** What the colors check found for the chosen deck; null until it has settled (and again whenever the choice changes), which keeps Add off. */
+    let check: ReturnType<typeof checkAdd> | null = null;
+    let identity: string[] | null = null;
+    /** This dialog already added the card to what is chosen: another press would add a second copy. */
+    let added = false;
+    /** Bumped on every change of choice; an answer for an older choice is dropped. */
+    let choiceRun = 0;
+    const identities = new Map<string, string[]>();
+    const decksNewestFirst = () => [...ctx.store.decks].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+    const chosenDeck = () => ctx.store.decks.find((d) => d.id === deckSelect.value);
+
+    deckSelect.replaceChildren(
+      h('option', { value: '' }, 'Choose a deck…'),
+      ...decksNewestFirst().map((d) => h('option', { value: d.id }, `${d.name} (${d.commander.name})`)),
+      h('option', { value: NEW }, 'New deck…'),
+    );
+    deckSelect.value = ctx.store.decks.length ? '' : NEW;
+
+    function sync() {
+      const making = deckSelect.value === NEW;
+      newPanel.hidden = !making;
+      addBtn.hidden = making;
+      createBtn.hidden = !making;
+      addBtn.disabled = added || !check || check.blocked != null || !chosenDeck();
+      createBtn.disabled = added || !commander;
+    }
+
+    function showDone(deck: { id: string; name: string }) {
+      done.replaceChildren(h('p', {}, `Added to ${deck.name}.`), h('a', { class: 'button', href: `#/deck/${deck.id}` }, 'Open deck'));
+    }
+
+    async function choose() {
+      const mine = ++choiceRun;
+      added = false;
+      check = null;
+      identity = null;
+      notes.replaceChildren();
+      done.replaceChildren();
+      const deck = chosenDeck();
+      sync();
+      if (!deck) return;
+      const known = identities.get(deck.commander.oracleId);
+      if (known) identity = known;
+      else {
+        try {
+          const found = (await cardsByOracleId(ctx.client, [deck.commander.oracleId])).get(deck.commander.oracleId);
+          if (found) identities.set(deck.commander.oracleId, (identity = found.color_identity));
+        } catch {
+          // The colors can't be checked; adding still works, with a note.
+        }
+        if (mine !== choiceRun) return;
+      }
+      // The deck may have changed while we waited: look it up again.
+      const fresh = chosenDeck();
+      if (!fresh) return;
+      check = checkAdd(fresh, card, identity);
+      notes.replaceChildren(...[check.blocked, ...check.notes].filter((t): t is string => !!t).map((t) => h('p', {}, t)));
+      sync();
+    }
+    deckSelect.addEventListener('change', () => void choose());
+
+    addBtn.addEventListener('click', () => {
+      const deck = chosenDeck();
+      if (added || !check || check.blocked || !deck) return;
+      ctx.saveDeck(addCardToDeck(deck, card));
+      added = true;
+      showDone(deck);
+      sync();
+    });
+
+    createBtn.addEventListener('click', () => {
+      if (added || !commander) return;
+      let deck = buildDeck(nameInput.value, [], commander);
+      // The card is the commander (picked, or by the shortcut): it is not also a main-deck card.
+      if (oracleIdOf(commander) !== oracleIdOf(card)) {
+        const blocked = checkAdd(deck, card, commander.color_identity).blocked;
+        if (blocked) return void notes.replaceChildren(h('p', {}, blocked));
+        deck = addCardToDeck(deck, card);
+      }
+      ctx.saveDeck(deck);
+      added = true;
+      showDone(deck);
+      sync();
+    });
+
+    const addPanel = h(
+      'div',
+      { class: 'stack add-panel', hidden: true },
+      h('div', { class: 'field' }, h('label', { for: 'add-deck-select' }, 'Deck'), deckSelect),
+      newPanel,
+      notes,
+      h('div', { class: 'actions' }, addBtn, createBtn),
+      done,
+    );
+    const addToggle = h('button', { type: 'button', class: 'button', 'aria-expanded': 'false' }, 'Add to deck…');
+    addToggle.addEventListener('click', () => {
+      const open = addPanel.hidden;
+      addPanel.hidden = !open;
+      addToggle.setAttribute('aria-expanded', String(open));
+      if (open) {
+        sync();
+        deckSelect.focus();
+      }
+    });
+    sync();
+
     const close = h('button', { type: 'button', class: 'button' }, 'Close');
     close.addEventListener('click', () => dialog.close());
     dialog.append(
@@ -322,7 +460,8 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext, storage: Storag
           formats.length > 1 ? h('details', {}, h('summary', {}, 'All formats'), h('ul', { class: 'formats' }, ...formats.map((f) => h('li', {}, `${f.format}: ${f.status}`)))) : null,
           h('p', {}, priceText, ' ', buy),
           priceNote,
-          h('div', { class: 'actions' }, ownButton),
+          h('div', { class: 'actions' }, ownButton, addToggle),
+          addPanel,
           oid ? null : h('p', { class: 'muted small' }, "This card can't be tracked as owned: Scryfall gave it no Oracle ID."),
         ),
       ),
