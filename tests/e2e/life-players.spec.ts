@@ -133,6 +133,29 @@ test.describe('roll for first player', () => {
     await expect(page.locator('.tile.rolling')).toHaveCount(0);
   });
 
+  test('the menu stays shut while the roll runs, so nothing can reset or undo mid-roll', async ({ page }) => {
+    await fixRandom(page, 5);
+    await start(page, { players: 6 });
+    await begin(page);
+    await (await menu(page)).getByRole('button', { name: 'Roll for first player' }).click();
+    await expect(page.getByRole('button', { name: 'Game menu' })).toBeDisabled();
+    await expect(tile(page, 5)).toHaveAttribute('data-first', 'true');
+    await expect(page.getByRole('button', { name: 'Game menu' })).toBeEnabled();
+  });
+
+  test('a roll still running when the game is left does not mark anyone in the next draw of the game', async ({ page }) => {
+    await fixRandom(page, 5);
+    await start(page, { players: 6 });
+    await begin(page);
+    await (await menu(page)).getByRole('button', { name: 'Roll for first player' }).click();
+    await expect(page.locator('.tile.rolling')).toHaveCount(1);
+    await page.evaluate(() => (location.hash = '#/life'));
+    await page.evaluate(() => (location.hash = '#/life/game'));
+    await page.waitForTimeout(2600);
+    await expect(page.locator('.tile[data-first="true"]')).toHaveCount(0);
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('swapsmith:life')!).game.first)).toBeNull();
+  });
+
   test('with reduced motion the answer is shown at once, with no animation', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await fixRandom(page, 1);
