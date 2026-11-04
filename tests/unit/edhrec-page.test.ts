@@ -156,3 +156,24 @@ describe('edhrecCandidates', () => {
   });
 });
 
+
+describe.runIf(process.env.EDHREC_LIVE === '1')('live EDHREC (EDHREC_LIVE=1)', () => {
+  // EDHREC's JSON is unofficial (ADR-005): this catches a change in its shape before review.
+  const withUa: typeof fetch = (input, init) => fetch(input, { ...init, headers: { ...Object.fromEntries(new Headers(init?.headers)), 'User-Agent': 'Swapsmith-tests/0.1' } });
+  const edhrec = createEdhrecClient({ fetch: withUa, cache: memoryCache() });
+
+  it('reads the real Edgar Markov page, a bracket and theme page, a partner redirect and a missing commander', async () => {
+    const main = await commanderPage(edhrec, '/commanders/edgar-markov');
+    if (main.status !== 'ok') throw new Error(`Edgar page: ${main.status}`);
+    expect(main.page.numDecks).toBeGreaterThan(10_000);
+    expect(main.page.cards.length).toBeGreaterThan(200);
+    expect(main.page.cards.filter((c) => c.category === 'Utility Artifacts').length).toBeGreaterThan(5);
+    expect(main.page.themes.length).toBeGreaterThan(5);
+    expect(main.page.typeCounts.Land).toBeGreaterThan(25);
+    expect(Object.keys(main.page.bracketCounts)).toContain('3');
+
+    expect(await commanderPage(edhrec, '/commanders/edgar-markov/core/vampires')).toMatchObject({ status: 'ok' });
+    expect(await commanderPage(edhrec, '/commanders/tymna-the-weaver-thrasios-triton-hero')).toMatchObject({ status: 'ok', path: '/commanders/thrasios-triton-hero-tymna-the-weaver' });
+    expect(await commanderPage(edhrec, '/commanders/not-a-real-commander-swapsmith')).toEqual({ status: 'missing' });
+  }, 60_000);
+});
