@@ -61,7 +61,15 @@ Builds the [tab bar and Life Counter spec](../specs/2026-11-04-tab-bar-life-coun
   - The click that ends a hold is swallowed once, within 150 ms. A longer window also swallowed a deliberate quick tap after a hold. The "release does not also tap" test fails without the guard.
 
 ### 4. Names, colors, first player, Wake Lock
-- [ ] Names (24 chars) and 8 swatches, remembered for the next game; contrast unit test for the swatches.
-- [ ] Roll for first player with an injectable random source; reduced-motion respected.
-- [ ] Wake Lock on game open, released on leave, re-requested on `visibilitychange`; notice when unsupported or rejected.
+- [x] Names (24 chars) and 8 swatches, remembered for the next game; contrast unit test for the swatches.
+- [x] Roll for first player with an injectable random source; reduced-motion respected.
+- [x] Wake Lock on game open, released on leave, re-requested on `visibilitychange`; notice when unsupported or rejected.
 - **Failure paths:** API missing; `request()` rejects; second request while held; release on leaving; reacquire after hidden.
+- **Done 2026-11-04.** `npm run check`: 368 unit and 224 e2e tests pass.
+  - Names and colors are edited in the setup and, live, from the game menu ("Edit names & colors"). Both use one row builder. A live edit also updates what the next game remembers.
+  - A reset clears who goes first (a restarted game rolls again) and keeps names and colors.
+  - The roll draws one unbiased 32-bit number (the uneven tail is redrawn). e2e tests stub `crypto.getRandomValues` for a fixed result, so there is no test hook in the app. With reduced motion, or one player, the answer shows at once.
+  - Wake Lock logic lives in `lib/awake.ts` with the browser passed in, so the failure paths are unit-tested with fakes. The game screen asks for the lock and `app.ts` lets go on any route change, not only Leave game.
+  - Mutation checks: removing the one-lock guard, and ignoring reduced motion, each make their test fail.
+  - Not checked on a real device: the wake lock in the Android WebView, and how the setup rows and swatches look on a phone.
+
