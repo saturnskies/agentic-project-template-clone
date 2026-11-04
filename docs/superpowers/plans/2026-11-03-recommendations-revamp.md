@@ -1,7 +1,7 @@
 ---
 description: Recommendations revamp build plan — five test-gated vertical slices from EDHREC client and category upgrades to filters, gaps, EDHREC-scored swaps and the wider Scryfall fallback
-status: draft
-updated: 2026-11-03
+status: current
+updated: 2026-11-04
 ---
 
 # Recommendations revamp: build plan
@@ -87,19 +87,24 @@ Builds the [recommendations revamp spec](../specs/2026-11-03-recommendations-rev
   - Edgar's first EDHREC swap is Kalastria Highborn → Blood Artist.
 
 ### 5. Wider Scryfall fallback
-- [ ] Verify each new `otag` live first (tutor, recursion, protection, counterspell, mana-rock, token-generator, sacrifice-outlet), and record which exist.
-- [ ] New themes in `lib/profile.ts`: artifacts matter, enchantments matter, spells matter, ETB/blink, landfall, equipment/auras. A theme the commander's own text names counts below the minimum. Unit tests cover each regex with a real card's text.
-- [ ] The fallback uses the same category layout and price filter, with no gaps, bracket or theme controls, and shows the notice.
-- [ ] Fixtures: the EDHREC 403 for a made-up commander; the fallback Scryfall searches.
-- [ ] E2E: the 403 shows the fallback notice and still lists suggestions.
+- [x] Verify each new `otag` live first (tutor, recursion, protection, counterspell, mana-rock, token-generator, sacrifice-outlet), and record which exist.
+- [x] New themes in `lib/profile.ts`: artifacts matter, enchantments matter, spells matter, ETB/blink, landfall, equipment/auras. A theme the commander's own text names counts below the minimum. Unit tests cover each regex with a real card's text.
+- [x] The fallback uses the same category layout and price filter, with no gaps, bracket or theme controls, and shows the notice.
+- [x] Fixtures: the EDHREC 403 for a made-up commander; the fallback Scryfall searches.
+- [x] E2E: the 403 shows the fallback notice and still lists suggestions.
 - **Failure paths:**
   - EDHREC 403, network error and wrong shape: each shows the fallback.
   - Every Scryfall search fails: the error message.
+- **Done 2026-11-04.**
+  - Six of the seven tags exist. There is no `otag:token-generator` (only `repeatable-token-generator`), so token makers keep coming from the tokens theme.
+  - New roles widen the fallback pool only; deck role lookups stay on the core four, which swaps match on.
+  - The fallback's new searches are recorded apart, in `scryfall-edgar-fallback.json`, so the 2026-11-02 Edgar recording and its pinned totals stay.
+  - The wider pool moves Woe Strider to the top creature and makes Purify → Woe Strider the first swap. Fallback e2e tests now check categories and the price filter instead of tiers.
 
 ### After slice 5
-- [ ] The opt-in live test `EDHREC_LIVE=1 npm test` checks the real Edgar page shape, and runs before review.
-- [ ] Mark the v1 spec's "Suggestion rules" section as replaced by the revamp spec. Set both new docs to `current` and rerun `tools/doc-index.sh`.
-- [ ] CLAUDE.md Architecture: add a line for `src/edhrec/`. Gotchas: EDHREC is unofficial, with the redirect and 403 behavior.
+- [x] The opt-in live test `EDHREC_LIVE=1 npm test` checks the real Edgar page shape, and runs before review.
+- [x] Mark the v1 spec's "Suggestion rules" section as replaced by the revamp spec. Set both new docs to `current` and rerun `tools/doc-index.sh`.
+- [x] CLAUDE.md Architecture: add a line for `src/edhrec/`. Gotchas: EDHREC is unofficial, with the redirect and 403 behavior.
 - [ ] `/go`: verify, review, simplify, PR.
 
 ## Follow-ups (not in this plan)
