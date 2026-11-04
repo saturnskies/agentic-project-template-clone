@@ -257,3 +257,33 @@ dialog.picker::backdrop { background: rgb(0 0 0 / 0.45); }
 .backup { display: grid; gap: 0.5rem; }
 .backup .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 .backup p { margin: 0; }
+
+/* Bottom tab bar (Decks, Browse, Life Counter). The body pads the page so the footer is not hidden behind it. */
+[hidden] { display: none !important; }
+body { padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px)); }
+.tabbar {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+  padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+}
+.tabbar a {
+  flex: 1;
+  max-width: 12rem;
+  min-height: 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.tabbar svg { width: 24px; height: 24px; }
+.tabbar a[aria-current='page'] { color: var(--ink); box-shadow: inset 0 3px 0 var(--accent); }
