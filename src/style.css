@@ -258,3 +258,30 @@ dialog.picker::backdrop { background: rgb(0 0 0 / 0.45); }
 .backup { display: grid; gap: 0.5rem; }
 .backup .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 .backup p { margin: 0; }
+
+/* Touch targets: 44px on touch screens (pointer: coarse), so a thumb can hit them (Material asks for 48dp).
+   Dense rows keep their height by growing the tap area with a ::after instead of the visible control. */
+.own-cell { cursor: pointer; }
+@media (pointer: coarse) {
+  .button, .segment, .sort, .link-button, input[type=text], select, .back { min-height: 44px; }
+  .segment { min-width: 44px; }
+  .sort { min-width: 44px; padding-inline: 0.25rem; display: inline-flex; align-items: center; }
+  .back { display: inline-flex; align-items: center; }
+  .link-button { display: inline-flex; align-items: center; }
+  .icon-button { width: 44px; height: 44px; }
+  .cards td.remove { width: 44px; padding: 0; }
+  .cards td.owned, .cards th.owned { width: 46px; padding-inline: 0; }
+  .own-cell, .own-label { display: grid; place-items: center; min-height: 44px; min-width: 44px; }
+  .own-label { display: inline-flex; gap: 0.3rem; }
+  .cards td.owned input, .own-label input { width: 1.4rem; height: 1.4rem; }
+  .card-tools { min-height: 44px; flex-wrap: wrap; gap: 0.4rem; }
+  .cards td.owned input, .own-label input { margin: 0; } /* the browser's own checkbox margin cost 7px a tile */
+  .card-tools .icon-button { width: 44px; height: 44px; }
+  .keep-toggle { position: relative; }
+  .keep-toggle::after { content: ''; position: absolute; inset: -13px -6px; }
+}
+@media (max-width: 40rem) {
+  .show-narrow.sub { display: flex; align-items: center; flex-wrap: wrap; column-gap: 0.5rem; row-gap: 0; }
+  .cards th, .cards td { padding-inline: 0.5rem; }
+  .cards .sub .keep-toggle { margin: 13px 0; } /* its row is about 45px tall even when it wraps onto a line alone */
+}
