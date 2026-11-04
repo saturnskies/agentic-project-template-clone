@@ -28,6 +28,7 @@ Status: **current** = in force or in progress; **draft** = proposed, not approve
 ## docs/superpowers/plans/
 
 - [2026-11-02-swapsmith-v1.md](superpowers/plans/2026-11-02-swapsmith-v1.md) — current, 2026-11-02 — Swapsmith v1 build plan — eight test-gated vertical slices from skeleton and deploy to swap suggestions
+- [2026-11-04-phone-layout.md](superpowers/plans/2026-11-04-phone-layout.md) — draft, 2026-11-04 — Phone layout fixes from the 2026-11-04 UI critique, dark mode first — five test-gated slices (dark contrast, empty alert bug, touch targets, Cards|Suggestions switch, deck header)
 
 ## docs/superpowers/specs/
 
