@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { SAMPLES } from '../support/browse-samples';
-import { buildQuery, defaultFilters, defaultPrefs, loadPrefs, MAX_QUERY, PREFS_KEY, savePrefs, sortParams, SORTS, type Filters } from '../../src/lib/browse';
+import { allFormats, buildQuery, defaultFilters, defaultPrefs, legalityLabel, loadPrefs, MAX_QUERY, ownableId, PREFS_KEY, savePrefs, sortParams, SORTS, type Filters } from '../../src/lib/browse';
 
 const base: Filters = defaultFilters();
 const ok = (f: Partial<Filters>) => {
@@ -233,5 +233,54 @@ describe('preferences', () => {
 describe('the recorded sample searches', () => {
   it.each(SAMPLES.map((x) => [x.id, x] as const))('the form builds the sample query for %s', (_id, sample) => {
     expect(ok(sample.filters)).toBe(sample.q);
+  });
+});
+
+describe('legalityLabel', () => {
+  it('says each Commander status in words, with a tone that is never colour alone', () => {
+    expect(legalityLabel('legal')).toEqual({ text: 'Legal in Commander', tone: 'good' });
+    expect(legalityLabel('not_legal')).toEqual({ text: 'Not legal in Commander', tone: 'bad' });
+    expect(legalityLabel('banned')).toEqual({ text: 'Banned in Commander', tone: 'bad' });
+    expect(legalityLabel('restricted')).toEqual({ text: 'Restricted in Commander', tone: 'bad' });
+  });
+
+  it('says unknown when the status is missing or not one Scryfall documents', () => {
+    for (const odd of [undefined, '', 'maybe', 'LEGAL']) expect(legalityLabel(odd)).toEqual({ text: 'Commander legality unknown', tone: 'unknown' });
+  });
+});
+
+describe('allFormats', () => {
+  it('lists every format with a readable name and status, Commander first then A to Z', () => {
+    expect(allFormats({ vintage: 'restricted', commander: 'legal', pauper_commander: 'not_legal', oldschool: 'banned' })).toEqual([
+      { format: 'Commander', status: 'Legal' },
+      { format: 'Old School', status: 'Banned' },
+      { format: 'Pauper Commander', status: 'Not legal' },
+      { format: 'Vintage', status: 'Restricted' },
+    ]);
+  });
+
+  it('names the formats Scryfall spells without a separator the way people write them', () => {
+    const names = allFormats({ paupercommander: 'legal', standardbrawl: 'legal', competitivebrawl: 'legal', predh: 'legal', oldschool: 'legal', premodern: 'legal', timeless: 'legal' }).map((f) => f.format);
+    expect(names).toEqual(['Competitive Brawl', 'Old School', 'Pauper Commander', 'Pre-DH', 'Premodern', 'Standard Brawl', 'Timeless']);
+  });
+
+  it('skips missing values and unknown statuses instead of printing them', () => {
+    expect(allFormats({ commander: 'legal', modern: undefined, pioneer: 'weird' })).toEqual([{ format: 'Commander', status: 'Legal' }]);
+    expect(allFormats({})).toEqual([]);
+  });
+});
+
+describe('ownableId', () => {
+  const card = (extra: object) => ({ id: 'printing-1', name: 'X', set: 's', set_name: 'S', collector_number: '1', color_identity: [], legalities: {}, finishes: [], prices: { usd: null, usd_foil: null, usd_etched: null }, ...extra });
+
+  it('is the Oracle ID, from the card or from its first face', () => {
+    expect(ownableId(card({ oracle_id: 'o1' }))).toBe('o1');
+    expect(ownableId(card({ card_faces: [{ name: 'A', oracle_id: 'o2' }, { name: 'B' }] }))).toBe('o2');
+  });
+
+  it('is null when there is none, never the printing id, so the owned list cannot be polluted', () => {
+    expect(ownableId(card({}))).toBeNull();
+    expect(ownableId(card({ card_faces: [{ name: 'A' }] }))).toBeNull();
+    expect(ownableId(card({ oracle_id: '' }))).toBeNull();
   });
 });
