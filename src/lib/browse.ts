@@ -1,5 +1,7 @@
 /** Browse tab logic that needs no browser: turning the search form into a Scryfall query, and sorting. */
 
+export type ColorMode = 'within' | 'exactly' | 'includes';
+
 export interface Filters {
   /** Words that must all appear in the card name. */
   name: string;
@@ -7,14 +9,60 @@ export interface Filters {
   commanderLegal: boolean;
   /** Raw Scryfall syntax, ANDed with everything else. */
   advanced: string;
+  /** A set code such as "cmr". */
+  set: string;
+  /** Card type words, such as "legendary artifact". */
+  type: string;
+  /** One creature type, such as "elf". */
+  tribe: string;
+  /** One keyword, such as "flying" or "first strike". */
+  keyword: string;
+  /** A Scryfall query for a role (ramp, removal, token makers…), chosen from a list in the screen; empty for any. */
+  role: string;
+  /** Color identity letters W U B R G, or C alone for colorless. */
+  colors: string[];
+  colorMode: ColorMode;
+  /** Mana value bounds, as typed. */
+  mvMin: string;
+  mvMax: string;
+  /** Rarity names; see RARITIES. */
+  rarities: string[];
+  /** USD price bounds, as typed. */
+  priceMin: string;
+  priceMax: string;
 }
+
+export function defaultFilters(): Filters {
+  return { name: '', commanderLegal: true, advanced: '', set: '', type: '', tribe: '', keyword: '', role: '', colors: [], colorMode: 'within', mvMin: '', mvMax: '', rarities: [], priceMin: '', priceMax: '' };
+}
+
+/** The color toggles, in WUBRG order; colorless stands alone. */
+export const COLORS = [
+  { id: 'W', label: 'White' },
+  { id: 'U', label: 'Blue' },
+  { id: 'B', label: 'Black' },
+  { id: 'R', label: 'Red' },
+  { id: 'G', label: 'Green' },
+  { id: 'C', label: 'Colorless' },
+] as const;
+
+export const RARITIES = [
+  { id: 'common', code: 'c', label: 'Common' },
+  { id: 'uncommon', code: 'u', label: 'Uncommon' },
+  { id: 'rare', code: 'r', label: 'Rare' },
+  { id: 'mythic', code: 'm', label: 'Mythic' },
+] as const;
 
 /** Scryfall silently drops the end of a query past ~1,000 characters; we refuse to send more than this. */
 export const MAX_QUERY = 900;
 
-export type QueryResult = { ok: true; q: string } | { ok: false; field: 'advanced' | 'form'; error: string };
+/** Where an error belongs on the form. */
+export type Field = 'form' | 'advanced' | 'set' | 'type' | 'tribe' | 'keyword' | 'colors' | 'mv' | 'price';
+
+export type QueryResult = { ok: true; q: string } | { ok: false; field: Field; error: string };
 
 const quote = (word: string) => `"${word.replace(/[\\"]/g, '\\$&')}"`;
+const words = (text: string) => text.split(/\s+/).filter(Boolean);
 
 /** True when every "(" has its ")" once quoted text and /regex/ text are set aside. */
 function balanced(text: string): boolean {
@@ -33,16 +81,63 @@ function balanced(text: string): boolean {
   return depth === 0;
 }
 
+type Part = { terms: string[] } | { field: Field; error: string };
+const fail = (field: Field, error: string): Part => ({ field, error });
+
+/** A low and a high bound typed as text: both optional, each matching `shape`, the low one not above the high one. */
+function range(field: Field, lo: string, hi: string, shape: RegExp, what: string, term: string): Part {
+  const a = lo.trim();
+  const b = hi.trim();
+  for (const v of [a, b]) if (v && !shape.test(v)) return fail(field, what);
+  if (a && b && Number(a) > Number(b)) return fail(field, `The minimum is above the maximum.`);
+  return { terms: [...(a ? [`${term}>=${Number(a)}`] : []), ...(b ? [`${term}<=${Number(b)}`] : [])] };
+}
+
+function filterTerms(f: Filters): Part[] {
+  const out: Part[] = [];
+  const set = f.set.trim().toLowerCase();
+  if (set) out.push(/^[a-z0-9]{2,6}$/.test(set) ? { terms: [`set:${set}`] } : fail('set', 'A set code is 2 to 6 letters or digits, like cmr.'));
+
+  const type = words(f.type.toLowerCase());
+  if (type.length) out.push(type.every((w) => /^[a-z][a-z'-]*$/.test(w)) ? { terms: type.map((w) => `t:${w}`) } : fail('type', 'Type words use letters, hyphens and apostrophes only, like legendary artifact.'));
+
+  const tribe = f.tribe.trim().toLowerCase();
+  if (tribe) out.push(/^[a-z][a-z-]*$/.test(tribe) ? { terms: ['t:creature', `t:${tribe}`] } : fail('tribe', 'Give one creature type, letters and hyphens only, like elf.'));
+
+  const keyword = words(f.keyword.toLowerCase()).join(' ');
+  if (keyword) out.push(/^[a-z][a-z -]*$/.test(keyword) ? { terms: [`kw:${quote(keyword)}`] } : fail('keyword', 'Give one keyword, letters, spaces and hyphens only, like first strike.'));
+
+  if (f.role.trim()) out.push({ terms: [f.role.trim()] });
+
+  const colors = COLORS.filter((c) => f.colors.includes(c.id)).map((c) => c.id);
+  if (colors.length) {
+    if (colors.includes('C')) out.push(colors.length > 1 ? fail('colors', 'Colorless cannot be combined with colors.') : { terms: ['id=c'] });
+    else out.push({ terms: [`id${{ within: '<=', exactly: '=', includes: '>=' }[f.colorMode] ?? '<='}${colors.join('').toLowerCase()}`] });
+  }
+
+  out.push(range('mv', f.mvMin, f.mvMax, /^\d{1,2}$/, 'Mana value is a whole number from 0 to 99.', 'mv'));
+
+  const rarities = RARITIES.filter((r) => f.rarities.includes(r.id)).map((r) => `r:${r.code}`);
+  if (rarities.length) out.push({ terms: [rarities.length === 1 ? rarities[0] : `(${rarities.join(' or ')})`] });
+
+  out.push(range('price', f.priceMin, f.priceMax, /^\d+(\.\d{1,2})?$/, 'Price is dollars with up to two decimals, like 2.50.', 'usd'));
+  return out;
+}
+
 /** The Scryfall query for the form, or the reason it can't be sent. Nothing is ever truncated. */
 export function buildQuery(f: Filters): QueryResult {
   const advanced = f.advanced.trim();
-  if (advanced && !balanced(advanced)) {
-    return { ok: false, field: 'advanced', error: 'The advanced box has unbalanced parentheses. Close every ( with a ).' };
-  }
   const parts: string[] = [];
   if (f.commanderLegal) parts.push('legal:commander');
-  for (const word of f.name.split(/\s+/).filter(Boolean)) parts.push(`name:${quote(word)}`);
-  if (advanced) parts.push(`(${advanced})`);
+  for (const word of words(f.name)) parts.push(`name:${quote(word)}`);
+  for (const part of filterTerms(f)) {
+    if ('error' in part) return { ok: false, ...part };
+    parts.push(...part.terms);
+  }
+  if (advanced) {
+    if (!balanced(advanced)) return { ok: false, field: 'advanced', error: 'The advanced box has unbalanced parentheses. Close every ( with a ).' };
+    parts.push(`(${advanced})`);
+  }
   if (!parts.length) return { ok: false, field: 'form', error: 'Add at least one filter, or turn Commander-legal on.' };
   const q = parts.join(' ');
   if (q.length > MAX_QUERY) {
@@ -66,4 +161,66 @@ export const SORTS: Array<{ id: SortKey; label: string; order: string; descendin
 export function sortParams(id: SortKey, descending: boolean): { order: string; dir: 'asc' | 'desc' } {
   const s = SORTS.find((x) => x.id === id) ?? SORTS[0];
   return { order: s.order, dir: descending ? 'desc' : 'asc' };
+}
+
+export const PREFS_KEY = 'swapsmith:browse';
+
+/** What Browse remembers between visits: how results look and are ordered. Filters and results are not kept. */
+export interface BrowsePrefs {
+  version: 1;
+  view: 'grid' | 'list';
+  sort: SortKey;
+  descending: boolean;
+  commanderLegal: boolean;
+}
+
+export function defaultPrefs(): BrowsePrefs {
+  return { version: 1, view: 'grid', sort: 'popularity', descending: SORTS[0].descending, commanderLegal: true };
+}
+
+function sanitizePrefs(raw: Record<string, unknown>): BrowsePrefs {
+  const d = defaultPrefs();
+  return {
+    version: 1,
+    view: raw.view === 'grid' || raw.view === 'list' ? raw.view : d.view,
+    sort: SORTS.some((x) => x.id === raw.sort) ? (raw.sort as SortKey) : d.sort,
+    descending: typeof raw.descending === 'boolean' ? raw.descending : d.descending,
+    commanderLegal: typeof raw.commanderLegal === 'boolean' ? raw.commanderLegal : d.commanderLegal,
+  };
+}
+
+/**
+ * Reads the saved preferences under their own key, apart from the deck store. Bad data falls back to the
+ * defaults field by field. `future` means a newer version saved here, which must not be overwritten.
+ */
+export function loadPrefs(storage: Storage | null): { prefs: BrowsePrefs; future: boolean } {
+  const fresh = (future = false) => ({ prefs: defaultPrefs(), future });
+  let raw: string | null;
+  try {
+    raw = storage ? storage.getItem(PREFS_KEY) : null;
+  } catch {
+    return fresh();
+  }
+  if (raw == null) return fresh();
+  let data: unknown;
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    return fresh();
+  }
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return fresh();
+  const rec = data as Record<string, unknown>;
+  if (typeof rec.version === 'number' && rec.version > 1) return fresh(true);
+  return { prefs: sanitizePrefs(rec), future: false };
+}
+
+/** Saves the preferences; false when storage is missing, blocked or full. */
+export function savePrefs(storage: Storage | null, prefs: BrowsePrefs): boolean {
+  if (!storage) return false;
+  try {
+    storage.setItem(PREFS_KEY, JSON.stringify(prefs));
+    return true;
+  } catch {
+    return false;
+  }
 }
