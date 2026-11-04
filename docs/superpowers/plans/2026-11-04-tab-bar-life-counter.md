@@ -37,10 +37,17 @@ Builds the [tab bar and Life Counter spec](../specs/2026-11-04-tab-bar-life-coun
 - **Done 2026-11-04.** `npm run check`: 280 unit and 140 e2e tests pass. The Decks screen is kept as it was (not redrawn) when its route is unchanged, so a half-typed form and the scroll survive; `ctx.refresh`, `go` and `replace` force a redraw. The active tab's link points at its root and the others at the place they were left.
 
 ### 2. Setup, game screen, life, saved game
-- [ ] `lib/life.ts`: new game, change life, seating per player count, sanitize/serialize, `swapsmith:life` key. Unit tests including bad shapes, 7 players, string totals, `version: 2`.
-- [ ] Setup (players 1–6, starting life 20/30/40/custom, Start, Resume/New with confirm). Game screen with rotated tiles, tap ±1, hold ±10. Tab bar and header hidden on `#/life/game`; "Leave game" back to `#/life`.
-- [ ] Save after every change; reload on `#/life/game` resumes; no saved game redirects to `#/life`.
+- [x] `lib/life.ts`: new game, change life, seating per player count, sanitize/serialize, `swapsmith:life` key. Unit tests including bad shapes, 7 players, string totals, `version: 2`.
+- [x] Setup (players 1–6, starting life 20/30/40/custom, Start, Resume/New with confirm). Game screen with rotated tiles, tap ±1, hold ±10. Tab bar and header hidden on `#/life/game`; "Leave game" back to `#/life`.
+- [x] Save after every change; reload on `#/life/game` resumes; no saved game redirects to `#/life`.
 - **Failure paths:** storage blocked and full; invalid JSON copied to `:backup`; hold then release does not also tap; pointer leaving cancels the hold; two tiles changed at once.
+- **Done 2026-11-04.** `npm run check`: 321 unit and 178 e2e tests pass.
+  - The segmented control moved from `suggestions.ts` to `ui/controls.ts`, so there is one copy.
+  - The 8-swatch palette and its contrast test landed here, not in slice 4, because tiles need readable text now. Slice 4 adds the picker.
+  - A game menu dialog (Leave game, Close) exists already; slices 3 and 4 add Undo, Roll and the rest.
+  - The pointer-leave test fails with the `pointerleave` handler removed.
+  - The custom life field has no `maxlength`: it would cut "1000" to a valid "100" and hide the error.
+  - An out-of-range saved player count falls back to 4 instead of clamping.
 
 ### 3. Poison, commander damage, warnings, undo
 - [ ] Reducers for poison and commander damage (partners tracked separately), lethal checks at 0 / 10 / 21, undo with a 50-entry history. Unit tests at both sides of each threshold.
