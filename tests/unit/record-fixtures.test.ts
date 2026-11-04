@@ -256,9 +256,11 @@ describe.runIf(process.env.RECORD === '1')('record Browse fixtures', () => {
       const headers = { ...Object.fromEntries(new Headers(init?.headers)), 'User-Agent': 'Swapsmith-fixture-recorder/0.1' };
       const res = await fetch(input, { ...init, headers });
       const body = await res.clone().json();
-      map[requestKey(init?.method ?? 'GET', String(input), init?.body as string | undefined)] = { status: res.status, body: trim(body, { allLegalities: true }) };
+      map[requestKey(init?.method ?? 'GET', String(input), init?.body as string | undefined)] = { status: res.status, body: trim(body, { allLegalities: full }) };
       return res;
     };
+    // The card detail reads every format's legality; the big searches below only need Commander, which keeps the file small.
+    let full = true;
     const client = createClient({ fetch: recording, cache: memoryCache() });
     const crypt = 'legal:commander name:"crypt"';
     for (const s of SORTS) await searchCards(client, crypt, s.id, s.descending, 1);
@@ -271,6 +273,12 @@ describe.runIf(process.env.RECORD === '1')('record Browse fixtures', () => {
     await searchCards(client, `${crypt} (t:land)`, 'popularity', false, 1);
     // A 400 can't come from the form (it refuses unbalanced parentheses first), so it is recorded straight from the API.
     await searchCards(client, 'legal:commander (t:elf', 'popularity', false, 1).catch(() => undefined);
+    // A search with more than one page (187 matches: 175 then 12), and the same search sorted by price.
+    full = false;
+    const sol = 'legal:commander name:"sol"';
+    await searchCards(client, sol, 'popularity', false, 1);
+    await searchCards(client, sol, 'popularity', false, 2);
+    await searchCards(client, sol, 'price', true, 1);
     writeFileSync(new URL('../fixtures/scryfall-browse.json', import.meta.url), JSON.stringify(map));
     console.log(`recorded ${Object.keys(map).length} Browse requests`);
   }, 120_000);
