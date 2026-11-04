@@ -8,14 +8,36 @@ export const LIFE_PRESETS = [20, 30, 40] as const;
 export const DEFAULT_LIFE = 40;
 export const DEFAULT_PLAYERS = 4;
 
+export const POISON_LETHAL = 10;
+export const CMDR_LETHAL = 21;
+export const COUNTER_LIMIT = 99;
+export const HISTORY_LIMIT = 50;
+
 export interface Player {
   name: string;
   life: number;
+  poison: number;
+  /** This player's commander has a partner: opponents track damage from each separately. */
+  partners: boolean;
+  /** Commander damage this player has taken, by `${seat}:${slot}` of the dealing commander (slot 1 = the partner). Zero entries are absent. */
+  cmdr: Record<string, number>;
+}
+
+/** What a change touches: life, poison, or the damage taken from one commander. */
+export type Target = { kind: 'life' } | { kind: 'poison' } | { kind: 'cmdr'; from: number; slot: 0 | 1 };
+
+/** One undoable change: which counter of which player, and the value it had before. */
+export interface Change {
+  seat: number;
+  target: Target;
+  before: number;
 }
 
 export interface Game {
   startingLife: number;
   players: Player[];
+  /** The last changes, oldest first, at most HISTORY_LIMIT. */
+  history: Change[];
 }
 
 /** What the setup screen remembers for the next game. */
@@ -76,14 +98,104 @@ export function newGame(setup: Setup): Game {
   const n = clamp(Math.round(setup.players), 1, MAX_PLAYERS);
   return {
     startingLife: setup.startingLife,
-    players: Array.from({ length: n }, (_, i) => ({ name: cleanName(setup.names[i] ?? '', i), life: setup.startingLife })),
+    players: Array.from({ length: n }, (_, i) => ({ name: cleanName(setup.names[i] ?? '', i), life: setup.startingLife, poison: 0, partners: false, cmdr: {} })),
+    history: [],
   };
 }
 
-/** Returns a new game with one player's life changed by `delta`; an unknown player changes nothing. */
-export function changeLife(game: Game, index: number, delta: number): Game {
-  if (!game.players[index]) return game;
-  return { ...game, players: game.players.map((p, i) => (i === index ? { ...p, life: clamp(p.life + delta, -LIFE_LIMIT, LIFE_LIMIT) } : p)) };
+const key = (from: number, slot: number) => `${from}:${slot}`;
+const range = (t: Target): [number, number] => (t.kind === 'life' ? [-LIFE_LIMIT, LIFE_LIMIT] : [0, COUNTER_LIMIT]);
+
+function valueOf(p: Player, t: Target): number {
+  return t.kind === 'life' ? p.life : t.kind === 'poison' ? p.poison : (p.cmdr[key(t.from, t.slot)] ?? 0);
+}
+
+function withValue(p: Player, t: Target, v: number): Player {
+  if (t.kind === 'life') return { ...p, life: v };
+  if (t.kind === 'poison') return { ...p, poison: v };
+  const cmdr = { ...p.cmdr };
+  if (v === 0) delete cmdr[key(t.from, t.slot)];
+  else cmdr[key(t.from, t.slot)] = v;
+  return { ...p, cmdr };
+}
+
+/** Whether `t` names a counter this game has: a real opponent, and a partner only if that player has one. */
+function exists(game: Game, seat: number, t: Target): boolean {
+  if (!game.players[seat]) return false;
+  if (t.kind !== 'cmdr') return true;
+  const dealer = game.players[t.from];
+  return !!dealer && t.from !== seat && (t.slot === 0 || dealer.partners);
+}
+
+/** The current value of one counter (0 for one that doesn't exist). */
+export function counter(game: Game, seat: number, t: Target): number {
+  return exists(game, seat, t) ? valueOf(game.players[seat], t) : 0;
+}
+
+/**
+ * Returns a new game with one counter changed by `delta`, limited to its range, and the change remembered for undo.
+ * A change that doesn't change anything (already at the limit) or names a counter that doesn't exist returns the same game.
+ * Commander damage never changes life: players adjust life themselves.
+ */
+export function applyChange(game: Game, seat: number, t: Target, delta: number): Game {
+  if (!exists(game, seat, t)) return game;
+  const before = valueOf(game.players[seat], t);
+  const [lo, hi] = range(t);
+  const next = clamp(before + delta, lo, hi);
+  if (next === before) return game;
+  return {
+    ...game,
+    players: game.players.map((p, i) => (i === seat ? withValue(p, t, next) : p)),
+    history: [...game.history, { seat, target: t, before }].slice(-HISTORY_LIMIT),
+  };
+}
+
+/** Returns a new game with one player's life changed by `delta`. */
+export const changeLife = (game: Game, seat: number, delta: number): Game => applyChange(game, seat, { kind: 'life' }, delta);
+
+/** Takes back the most recent change by anyone; with nothing to take back returns the same game. */
+export function undo(game: Game): Game {
+  const last = game.history[game.history.length - 1];
+  if (!last) return game;
+  return { ...game, players: game.players.map((p, i) => (i === last.seat ? withValue(p, last.target, last.before) : p)), history: game.history.slice(0, -1) };
+}
+
+/** Marks a player's commander as having a partner or not. Turning it off drops the damage dealt by the partner, and its undo entries. */
+export function setPartners(game: Game, seat: number, on: boolean): Game {
+  if (!game.players[seat] || game.players[seat].partners === on) return game;
+  const gone = key(seat, 1);
+  const dropped = (t: Target) => !on && t.kind === 'cmdr' && t.from === seat && t.slot === 1;
+  return {
+    ...game,
+    players: game.players.map((p, i) => {
+      const own = i === seat ? { ...p, partners: on } : p;
+      if (on || !(gone in own.cmdr)) return own;
+      const cmdr = { ...own.cmdr };
+      delete cmdr[gone];
+      return { ...own, cmdr };
+    }),
+    history: game.history.filter((c) => !dropped(c.target)),
+  };
+}
+
+/** Starts the same game over: life back to the starting total, no poison or commander damage, no undo. Names and partners stay. */
+export function resetGame(game: Game): Game {
+  return { ...game, players: game.players.map((p) => ({ ...p, life: game.startingLife, poison: 0, cmdr: {} })), history: [] };
+}
+
+/** Why a player is in danger, if they are. Only a warning: nobody is ever eliminated automatically. */
+export function warnings(game: Game, seat: number): string[] {
+  const p = game.players[seat];
+  if (!p) return [];
+  const out: string[] = [];
+  if (p.life <= 0) out.push('Life 0 or below');
+  if (p.poison >= POISON_LETHAL) out.push(`Poison ${p.poison}`);
+  for (const [k, v] of Object.entries(p.cmdr)) {
+    if (v < CMDR_LETHAL) continue;
+    const [from, slot] = k.split(':').map(Number);
+    out.push(`Commander damage ${v} from ${game.players[from]?.name ?? 'a player'}${slot === 1 ? "'s partner" : ''}`);
+  }
+  return out;
 }
 
 /**
@@ -109,9 +221,41 @@ function sanitizeGame(raw: unknown): Game | null {
     if (!isObject(p) || typeof p.name !== 'string') return null;
     const life = whole(p.life, -LIFE_LIMIT, LIFE_LIMIT);
     if (life == null) return null;
-    players.push({ name: p.name.trim().slice(0, MAX_NAME) || `Player ${players.length + 1}`, life });
+    players.push({
+      name: p.name.trim().slice(0, MAX_NAME) || `Player ${players.length + 1}`,
+      life,
+      poison: whole(p.poison, 0, COUNTER_LIMIT) ?? 0,
+      partners: p.partners === true,
+      cmdr: {},
+    });
   }
-  return { startingLife: whole(raw.startingLife, 1, 999) ?? DEFAULT_LIFE, players };
+  // Commander damage can only come from another seat, and from a partner only if that seat has one.
+  raw.players.forEach((p, seat) => {
+    const cmdr = isObject(p) && isObject(p.cmdr) ? p.cmdr : {};
+    for (const [k, v] of Object.entries(cmdr)) {
+      const m = /^([0-5]):([01])$/.exec(k);
+      const n = whole(v, 0, COUNTER_LIMIT);
+      if (!m || n == null || n === 0) continue;
+      const from = Number(m[1]);
+      if (from === seat || !players[from] || (m[2] === '1' && !players[from].partners)) continue;
+      players[seat].cmdr[k] = n;
+    }
+  });
+  const game: Game = { startingLife: whole(raw.startingLife, 1, 999) ?? DEFAULT_LIFE, players, history: [] };
+  if (Array.isArray(raw.history)) {
+    for (const c of raw.history) {
+      const t = isObject(c) && isObject(c.target) ? c.target : null;
+      if (!t || !isObject(c)) continue;
+      const target: Target | null = t.kind === 'life' || t.kind === 'poison' ? { kind: t.kind } : t.kind === 'cmdr' && typeof t.from === 'number' && (t.slot === 0 || t.slot === 1) ? { kind: 'cmdr', from: t.from, slot: t.slot } : null;
+      const seat = whole(c.seat, 0, MAX_PLAYERS);
+      if (!target || seat == null || typeof c.before !== 'number' || !exists(game, seat, target)) continue;
+      const [lo, hi] = range(target);
+      const before = whole(c.before, lo, hi);
+      if (before != null) game.history.push({ seat, target, before });
+    }
+    game.history = game.history.slice(-HISTORY_LIMIT);
+  }
+  return game;
 }
 
 function sanitizeSetup(raw: unknown): Setup {
