@@ -17,9 +17,9 @@ import { estimateBracket, type PageFilter } from '../../src/lib/edhrec';
 import type { Deck } from '../../src/lib/deck';
 import { gameChangerCount } from '../../src/scryfall/names';
 import { searchCards } from '../../src/scryfall/browse';
-import { printings } from '../../src/scryfall/cards';
+import { cardsByOracleId, printings } from '../../src/scryfall/cards';
 import { SORTS } from '../../src/lib/browse';
-import { SAMPLES } from '../support/browse-samples';
+import { BASIC_SWAMP_QUERY, COMMANDER_TYPED, SAMPLES, SOLPHIM_TYPED } from '../support/browse-samples';
 
 /**
  * Re-records tests/fixtures/scryfall-e2e.json from the real Scryfall API by running the same flow the
@@ -288,6 +288,13 @@ describe.runIf(process.env.RECORD === '1')('record Browse fixtures', () => {
     for (const [q, cardName] of [[sol, 'Sol Ring'], [crypt, 'Crypt Ghast'], [crypt, "Agadeem's Awakening // Agadeem, the Undercrypt"]] as const) {
       const card = await pick(q, cardName);
       await printings(client, card.oracle_id ?? card.card_faces![0].oracle_id!);
+    }
+    // Add to deck…: basic lands to repeat, and the commanders New deck… finds and Add to deck… looks up (one lookup per commander, as the app asks).
+    await searchCards(client, BASIC_SWAMP_QUERY, 'popularity', false, 1);
+    await searchCommanders(client, SOLPHIM_TYPED);
+    for (const [typed, wanted] of [[COMMANDER_TYPED.green, 'Selvala, Heart of the Wilds'], [COMMANDER_TYPED.black, 'Edgar Markov']] as const) {
+      const found = (await searchCommanders(client, typed)).find((c) => c.name === wanted)!;
+      await cardsByOracleId(client, [found.oracle_id!]);
     }
     writeFileSync(new URL('../fixtures/scryfall-browse.json', import.meta.url), JSON.stringify(map));
     console.log(`recorded ${Object.keys(map).length} Browse requests`);
