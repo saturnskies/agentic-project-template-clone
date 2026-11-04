@@ -11,6 +11,21 @@ export const CORE_ROLES: Array<{ label: string; query: string }> = [
   { label: 'board wipe', query: 'otag:board-wipe' },
 ];
 
+/**
+ * Roles the rules-based pool searches for: the core four plus more Tagger tags, each checked on
+ * Scryfall on 2026-11-04 (there is no `otag:token-generator`; token makers come from the tokens
+ * theme). Deck role lookups stay on CORE_ROLES, the jobs swaps match on.
+ */
+export const POOL_ROLES: Array<{ label: string; query: string }> = [
+  ...CORE_ROLES,
+  { label: 'tutor', query: 'otag:tutor' },
+  { label: 'recursion', query: 'otag:recursion' },
+  { label: 'protection', query: 'otag:protection' },
+  { label: 'counterspell', query: 'otag:counterspell' },
+  { label: 'mana rock', query: 'otag:mana-rock' },
+  { label: 'sacrifice outlet', query: 'otag:sacrifice-outlet' },
+];
+
 // Role queries are batched for the longest tag, so every role searches the same groups of names.
 const LONGEST_ROLE = CORE_ROLES.reduce((a, r) => (r.query.length > a.length ? r.query : a), '');
 
