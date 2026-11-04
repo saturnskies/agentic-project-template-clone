@@ -65,7 +65,7 @@ test('when EDHREC has no page for the commander, upgrades fall back to card rule
 
   const panel = page.getByRole('complementary', { name: 'Suggestions' });
   await expect(panel).toContainText('EDHREC has no decks for Edgar Markov, so these come from card rules, not real decks.');
-  await expect(panel.getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem').first()).toContainText('Indulgent Aristocrat');
+  await expect(panel.getByRole('list', { name: 'Creatures upgrades' }).getByRole('listitem').first()).toContainText('Woe Strider');
   expect(misses).toEqual([]);
 });
 
@@ -78,7 +78,7 @@ test("when EDHREC doesn't answer, upgrades fall back to card rules and say so", 
 
   const panel = page.getByRole('complementary', { name: 'Suggestions' });
   await expect(panel).toContainText("EDHREC didn't answer, so these come from card rules", { timeout: 30_000 });
-  await expect(panel.getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem').first()).toContainText('Indulgent Aristocrat');
+  await expect(panel.getByRole('list', { name: 'Creatures upgrades' }).getByRole('listitem').first()).toContainText('Woe Strider');
 });
 
 async function findSuggestions(page: import('@playwright/test').Page, timeout = 15_000) {
@@ -297,4 +297,18 @@ test('if the role lookups fail, swaps match cards by type and say matching is ap
   const pairs = panel.getByRole('list', { name: 'Swap pairs' }).getByRole('listitem');
   await expect(pairs.first()).toBeVisible();
   for (const text of await pairs.allTextContents()) expect(text).toMatch(/Both (creatures|instants|sorceries|artifacts|enchantments|planeswalkers|lands|battles)\./);
+});
+
+test("when EDHREC has nothing and Scryfall's searches all fail, a message says so", async ({ page }) => {
+  // The client retries each failed search with backoff before giving up.
+  test.setTimeout(150_000);
+  await mockScryfall(page, edgarFull);
+  await page.route(/api\.scryfall\.com\/cards\/search\?q=f%3Acommander[^&]*prefer%3Ausd-low/, (route) => route.abort());
+  const deck = await seedEdgarDeck(page);
+  await page.goto(`./#/deck/${deck.id}`);
+  await page.getByRole('button', { name: 'Find suggestions' }).click();
+  const panel = page.getByRole('complementary', { name: 'Suggestions' });
+  await expect(panel).toContainText('EDHREC has no decks for Edgar Markov, so these come from card rules, not real decks.');
+  await expect(panel).toContainText("Couldn't reach Scryfall. Check your connection and try again.", { timeout: 120_000 });
+  await expect(page.getByRole('button', { name: 'Refresh suggestions' })).toBeEnabled();
 });
