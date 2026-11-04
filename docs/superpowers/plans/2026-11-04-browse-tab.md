@@ -116,6 +116,15 @@ No other subagents. Docs-only commits get no review.
 - Mutation checks, each proved by removing the guard and watching the test fail: the stale-search run guard, the Load more run guard, the Decks stale flag, the duplicate check, the double-click guard, the 900-character limit.
 - Not verifiable in this sandbox, stated in the PR: the Android back gesture with the detail open, and the feel of the grid on a real phone.
 
+## Review at /go (2026-11-04, tier Normal)
+
+One review agent (sonnet, high) and an inline simplify pass. No critical findings; one important, fixed with a test that failed first:
+
+- **Important, fixed.** A deck screen still pricing on the Decks tab saved its old copy of the deck over a card Browse had just added. `deckView.ts` now remembers the `updatedAt` it last saw and skips a save when the stored deck has moved on; the app redraws the screen from the store on return. Test: `browse-decks.spec.ts` "a pricing run still going…" (fails with the guard removed).
+- **Minor, fixed (each with a test that failed first):** warnings are shown when a new deck is created too; a failed search puts the earlier query back, so a sort change sorts what is on screen; a role query with an `or` is wrapped; the mana value and price pairs are named groups; a field with a problem is `aria-invalid` and tied to its message; the owned toggle has no `aria-pressed` on top of its changing label. The sort captured at request time rather than reply time (no visible effect today, defensive).
+- **Checked, no change.** The reviewer could not tell whether `order:` or `unique:` in the advanced box overrides the sort and one-printing parameters. Checked live: inside the box's parentheses those terms return no cards ("No cards match"); they do not override. A 400 is blamed on the advanced box whenever it has text, even when a built term caused it (the form's own terms are validated first, so a 400 from them is not expected).
+- **Lessons** went to `.claude/rules/` (ui-state, external-tools, testing) and `docs/template-sync.md`.
+
 ## Follow-ups (not built)
 
 A route per card (`#/browse/card/<id>`); saved searches; searching by set name; Browse preferences in deck backup and restore.
