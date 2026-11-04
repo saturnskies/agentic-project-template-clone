@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { composite, contrastRatio, effectiveBackground, parseColor } from '../support/contrast';
-import { edgarFull, mockScryfall, seedEdgarDeck } from './helpers';
+import { edgarFull, mockScryfall, seedEdgarDeck, showPane } from './helpers';
 
 // Phone layout fixes (docs/superpowers/plans/2026-11-04-phone-layout.md). These check what the page
 // really renders, in both colour schemes. They never assert prices: re-recording fixtures moves them.
@@ -75,6 +75,7 @@ for (const scheme of ['light', 'dark'] as const) {
 
     test('"Save $x" on a cheaper replacement is readable', async ({ page }) => {
       await openDeck(page);
+      await showPane(page, 'Suggestions');
       await page.getByRole('button', { name: 'Find suggestions' }).click();
       const panel = page.getByRole('complementary', { name: 'Suggestions' });
       await panel.getByRole('button', { name: 'Cheaper' }).click();
@@ -182,9 +183,11 @@ test.describe('touch targets', () => {
 
   test('every control in the card list has a 44px target of its own', async ({ page }) => {
     await openDeck(page);
+    expect(await missedTaps(page), 'card list').toEqual([]);
+    await showPane(page, 'Suggestions');
     await page.getByRole('button', { name: 'Find suggestions' }).click();
     await expect(page.getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem').first()).toBeVisible();
-    expect(await missedTaps(page)).toEqual([]);
+    expect(await missedTaps(page), 'suggestions').toEqual([]);
   });
 
   test('every control in the card grid has a 44px target of its own', async ({ page }) => {
@@ -210,6 +213,123 @@ test.describe('touch targets', () => {
     await page.getByRole('button', { name: 'Grid' }).click();
     await expect(page.locator('.card-tile').first()).toBeVisible();
     expect(await height(), 'grid view').toBeLessThanOrEqual(19_000);
+  });
+});
+
+// ---- Cards | Suggestions switch (slice 4) -----------------------------------------------------
+// Below 70rem the card list and the suggestions panel share the screen: a bar at the bottom switches
+// between them, so suggestions are one tap away instead of a 100-row scroll.
+
+const paneBar = (page: Page) => page.getByRole('group', { name: 'Show' });
+const suggestionsPanel = (page: Page) => page.getByRole('complementary', { name: 'Suggestions' });
+
+async function findSuggestions(page: Page) {
+  await showPane(page, 'Suggestions');
+  await suggestionsPanel(page).getByRole('button', { name: 'Find suggestions' }).click();
+  await expect(suggestionsPanel(page).getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem').first()).toBeVisible();
+}
+
+test.describe('Cards | Suggestions switch', () => {
+  test('suggestions are one tap away from the top of a 100-card list', async ({ page }) => {
+    await openDeck(page);
+    const bar = paneBar(page);
+    await expect(bar).toBeInViewport();
+    await expect(bar.getByRole('button', { name: 'Cards', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('table.cards')).toBeVisible();
+
+    await showPane(page, 'Suggestions');
+    await expect(bar.getByRole('button', { name: 'Suggestions', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('table.cards')).toBeHidden();
+    await expect(suggestionsPanel(page).getByRole('button', { name: 'Find suggestions' })).toBeInViewport();
+  });
+
+  test('the bar stays on screen while you scroll the list', async ({ page }) => {
+    await openDeck(page);
+    await page.evaluate(() => window.scrollTo(0, 4000));
+    await expect(paneBar(page)).toBeInViewport();
+  });
+
+  test('Cards brings the list back where you were', async ({ page }) => {
+    await openDeck(page);
+    await page.evaluate(() => window.scrollTo(0, 3000));
+    const before = await page.evaluate(() => window.scrollY);
+    expect(before).toBeGreaterThan(2000);
+    await showPane(page, 'Suggestions');
+    await showPane(page, 'Cards');
+    await expect.poll(() => page.evaluate((y) => Math.abs(window.scrollY - y), before)).toBeLessThanOrEqual(2);
+  });
+
+  test('a card added from suggestions is in the list when you switch back', async ({ page }) => {
+    await openDeck(page);
+    await findSuggestions(page);
+    await suggestionsPanel(page).getByRole('button', { name: 'Add Indulgent Aristocrat' }).click();
+    await expect(page.getByTestId('deck-count')).toHaveText('101 / 100 cards');
+    await showPane(page, 'Cards');
+    await expect(page.getByTestId('deck-count')).toHaveText('101 / 100 cards');
+    await expect(page.locator('table.cards').getByRole('link', { name: 'Indulgent Aristocrat' })).toHaveCount(1);
+  });
+
+  test('a change made in the list updates suggestions while they are hidden', async ({ page }) => {
+    await openDeck(page);
+    await findSuggestions(page);
+    await suggestionsPanel(page).getByRole('button', { name: 'Cheaper' }).click();
+    await expect(suggestionsPanel(page).getByRole('region', { name: 'Cheaper than Minas Tirith' })).toBeVisible();
+
+    await showPane(page, 'Cards');
+    await page.getByRole('checkbox', { name: 'Own Minas Tirith' }).check();
+    await showPane(page, 'Suggestions');
+    await expect(suggestionsPanel(page).getByRole('region', { name: 'Cheaper than Minas Tirith' })).toHaveCount(0);
+  });
+
+  test('Undo is still offered after you leave suggestions and come back', async ({ page }) => {
+    await openDeck(page);
+    await findSuggestions(page);
+    await suggestionsPanel(page).getByRole('button', { name: 'Cheaper' }).click();
+    await suggestionsPanel(page).getByRole('button', { name: 'Swap Minas Tirith for Buried Ruin' }).click();
+    await expect(suggestionsPanel(page).getByText('Swapped Minas Tirith → Buried Ruin.')).toBeVisible();
+
+    await showPane(page, 'Cards');
+    await showPane(page, 'Suggestions');
+    await suggestionsPanel(page).getByRole('button', { name: 'Undo' }).click();
+    await expect(suggestionsPanel(page).getByText('Swapped Minas Tirith')).toHaveCount(0);
+    await expect(suggestionsPanel(page).getByRole('region', { name: 'Cheaper than Minas Tirith' })).toBeVisible();
+  });
+
+  test('leaving while a search runs does not lose it', async ({ page }) => {
+    await openDeck(page);
+    await showPane(page, 'Suggestions');
+    await suggestionsPanel(page).getByRole('button', { name: 'Find suggestions' }).click();
+    await showPane(page, 'Cards');
+    await showPane(page, 'Suggestions');
+    await expect(suggestionsPanel(page)).toContainText(/Searching Scryfall|Budget/);
+    await expect(suggestionsPanel(page).getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem').first()).toBeVisible();
+  });
+
+  test('switching panes does not touch the history, so Back still leaves the deck', async ({ page }) => {
+    await openDeck(page);
+    const before = await page.evaluate(() => ({ length: history.length, hash: location.hash }));
+    await showPane(page, 'Suggestions');
+    await showPane(page, 'Cards');
+    expect(await page.evaluate(() => ({ length: history.length, hash: location.hash }))).toEqual(before);
+  });
+
+  test('the switch keeps keyboard focus on the button you pressed', async ({ page }) => {
+    await openDeck(page);
+    await showPane(page, 'Suggestions');
+    await expect(paneBar(page).getByRole('button', { name: 'Suggestions', exact: true })).toBeFocused();
+  });
+
+  test('a wide screen shows both side by side with no switch, and narrowing keeps your pane', async ({ page }) => {
+    await openDeck(page);
+    await showPane(page, 'Suggestions');
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await expect(paneBar(page)).toBeHidden();
+    await expect(page.locator('table.cards')).toBeVisible();
+    await expect(suggestionsPanel(page)).toBeVisible();
+    await page.setViewportSize({ width: 412, height: 839 });
+    await expect(paneBar(page)).toBeVisible();
+    await expect(suggestionsPanel(page)).toBeVisible();
+    await expect(page.locator('table.cards')).toBeHidden();
   });
 });
 
