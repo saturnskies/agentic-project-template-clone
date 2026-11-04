@@ -1,18 +1,9 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+import { begin, life, minus, plus, start } from './life-helpers';
 
 test.beforeEach(async ({ page }) => {
   await page.route('https://api.scryfall.com/**', (route) => route.abort());
 });
-
-const start = async (page: Page, opts: { players?: number; life?: number | 'custom' } = {}) => {
-  await page.goto('./#/life');
-  if (opts.players) await page.getByRole('group', { name: 'Players' }).getByRole('button', { name: String(opts.players), exact: true }).click();
-  if (opts.life) await page.getByRole('group', { name: 'Starting life' }).getByRole('button', { name: String(opts.life === 'custom' ? 'Custom' : opts.life), exact: true }).click();
-};
-const begin = (page: Page) => page.getByRole('button', { name: /^(Start game|New game)$/ }).click();
-const life = (page: Page, seat: number) => page.locator(`.tile[data-player="${seat}"] .tile-life`);
-const minus = (page: Page, name: string) => page.getByRole('button', { name: `${name}: lose 1 life` });
-const plus = (page: Page, name: string) => page.getByRole('button', { name: `${name}: gain 1 life` });
 
 test('starts a game from the setup: players, starting life, and a full-screen table', async ({ page }) => {
   await start(page);
