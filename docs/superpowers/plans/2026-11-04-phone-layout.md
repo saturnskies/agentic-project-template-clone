@@ -50,12 +50,13 @@ Source: the impeccable critique of 2026-11-04, checked by rendering the app at P
 - [x] Failing tests first. In `phone-layout.spec.ts`, for dark and light: link text, `.save`, a pressed `.keep-toggle`, the logo's `span`, and the focus ring colour each reach their threshold against their real background (4.5:1 text, 3:1 ring and large text); a focused text input's border reaches 3:1.
 - [x] `src/style.css`: add `--accent-text` and `--field-line` (both schemes). Use `--accent-text` in `a`, the focus rule (`a`, `button`, `input`, plus `textarea`, `select`, `summary`, `[tabindex]`), `.site-header h1 span`, `.link-button:hover`, `.keep-toggle[aria-pressed="true"]`, `.save`. Use `--field-line` on `input[type=text]`, `textarea`, `select`. Leave fills on `--accent`.
 - [x] `index.html`: two `theme-color` metas with `media="(prefers-color-scheme: …)"` matching header surface colours. Check that `public/manifest.webmanifest` `theme_color` still agrees.
-- [ ] (Not done: only the deck, suggestions and paste screens are covered by tests; home, new deck and the picker dialog still need a look.) Check dark mode on every screen the e2e fixtures reach (home, new deck, paste, deck, picker dialog, suggestions) at phone width, plus the picker `dialog::backdrop`.
+- [x] Check dark mode on every screen the e2e fixtures reach (home, new deck, paste, deck, picker dialog, suggestions) at phone width, plus the picker `dialog::backdrop`.
 - Failure paths: a colour that cannot be parsed (transparent, `color-mix`) makes the test fail loudly, never pass; the test must prove it fails on the old CSS before trusting it.
 
 ### 2. Empty alert box on Home
-- [ ] Failing test first: on Home with no backup message, no element with `role="alert"` is visible (`toBeHidden` after the page settles).
-- [ ] `src/style.css`: `.notice:empty { display: none; }`. Check other `.notice` and `.banner` users for the same bug while in there.
+- [x] Failing test first: on Home with no backup message, no element with `role="alert"` is visible (`toBeHidden` after the page settles).
+- [x] `src/style.css`: `.notice:empty { display: none; }`. Check other `.notice` and `.banner` users for the same bug while in there.
+- [x] Added with it, from the dark-mode screenshots: a disabled button is restyled (muted label on the tag surface) instead of faded to half opacity, which left its label at about 3:1.
 
 ### 3. Touch targets (44px hit areas)
 - [ ] Failing test first, `phone` project, both schemes: for the remove button, Keep chip, Owned checkbox, `.button.small`, `.segment`, and the sort headers, a 44×44px square centred on the control resolves (`elementFromPoint` at its four corners and centre) to that control or its own label. Also assert no two adjacent controls claim the same point.
