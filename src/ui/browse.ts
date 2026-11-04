@@ -14,10 +14,6 @@ import { combobox } from './combobox';
 import { segmented } from './controls';
 import { h, usd } from './dom';
 
-/**
- * The Browse tab: search every card with a few filters and look through the results. The container stays
- * mounted while another tab shows, so the text, results and scroll survive a visit elsewhere.
- */
 const cap = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
 
 /** The role choices: the roles suggestions search for, plus token makers (there is no Tagger tag for them). */
@@ -26,6 +22,10 @@ const ROLES: Array<{ label: string; query: string }> = [
   { label: 'Token maker', query: THEMES.find((t) => t.id === 'tokens')!.query },
 ];
 
+/**
+ * The Browse tab: search every card with a few filters and look through the results. The container stays
+ * mounted while another tab shows, so the text, results and scroll survive a visit elsewhere.
+ */
 export function renderBrowse(view: HTMLElement, ctx: AppContext, storage: Storage | null): void {
   const loaded = loadPrefs(storage);
   let sort: SortKey = loaded.prefs.sort;
@@ -49,7 +49,7 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext, storage: Storag
   const name = h('input', { id: 'browse-name', type: 'text', autocomplete: 'off', placeholder: 'e.g. sol ring' });
   const legal = h('input', { id: 'browse-legal', type: 'checkbox', checked: loaded.prefs.commanderLegal });
   const advanced = h('input', { id: 'browse-advanced', type: 'text', autocomplete: 'off', placeholder: 'e.g. t:elf mv<=2' });
-  const advancedError = h('p', { class: 'field-error', role: 'alert', hidden: true });
+  const advancedError = h('p', { id: 'browse-advanced-error', class: 'field-error', role: 'alert', hidden: true });
   const formError = h('p', { class: 'field-error', role: 'alert', hidden: true });
   const hint = h('p', { class: 'muted' }, 'Pick some filters and press Search. With no filters it lists the most popular Commander-legal cards.');
   const query = h('p', { class: 'muted small', hidden: true }, 'Searching: ', h('code', { 'data-testid': 'query' }));
@@ -78,11 +78,16 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext, storage: Storag
   const colorBoxes = COLORS.map((c) => ({ id: c.id, box: h('input', { type: 'checkbox', id: `browse-color-${c.id}` }), label: c.label }));
   const rarityBoxes = RARITIES.map((r) => ({ id: r.id, box: h('input', { type: 'checkbox', id: `browse-rarity-${r.id}` }), label: r.label }));
   const colorModeBox = h('span');
-  const filterError = h('p', { class: 'field-error', role: 'alert', hidden: true });
+  const filterError = h('p', { id: 'browse-filter-error', class: 'field-error', role: 'alert', hidden: true });
   const checks = (legend: string, items: Array<{ box: HTMLInputElement; label: string }>) =>
     h('fieldset', { class: 'checks' }, h('legend', {}, legend), ...items.map((i) => h('label', { class: 'own-label', for: i.box.id }, i.box, i.label)));
   const range = (label: string, lo: HTMLInputElement, hi: HTMLInputElement, loLabel: string, hiLabel: string) =>
-    h('div', { class: 'field' }, h('span', { class: 'label-text' }, label), h('div', { class: 'range' }, h('label', { class: 'sr-only', for: lo.id }, loLabel), lo, h('span', { 'aria-hidden': 'true' }, 'to'), h('label', { class: 'sr-only', for: hi.id }, hiLabel), hi));
+    h(
+      'div',
+      { class: 'field' },
+      h('span', { id: `${lo.id}-label`, class: 'label-text' }, label),
+      h('div', { class: 'range', role: 'group', 'aria-labelledby': `${lo.id}-label` }, h('label', { class: 'sr-only', for: lo.id }, loLabel), lo, h('span', { 'aria-hidden': 'true' }, 'to'), h('label', { class: 'sr-only', for: hi.id }, hiLabel), hi),
+    );
   const filters = h(
     'details',
     { class: 'more-filters' },
@@ -103,8 +108,15 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext, storage: Storag
     filterError,
   );
 
+  // Each field's message is tied to its inputs, and the inputs at fault are marked invalid while it shows.
+  advanced.setAttribute('aria-describedby', 'browse-advanced-error');
+  for (const input of [setInput, typeInput, tribeInput, keywordInput, mvMin, mvMax, priceMin, priceMax]) input.setAttribute('aria-describedby', 'browse-filter-error');
+  const atFault: Partial<Record<Field, HTMLElement[]>> = { advanced: [advanced], set: [setInput], type: [typeInput], tribe: [tribeInput], keyword: [keywordInput], mv: [mvMin, mvMax], price: [priceMin, priceMax], colors: colorBoxes.map((c) => c.box) };
+
   /** Shows one error where it belongs, opening the extra filters if that is where it is, and hides the rest. */
   const setError = (field: Field | null, message = '') => {
+    for (const input of Object.values(atFault).flat()) input!.removeAttribute('aria-invalid');
+    if (field) for (const input of atFault[field] ?? []) input.setAttribute('aria-invalid', 'true');
     const home = field === null ? null : field === 'advanced' ? advancedError : field === 'form' ? formError : filterError;
     for (const el of [advancedError, formError, filterError]) {
       el.hidden = el !== home;
@@ -296,7 +308,6 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext, storage: Storag
     const drawOwn = () => {
       const on = ownedNow(card);
       ownButton.textContent = on ? 'Owned' : 'Mark as owned';
-      ownButton.setAttribute('aria-pressed', String(on));
       ownButton.toggleAttribute('disabled', oid == null);
     };
     drawOwn();
@@ -410,14 +421,17 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext, storage: Storag
     createBtn.addEventListener('click', () => {
       if (added || !commander) return;
       let deck = buildDeck(nameInput.value, [], commander);
+      let said: string[] = [];
       // The card is the commander (picked, or by the shortcut): it is not also a main-deck card.
       if (oracleIdOf(commander) !== oracleIdOf(card)) {
-        const blocked = checkAdd(deck, card, commander.color_identity).blocked;
-        if (blocked) return void notes.replaceChildren(h('p', {}, blocked));
+        const result = checkAdd(deck, card, commander.color_identity);
+        if (result.blocked) return void notes.replaceChildren(h('p', {}, result.blocked));
+        said = result.notes;
         deck = addCardToDeck(deck, card);
       }
       ctx.saveDeck(deck);
       added = true;
+      notes.replaceChildren(...said.map((t) => h('p', {}, t)));
       showDone(deck);
       sync();
     });
@@ -489,11 +503,11 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext, storage: Storag
     count.textContent = shown && results.children.length ? `Showing ${num(results.children.length)} of ${num(shown.total)} cards` : 'No cards match.';
   }
 
-  function show(page: SearchPage, q: string) {
+  function show(page: SearchPage, q: string, used: { sort: SortKey; descending: boolean }) {
     hint.hidden = true;
     cards = page.cards;
     drawResults();
-    shown = { q, sort, descending, page: 1, hasMore: page.hasMore, total: page.total };
+    shown = { q, sort: used.sort, descending: used.descending, page: 1, hasMore: page.hasMore, total: page.total };
     drawCount();
     ignored.hidden = !page.warnings.length;
     ignored.replaceChildren(...(page.warnings.length ? ['Scryfall ignored part of this search, so these cards may not match it: ', page.warnings.join(' ')] : []));
@@ -504,6 +518,9 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext, storage: Storag
     if (key === waiting) return;
     const mine = ++run;
     waiting = key;
+    // What this search asked with; a failure puts the earlier search's query back, so a sort change still sorts what is on screen.
+    const used = { sort, descending };
+    const previous = lastQuery;
     lastQuery = q;
     // This search owns the screen now: a page still on its way for the older one will be dropped.
     searching = true;
@@ -515,10 +532,13 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext, storage: Storag
     count.textContent = 'Searching…';
     try {
       const page = await searchCards(ctx.client, q, sort, descending, 1);
-      if (mine === run) show(page, q);
+      if (mine === run) show(page, q, used);
     } catch (e) {
       if (mine !== run) return;
       // The earlier results stay: one failed search shouldn't throw away what is on screen.
+      lastQuery = previous;
+      query.hidden = previous == null;
+      query.querySelector('code')!.textContent = previous ?? '';
       const bad = e instanceof ScryfallError && e.status === 400;
       setError(bad && advanced.value.trim() ? 'advanced' : 'form', bad ? e.message : "Couldn't search Scryfall. Press Search to try again.");
       count.textContent = results.children.length ? `Showing ${num(results.children.length)} cards from the earlier search.` : '';
