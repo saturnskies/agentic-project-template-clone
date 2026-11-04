@@ -97,7 +97,7 @@ export function startApp(root: HTMLElement): void {
   root.replaceChildren(...(banner ? [banner] : []), ...Object.values(views));
   const bar = createTabBar();
   document.body.append(bar.el);
-  renderBrowse(views.browse, ctx);
+  renderBrowse(views.browse, ctx, storage);
   const life = createLife(storage);
 
   /** Where each tab was left (its last route and window scroll), for coming back to it. */
