@@ -2,8 +2,9 @@ import { Capacitor } from '@capacitor/core';
 import { backTarget } from '../lib/nav';
 
 /**
- * Inside the Android app, the system back gesture (swipe from the screen edge) or button goes to
- * "Your decks" from any other screen, and leaves the app only from there. Browsers keep their own back.
+ * Inside the Android app, the system back gesture (swipe from the screen edge) or button follows
+ * `backTarget`: out of a life-counter game to its setup, then to "Your decks" from any other screen,
+ * and out of the app only from there. Browsers keep their own back.
  */
 export async function installNativeBack(): Promise<void> {
   if (!Capacitor.isNativePlatform()) return;
