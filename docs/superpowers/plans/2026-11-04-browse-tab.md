@@ -59,12 +59,21 @@ No other subagents. Docs-only commits get no review.
 
 
 ### 3. Every filter, list view, preferences
-- [ ] `buildQuery` for set (code), type, tribe, keyword, role (`POOL_ROLES` plus the `tokens` theme query), color identity (within / exactly / includes, Colorless), mana value range, rarity set, price range. Unit tests at both sides of each bound, and the escaped forms.
-- [ ] Inline validation before any request: set code shape, tribe and keyword characters, min above max (mana value and price), non-numeric or negative values, price with more than two decimals. Reset clears filters, not preferences.
-- [ ] List view and the grid/list toggle; the price-filter note ("cards with no USD price are left out").
-- [ ] Preferences (`view`, `sort`, `descending`, `commanderLegal`) saved under `swapsmith:browse` with a sanitizer: wrong shapes → defaults, unknown future `version` left alone. Unit-tested like `life.ts`.
-- [ ] E2E: each filter changes the "Searching:" line and the request (asserted on the recorded key); list view shows mana cost, type line and rarity; preferences survive a reload; the form (many controls) is usable at 390 px with no horizontal scroll.
+- [x] `buildQuery` for set (code), type, tribe, keyword, role (`POOL_ROLES` plus the `tokens` theme query), color identity (within / exactly / includes, Colorless), mana value range, rarity set, price range. Unit tests at both sides of each bound, and the escaped forms.
+- [x] Inline validation before any request: set code shape, tribe and keyword characters, min above max (mana value and price), non-numeric or negative values, price with more than two decimals. Reset clears filters, not preferences.
+- [x] List view and the grid/list toggle; the price-filter note ("cards with no USD price are left out").
+- [x] Preferences (`view`, `sort`, `descending`, `commanderLegal`) saved under `swapsmith:browse` with a sanitizer: wrong shapes → defaults, unknown future `version` left alone. Unit-tested like `life.ts`.
+- [x] E2E: each filter changes the "Searching:" line and the request (asserted on the recorded key); list view shows mana cost, type line and rarity; preferences survive a reload; the form (many controls) is usable at 390 px with no horizontal scroll.
 - **Failure paths:** every invalid input blocks Search with a message and sends nothing (test each); the combined query over 900 characters from filters plus advanced; storage blocked or full → works, nothing saved; invalid JSON in `swapsmith:browse` → defaults (and `swapsmith:v1` untouched; a test asserts the deck store key is never written by Browse preferences); `or` in advanced with the toggles still applied.
+- **Done 2026-11-04.** `npm run check`: 419 unit (12 live ones skipped) and 350 e2e tests pass. New: 44 query and preference unit tests, 35 filter e2e tests, and 13 real sample searches (`tests/support/browse-samples.ts`) shared by the unit test, the recorder, the live test and the e2e tests.
+  - The extra filters sit in a collapsible "More filters" section (closed by default); the advanced box and Commander-legal stay outside it. An error in a filter opens the section.
+  - The form reports the first error in form order, one at a time.
+  - Colorless is its own choice: picking it clears the colors and picking a color clears it, so "colorless plus a color" can only come from the builder (unit-tested).
+  - Browse preferences (`view`, `sort`, `descending`, `commanderLegal`) live under `swapsmith:browse`, loaded by `loadPrefs` (bad data repaired field by field, a newer version left alone and never overwritten); the e2e tests assert `swapsmith:v1` is byte-for-byte unchanged.
+  - The live test (`SCRYFALL_LIVE=1`) sends all 13 sample queries to Scryfall and fails on any ignored-term warning or empty result.
+  - Mutation checks, each failing its test: set-code validation off; the error not reopening the filters (8 tests); the newer-version guard off; `savePrefs` letting a full storage throw (the sort change then skips its re-search); Reset also resetting Commander-legal; colorless not exclusive.
+  - Role query for token makers is the `tokens` theme query; there is no Tagger tag for it.
+
 
 ### 4. Card detail, Mark as owned, Decks stays in step
 - [ ] Detail `<dialog>`: image with Flip for double-faced cards, name, mana cost, type line, rules text for every face, Commander legality (text plus color) and an "All formats" disclosure, price with **Buy on TCGplayer**. The cheapest printing loads through `printings()`; if that fails the result's own price shows.
