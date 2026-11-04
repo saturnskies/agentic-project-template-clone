@@ -1,12 +1,12 @@
-import { buildQuery, COLORS, defaultFilters, loadPrefs, RARITIES, savePrefs, SORTS, type ColorMode, type Field, type Filters, type SortKey } from '../lib/browse';
+import { allFormats, buildQuery, COLORS, defaultFilters, legalityLabel, loadPrefs, ownableId, RARITIES, savePrefs, SORTS, type ColorMode, type Field, type Filters, type SortKey } from '../lib/browse';
 import { cardImage } from '../lib/groups';
 import { isOwned } from '../lib/owned';
-import { bestPrice } from '../lib/price';
+import { bestPrice, cheapestPrinting, tcgplayerUrl } from '../lib/price';
 import { THEMES } from '../lib/profile';
 import { searchCards, type SearchPage } from '../scryfall/browse';
+import { printings } from '../scryfall/cards';
 import { ScryfallError } from '../scryfall/client';
 import { POOL_ROLES } from '../scryfall/roles';
-import { oracleIdOf } from '../scryfall/resolve';
 import type { ScryCard } from '../scryfall/types';
 import type { AppContext } from './app';
 import { segmented } from './controls';
@@ -167,35 +167,52 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext, storage: Storag
     );
   }
 
+  const typeOf = (card: ScryCard) => card.type_line ?? card.card_faces?.[0]?.type_line ?? '';
+  /** Whether the card is in the owned collection; a card with no Oracle ID cannot be. */
+  const ownedNow = (card: ScryCard) => {
+    const id = ownableId(card);
+    return id != null && isOwned(ctx.store, id, typeOf(card));
+  };
+
+  /** A card's name as a real button (keyboard and screen readers); the whole tile opens the detail too, for a mouse or a finger. */
+  function opener(card: ScryCard): HTMLButtonElement {
+    return h('button', { type: 'button', class: 'link-button card-open', 'aria-haspopup': 'dialog' }, card.name);
+  }
+
   function tile(card: ScryCard): HTMLElement {
     const src = cardImage(card);
     const price = bestPrice(card);
-    return h(
+    const open = opener(card);
+    const li = h(
       'li',
-      { class: 'card-tile' },
+      { class: 'card-tile', 'data-card': card.id },
       h(
         'div',
         { class: 'card-art' },
-        src ? h('img', { src, alt: card.name, loading: 'lazy', width: 488, height: 680 }) : h('div', { class: 'card-missing', role: 'img', 'aria-label': card.name }, card.name),
-        isOwned(ctx.store, oracleIdOf(card), card.type_line ?? card.card_faces?.[0]?.type_line ?? '') ? h('span', { class: 'qty-badge' }, 'Owned') : null,
+        src ? h('img', { src, alt: '', loading: 'lazy', width: 488, height: 680 }) : h('div', { class: 'card-missing', 'aria-hidden': 'true' }, card.name),
+        ownedNow(card) ? h('span', { class: 'qty-badge' }, 'Owned') : null,
       ),
-      h('div', { class: 'card-meta' }, h('span', { class: 'card-tile-name' }, card.name), h('span', { class: 'card-tile-price' }, price ? usd(price.price) : 'No price')),
+      h('div', { class: 'card-meta' }, h('span', { class: 'card-tile-name' }, open), h('span', { class: 'card-tile-price' }, price ? usd(price.price) : 'No price')),
     );
+    li.addEventListener('click', () => openDetail(card, open));
+    return li;
   }
 
   function row(card: ScryCard): HTMLElement {
     const price = bestPrice(card);
-    const type = card.type_line ?? card.card_faces?.[0]?.type_line ?? '';
-    return h(
+    const open = opener(card);
+    const li = h(
       'li',
-      { class: 'card-row' },
-      h('span', { class: 'card-row-name' }, card.name),
+      { class: 'card-row', 'data-card': card.id },
+      h('span', { class: 'card-row-name' }, open),
       h('span', { class: 'card-row-cost' }, card.mana_cost ?? ''),
-      h('span', { class: 'card-row-type' }, type),
+      h('span', { class: 'card-row-type' }, typeOf(card)),
       h('span', { class: 'card-row-rarity' }, card.rarity ? cap(card.rarity) : ''),
-      isOwned(ctx.store, oracleIdOf(card), type) ? h('span', { class: 'card-row-owned' }, 'Owned') : null,
+      ownedNow(card) ? h('span', { class: 'card-row-owned' }, 'Owned') : null,
       h('span', { class: 'card-row-price' }, price ? usd(price.price) : 'No price'),
     );
+    li.addEventListener('click', () => openDetail(card, open));
+    return li;
   }
 
   const render = (card: ScryCard) => (layout === 'grid' ? tile(card) : row(card));
@@ -214,6 +231,111 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext, storage: Storag
         persist();
       }),
     );
+  }
+
+  // ---- Card detail ----------------------------------------------------------------------------
+  /**
+   * A modal with the card's picture, rules, legality and price, and actions. Each open builds its own
+   * dialog, so a slow printings reply for a card that was closed can only touch that card's own dialog.
+   */
+  function openDetail(card: ScryCard, from: HTMLElement) {
+    const faces = card.card_faces && card.card_faces.length > 1 ? card.card_faces : null;
+    const faceImages = faces?.map((f) => f.image_uris?.normal);
+    const flips = !!faceImages && faceImages.every(Boolean);
+    let face = 0;
+    const dialog = h('dialog', { class: 'picker card-dialog', 'aria-labelledby': 'card-detail-h' });
+    const picture = h('img', { class: 'card-detail-img', width: 488, height: 680 });
+    const drawPicture = () => {
+      const src = flips ? faceImages![face] : cardImage(card);
+      if (src) picture.setAttribute('src', src);
+      picture.setAttribute('alt', flips ? faces![face].name : card.name);
+    };
+    drawPicture();
+    const flip = h('button', { type: 'button', class: 'button' }, 'Flip');
+    flip.addEventListener('click', () => {
+      face = (face + 1) % faces!.length;
+      drawPicture();
+    });
+
+    const rules = (name: string | null, type: string | undefined, text: string | undefined) =>
+      h('div', { class: 'rules' }, name ? h('h4', {}, name) : null, type ? h('p', { class: 'muted' }, type) : null, ...(text ?? '').split('\n').filter(Boolean).map((line) => h('p', {}, line)));
+
+    const legal = legalityLabel(card.legalities?.commander);
+    const formats = allFormats(card.legalities ?? {});
+
+    // Price: the card as shown first, then the cheapest printing once it is known.
+    const priceText = h('span', { class: 'detail-price' });
+    const priceNote = h('p', { class: 'muted small' });
+    const buy = h('span');
+    const showPrice = (label: string, amount: number | null, link: string | null) => {
+      priceText.textContent = amount == null ? 'No price' : `${label}${usd(amount)}`;
+      buy.replaceChildren(...(link ? [h('a', { class: 'button', href: link, target: '_blank', rel: 'noopener noreferrer' }, 'Buy on TCGplayer ↗')] : []));
+    };
+    const own = bestPrice(card);
+    showPrice('', own?.price ?? null, own ? tcgplayerUrl(card, own.finish) : null);
+    const oid = ownableId(card);
+    if (oid) {
+      priceNote.textContent = 'Checking other printings…';
+      printings(ctx.client, oid).then(
+        (prints) => {
+          const best = cheapestPrinting(prints);
+          if (best) {
+            showPrice('Cheapest printing: ', best.price, tcgplayerUrl(best.card, best.finish));
+            priceNote.textContent = `${best.card.set_name} #${best.card.collector_number}${best.finish === 'nonfoil' ? '' : `, ${best.finish}`}`;
+          } else priceNote.textContent = 'No printing has a price.';
+        },
+        () => (priceNote.textContent = "Couldn't check other printings, so this is the price of the version shown."),
+      );
+    } else priceNote.textContent = '';
+
+    // Owned.
+    let ownedChanged = false;
+    const ownButton = h('button', { type: 'button', class: 'button' });
+    const drawOwn = () => {
+      const on = ownedNow(card);
+      ownButton.textContent = on ? 'Owned' : 'Mark as owned';
+      ownButton.setAttribute('aria-pressed', String(on));
+      ownButton.toggleAttribute('disabled', oid == null);
+    };
+    drawOwn();
+    ownButton.addEventListener('click', () => {
+      if (!oid) return;
+      ctx.setOwned(oid, typeOf(card), !ownedNow(card));
+      ownedChanged = true;
+      drawOwn();
+    });
+
+    const close = h('button', { type: 'button', class: 'button' }, 'Close');
+    close.addEventListener('click', () => dialog.close());
+    dialog.append(
+      h('div', { class: 'picker-head' }, h('h3', { id: 'card-detail-h' }, card.name), close),
+      h(
+        'div',
+        { class: 'card-detail' },
+        h('div', { class: 'card-detail-art' }, picture, flips ? flip : null),
+        h(
+          'div',
+          { class: 'stack' },
+          card.mana_cost ? h('p', { class: 'mana-cost' }, card.mana_cost) : null,
+          ...(faces ? faces.map((f) => rules(f.name, f.type_line, f.oracle_text)) : [rules(null, card.type_line, card.oracle_text)]),
+          h('p', { class: `legality ${legal.tone}` }, legal.text),
+          formats.length > 1 ? h('details', {}, h('summary', {}, 'All formats'), h('ul', { class: 'formats' }, ...formats.map((f) => h('li', {}, `${f.format}: ${f.status}`)))) : null,
+          h('p', {}, priceText, ' ', buy),
+          priceNote,
+          h('div', { class: 'actions' }, ownButton),
+          oid ? null : h('p', { class: 'muted small' }, "This card can't be tracked as owned: Scryfall gave it no Oracle ID."),
+        ),
+      ),
+    );
+    dialog.addEventListener('close', () => {
+      dialog.remove();
+      // A change to what is owned shows on the results; redrawing replaces the button, so focus goes to its twin.
+      if (ownedChanged) drawResults();
+      const back = from.isConnected ? from : [...results.children].find((li) => (li as HTMLElement).dataset.card === card.id)?.querySelector('button');
+      (back as HTMLElement | null | undefined)?.focus();
+    });
+    view.append(dialog);
+    dialog.showModal();
   }
 
   const num = (n: number) => n.toLocaleString('en-US');
