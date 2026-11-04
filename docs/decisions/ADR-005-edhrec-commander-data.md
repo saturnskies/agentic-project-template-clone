@@ -1,7 +1,7 @@
 ---
 description: Uses EDHREC's unofficial per-commander JSON (inclusion, synergy, themes, brackets, average deck) as the main recommendation signal, called from the browser, with Scryfall rules as the fallback
-status: draft
-updated: 2026-11-03
+status: current
+updated: 2026-11-04
 ---
 # ADR-005: EDHREC commander data for recommendations
 
