@@ -22,7 +22,7 @@ Searching is explicit (Search button or Enter in a text field), never per keystr
 
 | Control | Scryfall term built | Notes |
 |---|---|---|
-| Name | quoted words, e.g. `"mana crypt"` (each word `name:`-matched, so word order is free) | Quotes and backslashes in the text are escaped |
+| Name | one `name:"word"` per typed word, e.g. `name:"mana" name:"crypt"`, so word order is free | Quotes and backslashes in the text are escaped |
 | Set | `set:<code>` | Set code, 2–6 letters or digits; other input shows an inline error |
 | Type | `t:<word>` per word | "legendary artifact" → `t:legendary t:artifact` |
 | Tribe | `t:<creature type>` plus `t:creature` | One creature type, letters and hyphens only |
@@ -37,7 +37,9 @@ Searching is explicit (Search button or Enter in a text field), never per keystr
 
 - All filters are ANDed. The built query is shown under the form ("Searching: …") so the person can copy it into Scryfall.
 - **Query length.** Scryfall silently drops the end of a query past ~1,000 characters. The builder measures the final string; over 900 characters the search does not run and the form says which part to shorten (usually the advanced box). Never truncated.
-- **Errors from Scryfall.** 404 means no matches: "No cards match". 400 (bad syntax in the advanced box) shows Scryfall's own message under that box. Any other failure shows a retry message and keeps the previous results.
+- **Parentheses.** The advanced box is wrapped in parentheses, so an unbalanced one (outside quoted text and `/regex/`) would break out of the wrapper; the form refuses it before searching.
+- **Ignored terms.** Scryfall answers an unknown keyword or a bad regex with 200 and a `warnings` list, and then drops that term, so the cards are *not* filtered by it (checked 2026-11-04: `(bogus:thing)` returned all 32,116 Commander cards). The screen shows Scryfall's warnings above the results ("Scryfall ignored part of this search, so these cards may not match it") so nobody trusts an unfiltered list.
+- **Errors from Scryfall.** 404 means no matches: "No cards match". 400 (for example unclosed parentheses, which the form normally catches first) shows Scryfall's own message under the advanced box. Any other failure shows a retry message and keeps the previous results.
 - **Reset** clears the filters (not the view, sort or Commander-legal toggle).
 
 ## Results
