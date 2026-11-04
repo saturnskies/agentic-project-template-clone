@@ -10,6 +10,7 @@ import { oracleIdOf, priceDeck, priceEntries, withPrinting, type PricedCard } fr
 import type { ScryCard } from '../scryfall/types';
 import type { AppContext } from './app';
 import { combobox } from './combobox';
+import { paneSwitch } from './panes';
 import { saveFile } from './saveFile';
 import { suggestionsPanel } from './suggestions';
 import { h, usd } from './dom';
@@ -339,7 +340,7 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   });
   confirmBox.append(del);
 
-  // On wide screens the upgrades panel sits beside the cards; on phones it follows them.
+  // On wide screens the upgrades panel sits beside the cards; below 70rem a bar switches between the two.
   const columns = h('div', { class: 'deck-columns' }, body);
 
   // ---- Sharing --------------------------------------------------------------------------------
@@ -436,6 +437,7 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
         columns.classList.add('with-panel');
         panel = suggestionsPanel(ctx, () => priced, { add, swap, undo, lastSwap: () => lastSwap?.label ?? null });
         columns.append(panel.root);
+        columns.after(paneSwitch(columns, panel.root));
       }
       redraw();
     })
