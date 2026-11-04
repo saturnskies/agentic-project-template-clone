@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { EdhCard } from '../../src/lib/edhrec';
-import { byCategory, roleLookupNames, scoreEdhrec, scoreSuggestions, tierOf, upgradesByTier, type EdhCandidate, type PoolEntry } from '../../src/lib/suggest';
+import { byCategory, roleLookupNames, scoreEdhrec, scoreSuggestions, tierOf, type EdhCandidate, type PoolEntry } from '../../src/lib/suggest';
 import type { ScryCard } from '../../src/scryfall/types';
 
 const card = (name: string, over: Partial<ScryCard> = {}): ScryCard =>
@@ -82,18 +82,16 @@ describe('scoreSuggestions', () => {
   });
 });
 
-describe('upgradesByTier', () => {
-  it('keeps the top suggestions of each tier, in score order', () => {
+describe('rules-based suggestion categories', () => {
+  it('files each suggestion under the same categories as EDHREC ones, mana rocks apart from other artifacts', () => {
     const pool: PoolEntry[] = [
-      ...Array.from({ length: 12 }, (_, i) => ({ card: card(`Cheap ${i}`, { edhrec_rank: 10 + i, prices: { usd: '1.00', usd_foil: null, usd_etched: null } }), tags: [], roles: [] })),
-      { card: card('Mid one', { prices: { usd: '7.50', usd_foil: null, usd_etched: null } }), tags: [], roles: [] },
-      { card: card('Pricey', { prices: { usd: '40.00', usd_foil: null, usd_etched: null } }), tags: [], roles: [] },
+      { card: card('Rock', { type_line: 'Artifact' }), tags: [], roles: ['ramp', 'mana rock'] },
+      { card: card('Clamp', { type_line: 'Artifact — Equipment' }), tags: [], roles: ['card draw'] },
+      { card: card('Golem', { type_line: 'Artifact Creature — Golem' }), tags: [], roles: ['mana rock'] },
+      { card: card('Field', { type_line: 'Land' }), tags: [], roles: [] },
     ];
-    const tiers = upgradesByTier(scoreSuggestions(pool, deck, new Set()), 10);
-    expect(tiers.budget).toHaveLength(10);
-    expect(tiers.budget[0].card.name).toBe('Cheap 0');
-    expect(tiers.mid.map((s) => s.card.name)).toEqual(['Mid one']);
-    expect(tiers.premium.map((s) => s.card.name)).toEqual(['Pricey']);
+    const byName = Object.fromEntries(scoreSuggestions(pool, deck, new Set()).map((s) => [s.card.name, s.category]));
+    expect(byName).toEqual({ Rock: 'Mana Artifacts', Clamp: 'Utility Artifacts', Golem: 'Creatures', Field: 'Lands' });
   });
 });
 
