@@ -49,11 +49,22 @@ describe('commanderPage', () => {
     expect(await commanderPage(fake(() => ({ container: { json_dict: {} } })), '/commanders/x')).toEqual({ status: 'failed' });
   });
 
+  it("refuses a redirect to a different commander's page", async () => {
+    const other = fake((p) => (p.includes('edgar') ? { redirect: '/commanders/atraxa-praetors-voice' } : { container: { json_dict: { cardlists: [{ tag: 'lands', cardviews: [{ name: 'A', num_decks: 1, potential_decks: 2, synergy: 0 }] }] } } }));
+    expect(await commanderPage(other, '/commanders/edgar-markov')).toEqual({ status: 'failed' });
+    // The same pair in the other order, with the same filters, is fine.
+    const reorder = fake((p) => (p.includes('tymna-the-weaver-thrasios') ? { redirect: '/commanders/thrasios-triton-hero-tymna-the-weaver/core' } : { container: { json_dict: { cardlists: [{ tag: 'lands', cardviews: [{ name: 'A', num_decks: 1, potential_decks: 2, synergy: 0 }] }] } } }));
+    expect(await commanderPage(reorder, '/commanders/tymna-the-weaver-thrasios-triton-hero/core')).toMatchObject({ status: 'ok' });
+    const dropped = fake((p) => (p.includes('tymna-the-weaver-thrasios') ? { redirect: '/commanders/thrasios-triton-hero-tymna-the-weaver' } : {}));
+    expect(await commanderPage(dropped, '/commanders/tymna-the-weaver-thrasios-triton-hero/core')).toEqual({ status: 'failed' });
+  });
+
   it('follows only one redirect, so a loop fails instead of hanging', async () => {
     const paths: string[] = [];
-    const loop = fake((p) => (paths.push(p), { redirect: p.includes('/a.') ? '/commanders/b' : '/commanders/a' }));
-    expect(await commanderPage(loop, '/commanders/a')).toEqual({ status: 'failed' });
-    expect(paths).toEqual(['/pages/commanders/a.json', '/pages/commanders/b.json']);
+    // A partner pair that keeps redirecting to the other order.
+    const loop = fake((p) => (paths.push(p), { redirect: p.includes('/a-b.') ? '/commanders/b-a' : '/commanders/a-b' }));
+    expect(await commanderPage(loop, '/commanders/a-b')).toEqual({ status: 'failed' });
+    expect(paths).toEqual(['/pages/commanders/a-b.json', '/pages/commanders/b-a.json']);
   });
 });
 
@@ -146,6 +157,18 @@ describe('edhrecCandidates', () => {
     const res = await edhrecCandidates(edhrec, fake(() => found([])), { slug: 'x', filter: { bracket: 2, theme: 'vampires', budget: false }, colorIdentity: ['B'] });
     expect(paths).toEqual(['/pages/commanders/x/core/vampires.json', '/pages/commanders/x/vampires.json']);
     expect(res).toMatchObject({ status: 'ok', filter: { bracket: null, theme: 'vampires' }, thinBracket: { bracket: 2, decks: 8 } });
+  });
+
+  it.each([
+    ['answers 403', () => { throw new ScryfallError(403, 'EDHREC 403: Forbidden'); }],
+    // A bracket with no decks answers 200 with no cards (rhys-the-exiled/cedh, 2026-11-04).
+    ['lists no cards', () => ({ container: { json_dict: { card: { num_decks: 0 }, cardlists: [] } } })],
+  ])('shows all brackets when the chosen bracket page %s', async (_, bracketReply) => {
+    const paths: string[] = [];
+    const edhrec = fake((p) => (paths.push(p), p.includes('/cedh') ? bracketReply() : { container: { json_dict: { card: { num_decks: 194 }, cardlists: page.container.json_dict.cardlists } } }));
+    const res = await edhrecCandidates(edhrec, fake(() => found([])), { slug: 'x', filter: { bracket: 5, theme: null, budget: false }, colorIdentity: ['B'] });
+    expect(paths).toEqual(['/pages/commanders/x/cedh.json', '/pages/commanders/x.json']);
+    expect(res).toMatchObject({ status: 'ok', filter: { bracket: null }, thinBracket: { bracket: 5, decks: 0 } });
   });
 
   it('keeps a bracket page with 50 decks or more', async () => {
