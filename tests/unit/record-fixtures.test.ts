@@ -16,6 +16,8 @@ import { edhrecCandidates } from '../../src/edhrec/candidates';
 import { estimateBracket, type PageFilter } from '../../src/lib/edhrec';
 import type { Deck } from '../../src/lib/deck';
 import { gameChangerCount } from '../../src/scryfall/names';
+import { searchCards } from '../../src/scryfall/browse';
+import { SORTS } from '../../src/lib/browse';
 
 /**
  * Re-records tests/fixtures/scryfall-e2e.json from the real Scryfall API by running the same flow the
@@ -244,5 +246,32 @@ describe.runIf(process.env.RECORD === '1')('record Scryfall fixtures', () => {
     await resolveList(client, parseDeckList(readFileSync(new URL('../fixtures/edgar-list.txt', import.meta.url), 'utf8')).entries);
     writeFileSync(new URL('../fixtures/scryfall-edgar-resolve.json', import.meta.url), JSON.stringify(map, null, 1) + '\n');
     expect(Object.keys(map).length).toBeGreaterThan(2);
+  }, 120_000);
+});
+
+describe.runIf(process.env.RECORD === '1')('record Browse fixtures', () => {
+  it('records the Browse searches: every sort, no match, an ignored term, a bad query', async () => {
+    const map: FixtureMap = {};
+    const recording: typeof fetch = async (input, init) => {
+      const headers = { ...Object.fromEntries(new Headers(init?.headers)), 'User-Agent': 'Swapsmith-fixture-recorder/0.1' };
+      const res = await fetch(input, { ...init, headers });
+      const body = await res.clone().json();
+      map[requestKey(init?.method ?? 'GET', String(input), init?.body as string | undefined)] = { status: res.status, body: trim(body, { allLegalities: true }) };
+      return res;
+    };
+    const client = createClient({ fetch: recording, cache: memoryCache() });
+    const crypt = 'legal:commander name:"crypt"';
+    for (const s of SORTS) await searchCards(client, crypt, s.id, s.descending, 1);
+    // The same search the other way round, for the direction toggle.
+    await searchCards(client, crypt, 'popularity', true, 1);
+    await searchCards(client, 'legal:commander name:"zzzzqq"', 'popularity', false, 1);
+    // Scryfall ignores an unknown keyword and answers 200 with a warning.
+    await searchCards(client, `${crypt} (bogus:thing)`, 'popularity', false, 1);
+    // An advanced term that narrows the same search.
+    await searchCards(client, `${crypt} (t:land)`, 'popularity', false, 1);
+    // A 400 can't come from the form (it refuses unbalanced parentheses first), so it is recorded straight from the API.
+    await searchCards(client, 'legal:commander (t:elf', 'popularity', false, 1).catch(() => undefined);
+    writeFileSync(new URL('../fixtures/scryfall-browse.json', import.meta.url), JSON.stringify(map));
+    console.log(`recorded ${Object.keys(map).length} Browse requests`);
   }, 120_000);
 });
