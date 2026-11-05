@@ -60,9 +60,9 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   });
   const viewSwitch = h('div', { class: 'segmented', role: 'group', 'aria-label': 'View' }, ...viewButtons);
 
-  const total = h('span', { class: 'stat-value', 'data-testid': 'deck-total' }, '—');
-  const toBuy = h('span', { class: 'stat-value', 'data-testid': 'deck-to-buy' }, '—');
-  const count = h('span', { class: 'stat-value', 'data-testid': 'deck-count' }, '—');
+  const total = h('span', { 'data-testid': 'deck-total' }, '—');
+  const toBuy = h('span', { class: 'stat-hero', 'data-testid': 'deck-to-buy' }, '—');
+  const count = h('span', { 'data-testid': 'deck-count' }, '—');
   const note = h('p', { class: 'muted' });
   const adder = h('div', { class: 'stack' });
   const body = h('div', { class: 'stack' });
@@ -74,7 +74,7 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
     rename.addEventListener('click', editTitle);
     titleBox.replaceChildren(
       h('div', { class: 'deck-title-row' }, h('h2', {}, deck.name || 'Shared deck'), readOnly ? null : rename),
-      h('p', { class: 'muted' }, `Commander: ${deck.commander.name}`),
+      h('p', { class: 'muted' }, `Commander: ${deck.commander.name} · `, count),
     );
     return rename;
   };
@@ -345,7 +345,7 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
 
   // ---- Sharing --------------------------------------------------------------------------------
   const shareBox = h('div', { class: 'stack' });
-  const shareBtn = h('button', { type: 'button', class: 'button' }, 'Share');
+  const shareBtn = h('button', { type: 'button', class: 'button' }, 'Copy share link');
   shareBtn.addEventListener('click', async () => {
     const link = `${location.origin}${location.pathname}#d=${await encodeDeck(deck)}`;
     const field = h('input', { type: 'text', readonly: true, value: link, 'aria-label': 'Share link', class: 'share-field' });
@@ -382,6 +382,20 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
     }
   });
 
+  // Copy, download and the share link live behind one button, so the header stays short. A shared
+  // (read-only) deck can still be exported but has no link of its own to make.
+  const options = h('dialog', { class: 'picker', 'aria-labelledby': 'options-h' });
+  const closeOptions = h('button', { type: 'button', class: 'button' }, 'Close');
+  closeOptions.addEventListener('click', () => options.close());
+  options.append(
+    h('div', { class: 'picker-head' }, h('h3', { id: 'options-h' }, readOnly ? 'Export' : 'Share & export'), closeOptions),
+    h('div', { class: 'actions' }, copyBtn, downloadBtn, readOnly ? null : shareBtn),
+    exportMsg,
+    shareBox,
+  );
+  const openOptions = h('button', { type: 'button', class: 'button' }, readOnly ? 'Export' : 'Share & export');
+  openOptions.addEventListener('click', () => options.showModal());
+
   const save = h('button', { type: 'button', class: 'button primary' }, 'Save to my decks');
   save.addEventListener('click', () => {
     ctx.saveDeck(deck);
@@ -395,26 +409,20 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
       { class: 'stack' },
       h('a', { href: '#/', class: 'back' }, '← Your decks'),
       readOnly ? sharedBanner : null,
+      titleBox,
+      // What you came for is what is left to buy; the deck total is context, and the card count sits on the commander line.
       h(
         'div',
-        { class: 'row-between' },
-        titleBox,
-        h('div', { class: 'actions' }, copyBtn, downloadBtn, readOnly ? null : shareBtn),
-      ),
-      exportMsg,
-      shareBox,
-      h(
-        'div',
-        { class: 'stats' },
-        h('div', { class: 'stat' }, h('span', { class: 'stat-label' }, 'Deck total'), total),
-        h('div', { class: 'stat' }, h('span', { class: 'stat-label' }, 'Still to buy'), toBuy),
-        h('div', { class: 'stat' }, h('span', { class: 'stat-label' }, 'Cards'), count),
+        { class: 'row-between stat-row' },
+        h('div', { class: 'stat-main' }, h('span', { class: 'stat-label' }, 'Still to buy'), toBuy, h('span', { class: 'stat-sub' }, 'Deck total ', total)),
+        openOptions,
       ),
       note,
       adder,
       columns,
       readOnly ? null : confirmBox,
       picker,
+      options,
     ),
   );
 
