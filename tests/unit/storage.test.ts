@@ -156,3 +156,23 @@ describe('migrating the old shared owned list into each deck', () => {
     expect(s.getItem(`${STORE_KEY}:before-owned-per-deck`)).toBeNull();
   });
 });
+
+describe('the first-use note preference', () => {
+  const load = (prefs: unknown) => loadStore(memoryStorage({ [STORE_KEY]: JSON.stringify({ version: 2, decks: [], prefs }) })).store.prefs;
+
+  it('is absent by default, so a new device shows the note', () => {
+    expect(emptyStore().prefs).toEqual({ view: 'list' });
+    expect(load({ view: 'grid' })).toEqual({ view: 'grid' });
+  });
+
+  it('is kept only when it is exactly true', () => {
+    expect(load({ view: 'list', helpDismissed: true })).toEqual({ view: 'list', helpDismissed: true });
+    for (const bad of ['true', 1, null, false, {}]) expect(load({ view: 'list', helpDismissed: bad })).toEqual({ view: 'list' });
+  });
+
+  it('survives a save and a load', () => {
+    const s = memoryStorage();
+    saveStore(s, { ...emptyStore(), prefs: { view: 'grid', helpDismissed: true } });
+    expect(loadStore(s).store.prefs).toEqual({ view: 'grid', helpDismissed: true });
+  });
+});
