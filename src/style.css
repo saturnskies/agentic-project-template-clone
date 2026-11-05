@@ -158,6 +158,8 @@ th[aria-sort="descending"] .sort::after { content: " ↓"; }
 @media (max-width: 40rem) { .hide-narrow { display: none; } }
 .show-narrow { display: none; }
 @media (max-width: 40rem) { .show-narrow { display: block; } }
+.qty-mark { display: none; }
+@media (max-width: 40rem) { .qty-mark { display: inline; margin-left: 0.4rem; color: var(--muted); font-weight: 600; } }
 .cards td .sub { font-size: 0.85rem; color: var(--muted); margin-top: 0.15rem; }
 
 /* Combobox (commander and add-card search) */
