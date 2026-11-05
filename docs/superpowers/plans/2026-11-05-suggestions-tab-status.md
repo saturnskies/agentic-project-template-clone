@@ -1,6 +1,6 @@
 ---
 description: A small status badge on the Suggestions tab (Searching, Ready, Failed) so a search started in the Suggestions pane is visible from the Cards pane on a phone — one test-gated slice
-status: draft
+status: done
 updated: 2026-11-05
 ---
 
