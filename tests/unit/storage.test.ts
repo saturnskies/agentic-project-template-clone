@@ -176,3 +176,20 @@ describe('the first-use note preference', () => {
     expect(loadStore(s).store.prefs).toEqual({ view: 'grid', helpDismissed: true });
   });
 });
+
+describe("bounding a deck's own owned lists", () => {
+  it('removes duplicates and caps the length, so a hostile backup cannot make them huge', () => {
+    const many = Array.from({ length: 5000 }, (_, i) => `id-${i}`);
+    const big = { ...deck, owned: [...many, ...many], unownedBasics: many };
+    const { store } = loadStore(memoryStorage({ [STORE_KEY]: JSON.stringify({ version: 2, decks: [big], prefs: {} }) }));
+    expect(store.decks[0].owned).toHaveLength(1000);
+    expect(new Set(store.decks[0].owned).size).toBe(1000);
+    expect(store.decks[0].unownedBasics).toHaveLength(1000);
+  });
+
+  it('keeps an ordinary list exactly as it was', () => {
+    const mine = { ...deck, owned: ['o-sol', 'o-gone'], unownedBasics: ['o-swamp'] };
+    const { store } = loadStore(memoryStorage({ [STORE_KEY]: JSON.stringify({ version: 2, decks: [mine], prefs: {} }) }));
+    expect(store.decks[0].owned).toEqual(['o-sol', 'o-gone']); // an id for a card removed from the deck stays: it may be re-added
+  });
+});
