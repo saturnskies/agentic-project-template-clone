@@ -2,6 +2,7 @@ import { cardImage } from '../lib/groups';
 import { deckProfile, type DeckProfile } from '../lib/profile';
 import { tcgplayerUrl } from '../lib/price';
 import { scoreSuggestions, TIERS, upgradesByTier, type PoolEntry, type Suggestion, type Tier } from '../lib/suggest';
+import type { Collection } from '../lib/owned';
 import { cheaperReplacements, swapPairs } from '../lib/swaps';
 import type { PricedCard } from '../scryfall/resolve';
 import { deckRoles } from '../scryfall/roles';
@@ -26,6 +27,8 @@ export interface PanelActions {
   undo(): void;
   /** A short label for the last swap, or null when there is nothing to undo. */
   lastSwap(): string | null;
+  /** The cards owned for this deck only: suggestions never look at what you own for another deck. */
+  collection(): Collection;
 }
 
 /**
@@ -60,7 +63,7 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
     body,
   );
 
-  const facts = () => deckCardFacts(priced(), roles, pool ?? [], ctx.store);
+  const facts = () => deckCardFacts(priced(), roles, pool ?? [], actions.collection());
 
   const segmented = <T extends string>(label: string, options: Array<{ id: T; label: string }>, current: T, onPick: (id: T) => void) =>
     h(
@@ -117,7 +120,7 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
     drawUndo();
     if (!pool || !profile) return;
     const deck = facts();
-    const scored = scoreSuggestions(pool, { colorIdentity: profile.colorIdentity, oracleIds: new Set(deck.map((c) => c.oracleId)) }, new Set(ctx.store.owned));
+    const scored = scoreSuggestions(pool, { colorIdentity: profile.colorIdentity, oracleIds: new Set(deck.map((c) => c.oracleId)) }, new Set(actions.collection().owned));
     const colors = profile.colorIdentity.map((c) => COLOR_NAMES[c] ?? c).join(', ') || 'colorless';
     const line = [`Colors: ${colors}`, profile.tribe ? `Tribe: ${profile.tribe}` : null, profile.themes.length ? `Themes: ${profile.themes.map((t) => t.label).join(', ')}` : null];
     const parts: Array<HTMLElement | null> = [
