@@ -19,6 +19,10 @@ export function emptyStore(): Store {
   return { version: 2, decks: [], prefs: { view: 'list' } };
 }
 
+/** A deck holds at most a few hundred cards; a backup file is untrusted, so a deck's own lists are deduplicated and capped. */
+const MAX_OWNED_IDS = 1000;
+const boundedIds = (x: unknown): string[] => [...new Set(strings(x))].slice(0, MAX_OWNED_IDS);
+
 const strings = (x: unknown): string[] => (Array.isArray(x) ? x.filter((s): s is string => typeof s === 'string') : []);
 
 /** Reads the store. `persistent` is false when storage is missing or blocked (some private windows). */
@@ -80,7 +84,7 @@ export function sanitizeStore(data: Record<string, unknown>): Store {
  */
 function withOwnership(deck: Deck, legacy: { owned: string[]; unownedBasics: string[] } | null): Deck {
   const raw = deck as unknown as Record<string, unknown>;
-  if ('owned' in raw || 'unownedBasics' in raw) return { ...deck, owned: strings(raw.owned), unownedBasics: strings(raw.unownedBasics) };
+  if ('owned' in raw || 'unownedBasics' in raw) return { ...deck, owned: boundedIds(raw.owned), unownedBasics: boundedIds(raw.unownedBasics) };
   if (!legacy) return deck;
   const ids = new Set([deck.commander.oracleId, ...deck.cards.map((e) => e.card.oracleId)]);
   const mine = (list: string[]) => [...new Set(list.filter((id) => ids.has(id)))];
