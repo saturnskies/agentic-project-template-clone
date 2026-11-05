@@ -82,6 +82,16 @@ test("suggestions in a deck ignore what you own in another deck", async ({ page 
   const panel = page.getByRole('complementary', { name: 'Suggestions' });
   await panel.getByRole('button', { name: 'Cheaper' }).click();
   await expect(panel.getByRole('region', { name: 'Cheaper than Minas Tirith' })).toBeVisible();
+
+  // The same card IS owned in Deck A, so there it has no cheaper replacements: ownership is read per deck, in both directions.
+  await page.goto('./#/deck/deck-a');
+  await expect(page.getByTestId('deck-total')).toHaveText(/\$/);
+  await showPane(page, 'Suggestions');
+  await page.getByRole('button', { name: 'Find suggestions' }).click();
+  const panelA = page.getByRole('complementary', { name: 'Suggestions' });
+  await panelA.getByRole('button', { name: 'Cheaper' }).click();
+  await expect(panelA).toContainText('Cheaper cards that do the same job'); // the Cheaper view has drawn
+  await expect(panelA.getByRole('region', { name: 'Cheaper than Minas Tirith' })).toHaveCount(0);
 });
 
 test('data saved before ownership moved into each deck opens with every deck looking the same', async ({ page }) => {
