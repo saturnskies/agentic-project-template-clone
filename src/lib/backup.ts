@@ -40,9 +40,10 @@ export interface RestoreResult {
 }
 
 /**
- * Merges a backup into the current store, never deleting anything: decks only in the backup are added
+ * Merges a backup into the current store, never deleting a deck: decks only in the backup are added
  * and a deck in both keeps whichever was edited last. Ownership belongs to each deck, so a deck's ticks
- * travel with it and are never mixed between decks.
+ * travel with it and are never mixed between decks. (That means the newer copy's ticks replace the other
+ * copy's ticks; they are no longer combined as they were when owned cards were one shared list.)
  */
 export function mergeBackup(current: Store, backup: Store): RestoreResult {
   const decks: Deck[] = [...current.decks];
