@@ -16,7 +16,7 @@ const store = (over: Partial<Store>): Store => ({ ...emptyStore(), ...over });
 
 describe('backup round trip', () => {
   it('parses what makeBackup wrote', () => {
-    const s = store({ decks: [deck('a', 'Edgar', '2026-01-01T00:00:00Z')], owned: ['o-sol'], unownedBasics: ['Swamp'], prefs: { view: 'grid' } });
+    const s = store({ decks: [{ ...deck('a', 'Edgar', '2026-01-01T00:00:00Z'), owned: ['o-sol'], unownedBasics: ['o-swamp'] }], prefs: { view: 'grid' } });
     expect(parseBackup(makeBackup(s))).toEqual(s);
   });
 
@@ -40,8 +40,18 @@ describe('backup round trip', () => {
     const good = deck('a', 'Edgar', '2026-01-01T00:00:00Z');
     const text = JSON.stringify({ app: 'swapsmith', backup: 1, store: { decks: [good, { id: 'x' }, 7], owned: ['o-sol', 3] } });
     const out = parseBackup(text);
-    expect(out.decks).toEqual([good]);
-    expect(out.owned).toEqual(['o-sol']);
+    // A backup made before ownership moved into each deck still restores: its shared list lands in the decks.
+    expect(out.decks).toEqual([{ ...good, owned: ['o-sol'], unownedBasics: [] }]);
+    expect(out).not.toHaveProperty('owned');
+  });
+
+  it('restores an old-format backup with each deck keeping only its own ticks', () => {
+    const a = deck('a', 'A', '2026-01-01T00:00:00Z');
+    const b = { ...deck('b', 'B', '2026-01-01T00:00:00Z'), cards: [{ card: { oracleId: 'o-signet', name: 'Arcane Signet' }, qty: 1 }] };
+    const old = JSON.stringify({ app: 'swapsmith', backup: 1, store: { version: 1, decks: [a, b], owned: ['o-sol', 'o-signet'], unownedBasics: [] } });
+    const out = parseBackup(old);
+    expect(out.decks.find((d) => d.id === 'a')!.owned).toEqual(['o-sol']);
+    expect(out.decks.find((d) => d.id === 'b')!.owned).toEqual(['o-signet']);
   });
 });
 
@@ -63,10 +73,13 @@ describe('mergeBackup', () => {
     expect(r).toMatchObject({ added: 0, updated: 1 });
   });
 
-  it('combines owned cards without duplicates and never removes any', () => {
-    const r = mergeBackup(store({ owned: ['a', 'b'], unownedBasics: ['Swamp'] }), store({ owned: ['b', 'c'], unownedBasics: ['Forest'] }));
-    expect(r.store.owned.sort()).toEqual(['a', 'b', 'c']);
-    expect(r.store.unownedBasics.sort()).toEqual(['Forest', 'Swamp']);
+  it('keeps a deck together with its own ticks: the newer copy wins and nothing is mixed between decks', () => {
+    const cur = store({ decks: [{ ...deck('a', 'A', '2026-03-01T00:00:00Z'), owned: ['mine'] }, { ...deck('c', 'C', '2026-01-01T00:00:00Z'), owned: ['old'] }] });
+    const bak = store({ decks: [{ ...deck('a', 'A', '2026-02-01T00:00:00Z'), owned: ['theirs'] }, { ...deck('c', 'C', '2026-02-01T00:00:00Z'), owned: ['new'] }] });
+    const r = mergeBackup(cur, bak);
+    expect(r.store.decks.find((d) => d.id === 'a')!.owned).toEqual(['mine']);
+    expect(r.store.decks.find((d) => d.id === 'c')!.owned).toEqual(['new']);
+    expect(r.store).not.toHaveProperty('owned');
   });
 
   it('keeps the current view preference', () => {
