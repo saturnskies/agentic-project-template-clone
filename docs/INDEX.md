@@ -34,7 +34,7 @@ Status: **current** = in force or in progress; **draft** = proposed, not approve
 
 ## docs/superpowers/specs/
 
-- [2026-11-02-swapsmith-design.md](superpowers/specs/2026-11-02-swapsmith-design.md) — current, 2026-11-02 — Swapsmith v1 design spec — free static Commander deckbuilder with live TCGplayer prices via Scryfall, owned-card tracking, and rules-based swap/upgrade/cheaper-replacement suggestions
+- [2026-11-02-swapsmith-design.md](superpowers/specs/2026-11-02-swapsmith-design.md) — current, 2026-11-05 — Swapsmith v1 design spec — free static Commander deckbuilder with live TCGplayer prices via Scryfall, owned-card tracking, and rules-based swap/upgrade/cheaper-replacement suggestions
 
 ## tutorial/
 
