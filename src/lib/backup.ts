@@ -40,8 +40,9 @@ export interface RestoreResult {
 }
 
 /**
- * Merges a backup into the current store, never deleting anything: decks only in the backup are added,
- * a deck in both keeps whichever was edited last, and owned cards are combined.
+ * Merges a backup into the current store, never deleting anything: decks only in the backup are added
+ * and a deck in both keeps whichever was edited last. Ownership belongs to each deck, so a deck's ticks
+ * travel with it and are never mixed between decks.
  */
 export function mergeBackup(current: Store, backup: Store): RestoreResult {
   const decks: Deck[] = [...current.decks];
@@ -57,15 +58,5 @@ export function mergeBackup(current: Store, backup: Store): RestoreResult {
       updated += 1;
     }
   }
-  const union = (a: string[], b: string[]) => [...new Set([...a, ...b])];
-  return {
-    store: {
-      ...current,
-      decks,
-      owned: union(current.owned, backup.owned),
-      unownedBasics: union(current.unownedBasics, backup.unownedBasics),
-    },
-    added,
-    updated,
-  };
+  return { store: { ...current, decks }, added, updated };
 }
