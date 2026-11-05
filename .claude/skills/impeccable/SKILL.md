@@ -7,7 +7,7 @@ argument-hint: "[shape · audit|critique · animate|bolder|colorize|delight|layo
 license: Apache 2.0
 ---
 
-<!-- Source: https://github.com/pbakaus/impeccable (plugin/skills/impeccable, v4.8.0, Apache 2.0, commit 5af4319). Copied as a skill only: no plugin hooks, no agents, no `npx impeccable install`. -->
+<!-- Source: https://github.com/pbakaus/impeccable (plugin/skills/impeccable, v4.8.0, Apache 2.0, commit 5af4319). Copied as a skill only: no plugin hooks, no agents, no `npx impeccable install`. Local change (2026-11-05 security review): the live-mode browser scripts (`scripts/live-browser*.js`, `scripts/modern-screenshot.umd.js`) were deleted, so live mode cannot run from this copy; restore them from the commit above if it is ever wanted. The launcher scripts are untouched. -->
 
 This skill gives you the tools and permission to make design that earns the name out-of-distribution craft. Work as an award-winning design director would: production-grade code, a clear POV, a deep grasp of what the client and its users need, and exceptional craft.
 
@@ -93,7 +93,11 @@ After init writes PRODUCT.md, resume without rerunning `impeccable context`; ini
 
 - **Superpowers stays the backbone.** Use this for design work only (shape, critique, audit, polish). Do not let it plan or review code; `/go` still owns review and the PR.
 - **Hooks are not installed, on purpose.** The detector hook edits settings and runs after every UI edit. Do not run `npx impeccable install` or `/impeccable hooks on`; run the detector by hand when the skill asks for it.
-- **Do not use `live` or `generate` modes.** Live mode can launch the `claude`/`codex` CLI with approvals and sandboxing disabled and runs a `package.json` script. Everything else is fine.
+- **Do not use `live` or `generate` modes.** Live mode can launch the `claude`/`codex` CLI with approvals and sandboxing disabled and runs a `package.json` script. Its browser scripts are deleted from this copy, so it should fail closed; do not restore them.
+- **Never run it outside the sandbox, and never send anything out.** Parts of `reference/new-work.md` say to start the decision page "through the least-sandboxed command path" and to send a "choice ping" / TELEMETRY line; `init.md` and `visualize.md` use an image-generation API fallback; `doctor.md` suggests `npx impeccable update`. Do none of these: never disable the sandbox for an `impeccable` command, never send the telemetry or choice ping, never use an image API with product context, and never run `npx impeccable install`, `update` or `pin`. For a new surface, do the design thinking in the conversation and skip the decision page.
+- **No `IMPECCABLE_*` variables in `.claude/settings.json` `env`** (`IMPECCABLE_BIN`, `IMPECCABLE_HOME`, `IMPECCABLE_SKILL_DIR`, `IMPECCABLE_DOWNLOAD_BASE`): `IMPECCABLE_BIN` runs a binary with no checksum, and the others redirect what the engine reads. The checksum list in `scripts/engine-checksums.txt` is the only thing vouching for a downloaded engine, and it vouches for the release, not for what the engine does.
+- **Do not commit anything under `scripts/bin/`.** The launcher runs a binary placed there after only a version check. It is ignored in `.gitignore`.
+- **On Windows, run it only from a folder you trust:** `scripts/impeccable.cmd` can pick up an `impeccable.bat`/`.exe` from the current folder before PATH.
 - **First run downloads the engine** to `~/.impeccable/bin/` from GitHub releases, verified against `scripts/engine-checksums.txt`. It needs network access to github.com; in a sandbox set `IMPECCABLE_BIN` or allow the host.
 - **It fetches visual directions from impeccable.style** when a new design starts. Fine for design work, not for anything private.
 - **Stack mismatch:** its examples mention React, Next and other frameworks. This repo is plain TypeScript + Vite with DOM helpers in `src/ui/dom.ts`; keep that.
