@@ -601,6 +601,8 @@ function table(priced: PricedCard[], sort: SortKey, handlers: TableHandlers): HT
         'td',
         { class: 'name' },
         nameEl,
+        // On phones the Qty column is hidden, so several copies show as ×N beside the name.
+        p.entry.qty > 1 ? h('span', { class: 'qty-mark' }, `×${p.entry.qty}`) : null,
         p.isCommander ? h('span', { class: 'tag' }, 'Commander') : null,
         h('span', { class: 'hide-narrow' }, c.keepToggle()),
         // On phones the Printing column is hidden, so the printing shows under the name, in one row with
@@ -609,7 +611,7 @@ function table(priced: PricedCard[], sort: SortKey, handlers: TableHandlers): HT
       ),
       h('td', { class: 'type hide-narrow' }, p.isCommander ? 'Commander' : typeName(p.typeLine)),
       h('td', { class: 'printing hide-narrow' }, c.printingControl(), c.finishTag()),
-      h('td', { class: 'num' }, p.entry.qty),
+      h('td', { class: 'num hide-narrow' }, p.entry.qty),
       h('td', { class: 'num' }, c.priceText),
       h('td', { class: 'num hide-narrow' }, p.price == null ? '—' : usd(p.price * p.entry.qty)),
       // The label is the touch target: the checkbox alone is too small to hit reliably.
@@ -629,7 +631,7 @@ function table(priced: PricedCard[], sort: SortKey, handlers: TableHandlers): HT
         h(
           'thead',
           {},
-          h('tr', {}, th('name', 'Card'), th('type', 'Type', 'hide-narrow'), th(null, 'Printing', 'hide-narrow'), th(null, 'Qty', 'num'), th('price', 'Price', 'num'), th(null, 'Line total', 'num hide-narrow'), handlers.readOnly ? null : th(null, 'Owned', 'owned'), handlers.readOnly ? null : h('th', { scope: 'col' }, h('span', { class: 'visually-hidden' }, 'Remove'))),
+          h('tr', {}, th('name', 'Card'), th('type', 'Type', 'hide-narrow'), th(null, 'Printing', 'hide-narrow'), th(null, 'Qty', 'num hide-narrow'), th('price', 'Price', 'num'), th(null, 'Line total', 'num hide-narrow'), handlers.readOnly ? null : th(null, 'Owned', 'owned'), handlers.readOnly ? null : h('th', { scope: 'col' }, h('span', { class: 'visually-hidden' }, 'Remove'))),
         ),
         h('tbody', {}, ...rows),
       ),
