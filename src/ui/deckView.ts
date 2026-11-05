@@ -59,7 +59,7 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
     });
     return btn;
   });
-  const viewSwitch = h('div', { class: 'segmented', role: 'group', 'aria-label': 'View' }, ...viewButtons);
+  const viewSwitch = h('div', { class: 'segmented view-switch', role: 'group', 'aria-label': 'View' }, ...viewButtons);
 
   const total = h('span', { 'data-testid': 'deck-total' }, '—');
   const toBuy = h('span', { class: 'stat-hero', 'data-testid': 'deck-to-buy' }, '—');
