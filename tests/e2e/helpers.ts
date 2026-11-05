@@ -51,6 +51,15 @@ export async function pasteAndFix(page: Page, name = 'Edgar test') {
   await expect(page.getByTestId('deck-total')).toHaveText(/\$/);
 }
 
+const edgarDeck = () => JSON.parse(readFileSync(new URL('../fixtures/edgar-deck.json', import.meta.url), 'utf8'));
+
+/** Saves `store` as the app's saved data before the page loads (only if nothing is saved yet). */
+export async function seedStore(page: Page, store: object) {
+  await page.addInitScript(([payload]) => {
+    if (!localStorage.getItem('swapsmith:v1')) localStorage.setItem('swapsmith:v1', payload);
+  }, [JSON.stringify(store)]);
+}
+
 /**
  * The full 100-card Edgar Markov deck, saved before the page loads, as if the user had built it. The
  * first-use note about Owned and Keep starts dismissed, as for a returning user, so it does not move
@@ -58,24 +67,40 @@ export async function pasteAndFix(page: Page, name = 'Edgar test') {
  * it is migrated on load, so every spec that uses this also exercises the migration.)
  */
 export async function seedEdgarDeck(page: Page, opts: { firstVisit?: boolean } = {}) {
-  const deck = JSON.parse(readFileSync(new URL('../fixtures/edgar-deck.json', import.meta.url), 'utf8'));
-  await page.addInitScript(
-    ([d, firstVisit]) => {
-      if (!localStorage.getItem('swapsmith:v1')) {
-        const prefs = firstVisit ? { view: 'list' } : { view: 'list', helpDismissed: true };
-        localStorage.setItem('swapsmith:v1', JSON.stringify({ version: 1, decks: [d], owned: [], unownedBasics: [], prefs }));
-      }
-    },
-    [deck, !!opts.firstVisit] as const,
-  );
+  const deck = edgarDeck();
+  const prefs = opts.firstVisit ? { view: 'list' } : { view: 'list', helpDismissed: true };
+  await seedStore(page, { version: 1, decks: [deck], owned: [], unownedBasics: [], prefs });
   return deck as { id: string };
 }
+
+/** Two copies of the Edgar deck (ids `deck-a` and `deck-b`), so the same card is in both; `store` builds the saved data from them. */
+export async function seedTwoEdgarDecks(page: Page, store: (a: object, b: object) => object) {
+  const edgar = edgarDeck();
+  await seedStore(page, store({ ...edgar, id: 'deck-a', name: 'Deck A' }, { ...edgar, id: 'deck-b', name: 'Deck B' }));
+}
+
+/** Answers Scryfall from the recorded Edgar replies, seeds the deck and opens it once its 100 cards are priced. */
+export async function openEdgarDeck(page: Page, opts: { firstVisit?: boolean } = {}) {
+  await mockScryfall(page, edgarFull);
+  const deck = await seedEdgarDeck(page, opts);
+  await page.goto(`./#/deck/${deck.id}`);
+  await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
+  return deck;
+}
+
+/** The deck-list row for a card, found by its name link (counts hidden rows too, unlike a role query on the row). */
+export const row = (page: Page, name: string) => page.getByRole('row').filter({ has: page.getByRole('link', { name, exact: true }) });
+export const suggestionsPanel = (page: Page) => page.getByRole('complementary', { name: 'Suggestions' });
+export const paneBar = (page: Page) => page.getByRole('group', { name: 'Show' });
+
+/** 70rem in px (src/style.css): from this width the list and the suggestions panel sit side by side. */
+const SIDE_BY_SIDE_PX = 1120;
 
 /**
  * Below 70rem the card list and the suggestions panel share the screen and a bar switches between them;
  * this shows one. On a wide screen both are already visible, so nothing is clicked.
  */
 export async function showPane(page: Page, pane: 'Cards' | 'Suggestions') {
-  if ((page.viewportSize()?.width ?? 1280) >= 1120) return;
-  await page.getByRole('group', { name: 'Show' }).getByRole('button', { name: pane, exact: true }).click();
+  if ((page.viewportSize()?.width ?? 1280) >= SIDE_BY_SIDE_PX) return;
+  await paneBar(page).getByRole('button', { name: pane, exact: true }).click();
 }
