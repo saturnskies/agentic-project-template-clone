@@ -10,11 +10,12 @@ import { oracleIdOf, priceDeck, priceEntries, withPrinting, type PricedCard } fr
 import type { ScryCard } from '../scryfall/types';
 import type { AppContext } from './app';
 import { combobox } from './combobox';
+import { undoToast } from './undoToast';
 import { helpTip } from './helpTip';
 import { paneSwitch } from './panes';
 import { saveFile } from './saveFile';
 import { suggestionsPanel } from './suggestions';
-import { h, usd } from './dom';
+import { h, segmented, usd } from './dom';
 
 const FINISH_LABEL = { nonfoil: '', foil: 'Foil', etched: 'Etched' } as const;
 const SCRYFALL_DOWN = "Couldn't reach Scryfall. Check your connection and try again.";
@@ -50,16 +51,16 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   let priced: PricedCard[] = [];
   let sort: SortKey = 'type';
 
-  const viewButtons = (['list', 'grid'] as const).map((v) => {
-    const btn = h('button', { type: 'button', class: 'segment', 'aria-pressed': String(ctx.store.prefs.view === v) }, v === 'list' ? 'List' : 'Grid');
-    btn.addEventListener('click', () => {
+  const viewSwitch = segmented(
+    'View',
+    [{ id: 'list', label: 'List' }, { id: 'grid', label: 'Grid' }],
+    ctx.store.prefs.view,
+    (v) => {
       ctx.setView(v);
-      viewButtons.forEach((b, i) => b.setAttribute('aria-pressed', String(['list', 'grid'][i] === v)));
       redraw();
-    });
-    return btn;
-  });
-  const viewSwitch = h('div', { class: 'segmented view-switch', role: 'group', 'aria-label': 'View' }, ...viewButtons);
+    },
+    'view-switch',
+  );
 
   const total = h('span', { 'data-testid': 'deck-total' }, '—');
   const toBuy = h('span', { class: 'stat-hero', 'data-testid': 'deck-to-buy' }, '—');
@@ -121,36 +122,16 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   let panel: { root: HTMLElement; refresh(): void } | null = null;
   let lastSwap: { removed: PricedCard; index: number; addedOracleId: string; label: string } | null = null;
 
-  // Undo for a removal lives here, on the Cards pane, not in the suggestions panel (a different pane on a phone).
-  // It keeps the whole deck as it was just before the removal and is dropped by the next change to the cards
-  // (`commit`), so Undo can only ever bring back that one removal and never reverts something newer. Ticking
-  // Owned does not end it: ownership is stored apart from the cards, which Undo does not touch.
-  const toastHost = h('div', { class: 'toast-host', role: 'status', 'aria-live': 'polite' });
-  let lastRemoval: { before: PricedCard[] } | null = null;
-  let removalTimer: ReturnType<typeof setTimeout> | undefined;
-  const clearRemoval = () => {
-    lastRemoval = null;
-    clearTimeout(removalTimer);
-    toastHost.replaceChildren();
-  };
-  const offerRemovalUndo = (before: PricedCard[], label: string, focusUndo: boolean) => {
-    clearRemoval();
-    lastRemoval = { before };
-    const undoBtn = h('button', { type: 'button', class: 'button' }, 'Undo');
-    undoBtn.addEventListener('click', () => {
-      if (!lastRemoval) return;
-      priced = lastRemoval.before;
-      commit(cardsOf()); // also ends the offer
-    });
-    toastHost.replaceChildren(h('div', { class: 'toast' }, h('span', {}, `Removed ${label}.`), undoBtn));
-    if (focusUndo) undoBtn.focus();
-    removalTimer = setTimeout(clearRemoval, 10_000);
-  };
+  // Undo for a removal lives here, on the Cards pane, not in the suggestions panel (a different pane on a phone). The
+  // offer holds the deck as it was just before the removal and is dropped by the next change to the cards (`commit`), so
+  // Undo can only ever bring back that one removal and never reverts something newer. Ticking Owned does not end it:
+  // ownership is stored apart from the cards, which Undo does not touch.
+  const removalUndo = undoToast();
 
   /** Saves the deck and redraws totals, the cards and the suggestions from `priced`. Any edit other than a swap ends the Undo offer. */
   const commit = (cards: DeckEntry[], extra: Partial<Deck> = {}, opts: { keepUndo?: boolean } = {}) => {
     if (!opts.keepUndo) lastSwap = null;
-    clearRemoval(); // any change ends the removal Undo offer; remove() makes a new one after this
+    removalUndo.clear(); // any change ends the removal Undo offer; remove() makes a new one after this
     deck = { ...deck, ...extra, cards, updatedAt: new Date().toISOString(), summary: summary() };
     persist(deck);
     redraw();
@@ -211,7 +192,14 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
       priced = priced.filter((x) => x !== p);
     }
     commit(cardsOf());
-    offerRemovalUndo(before, label, byKeyboard);
+    removalUndo.offer(
+      `Removed ${label}.`,
+      () => {
+        priced = before;
+        commit(cardsOf()); // also ends the offer
+      },
+      byKeyboard,
+    );
   };
 
   // ---- Printing picker ------------------------------------------------------------------------
@@ -468,7 +456,7 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
       readOnly ? null : confirmBox,
       picker,
       options,
-      toastHost,
+      removalUndo.root,
     ),
   );
 
