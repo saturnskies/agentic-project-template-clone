@@ -41,9 +41,9 @@ Source: the second impeccable critique, run after the [phone layout plan](2026-1
 - Tests: 6 in `tests/e2e/remove-undo.spec.ts` (5 on desktop, the 6th is phone-only), all failing before the code existed.
 
 ### 2. Shorter list rows on phones
-- [ ] Failing tests first: under 40rem the Qty header and column are hidden and a card with several copies shows "×N" beside its name (Swamp), while a single copy shows no mark; at 40rem and up the Qty column is still there and no "×N" mark shows; the phone list is shorter than the 8,847px it was (guard set from the measured result, with a little slack); the existing touch-target and layout tests still pass.
-- [ ] `src/ui/deckView.ts` and `src/style.css`: Qty `th` and `td` get `hide-narrow`; a `.qty-mark` span beside the name shows only under 40rem.
-- [ ] Look at rows with Foil and a pressed Keep chip: if Foil still wraps onto its own line, put it on the printing line.
+- [x] Failing tests first (`tests/e2e/list-rows.spec.ts`): under 40rem the Qty header is hidden and a card with several copies shows "×N" beside its name (Swamp ×8) while a single copy shows no mark; the mark follows the quantity when a copy is removed; at 40rem and up the Qty column stays and no mark shows; the phone list is shorter. The first version of the height guard used a stale baseline (8847px, measured before the slice 5 header change; the real baseline was 8486px), so it passed on the old code. It was corrected to the measured figures before the change was kept.
+- [x] `src/ui/deckView.ts` and `src/style.css`: the Qty header and cells get `hide-narrow`; a `.qty-mark` span beside the name shows only under 40rem. The Price column keeps the unit price; "×8" next to the name is what stops "$0.09" reading as a line total.
+- [x] Result at Pixel 7 width on the seeded 100-card deck: list 8,486px before, 8,026px after (460px, 5.4% shorter). The commander row fits on one line, and Foil now fits on the printing line next to Keep, so no separate Foil change was needed.
 
 ## Done when
 
