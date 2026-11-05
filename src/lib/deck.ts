@@ -25,6 +25,13 @@ export interface Deck {
   updatedAt: string;
   /** Last computed totals, shown on the home screen without re-pricing. */
   summary?: { total: number; unpriced: number; count: number; toBuy?: number };
+  /**
+   * Oracle IDs of the cards you own for this deck. A physical card is in one deck at a time, so this
+   * belongs to the deck: ticking a card here never marks it owned in another deck. Owning any printing counts.
+   */
+  owned?: string[];
+  /** Basic lands count as owned unless unticked; the ones unticked in this deck. */
+  unownedBasics?: string[];
 }
 
 export interface PricedLine {
