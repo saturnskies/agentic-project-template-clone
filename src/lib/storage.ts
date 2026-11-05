@@ -1,18 +1,21 @@
 import { isDeck, type Deck } from './deck';
 
-/** Everything Swapsmith keeps in the browser, under one versioned key (see ADR-001). */
+/**
+ * Everything Swapsmith keeps in the browser, under one versioned key (see ADR-001). The key stays
+ * `swapsmith:v1`: the `version` field inside is what moves. Version 2 keeps the owned cards on each deck;
+ * version 1 had one list shared by every deck, and `sanitizeStore` moves that into the decks on load.
+ */
 export interface Store {
-  version: 1;
+  version: 2;
   decks: Deck[];
-  owned: string[];
-  unownedBasics: string[];
   prefs: { view: 'grid' | 'list' };
 }
 
 export const STORE_KEY = 'swapsmith:v1';
+const MIGRATION_BACKUP_KEY = `${STORE_KEY}:before-owned-per-deck`;
 
 export function emptyStore(): Store {
-  return { version: 1, decks: [], owned: [], unownedBasics: [], prefs: { view: 'list' } };
+  return { version: 2, decks: [], prefs: { view: 'list' } };
 }
 
 const strings = (x: unknown): string[] => (Array.isArray(x) ? x.filter((s): s is string => typeof s === 'string') : []);
@@ -41,19 +44,46 @@ export function loadStore(storage: Storage | null): { store: Store; persistent: 
     return { store: emptyStore(), persistent: true };
   }
 
+  // The first time the old shared owned list is migrated into the decks, keep the old data as it was.
+  // Nothing reads this copy; it only exists so a mistake can never cost anyone their decks.
+  if (('owned' in data || 'unownedBasics' in data) && !storage.getItem(MIGRATION_BACKUP_KEY)) {
+    try {
+      storage.setItem(MIGRATION_BACKUP_KEY, raw);
+    } catch {
+      // Storage full or blocked: the migration still works, just without the safety copy.
+    }
+  }
+
   return { store: sanitizeStore(data), persistent: true };
 }
 
-/** Builds a valid Store from untrusted parsed JSON: bad decks and fields are dropped, never thrown on. */
+/**
+ * Builds a valid Store from untrusted parsed JSON: bad decks and fields are dropped, never thrown on.
+ * A store saved in the old shape (one `owned` / `unownedBasics` list for every deck) is migrated here, so
+ * loading, restoring an old backup and opening an old cached copy of the data all end up the same way.
+ */
 export function sanitizeStore(data: Record<string, unknown>): Store {
   const prefs = (data.prefs ?? {}) as Record<string, unknown>;
+  const legacy = 'owned' in data || 'unownedBasics' in data ? { owned: strings(data.owned), unownedBasics: strings(data.unownedBasics) } : null;
   return {
-    version: 1,
-    decks: Array.isArray(data.decks) ? data.decks.filter(isDeck) : [],
-    owned: strings(data.owned),
-    unownedBasics: strings(data.unownedBasics),
+    version: 2,
+    decks: (Array.isArray(data.decks) ? data.decks.filter(isDeck) : []).map((d) => withOwnership(d, legacy)),
     prefs: { view: prefs.view === 'grid' ? 'grid' : 'list' },
   };
+}
+
+/**
+ * A deck that already has its own ticks keeps them (cleaned up), even if old shared lists are also
+ * present: an old cached copy of the app saving the old shape must not undo the migration. Otherwise the
+ * old shared lists are copied in, keeping only the cards this deck contains, so it looks as it did before.
+ */
+function withOwnership(deck: Deck, legacy: { owned: string[]; unownedBasics: string[] } | null): Deck {
+  const raw = deck as unknown as Record<string, unknown>;
+  if ('owned' in raw || 'unownedBasics' in raw) return { ...deck, owned: strings(raw.owned), unownedBasics: strings(raw.unownedBasics) };
+  if (!legacy) return deck;
+  const ids = new Set([deck.commander.oracleId, ...deck.cards.map((e) => e.card.oracleId)]);
+  const mine = (list: string[]) => [...new Set(list.filter((id) => ids.has(id)))];
+  return { ...deck, owned: mine(legacy.owned), unownedBasics: mine(legacy.unownedBasics) };
 }
 
 /** Saves the store; returns false when storage is missing, blocked or full. */
