@@ -134,10 +134,13 @@ h3 { font: 500 1.05rem/1.3 var(--font-display); margin: 0; }
 .back { text-decoration: none; font-size: 0.9rem; }
 .deck-head h2 { font-size: 1.6rem; }
 .deck-head p { margin: 0.25rem 0 0; }
-.stats { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-.stat { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.75rem 1rem; display: grid; min-width: 9rem; }
+.stat-row { align-items: end; }
+.stat-main { display: grid; gap: 0.1rem; justify-items: start; justify-self: start; min-width: 12rem; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.75rem 1rem; }
 .stat-label { color: var(--muted); font-size: 0.85rem; }
-.stat-value { font: 700 1.5rem/1.2 var(--font-display); font-variant-numeric: tabular-nums; }
+.stat-hero { font: 700 2.25rem/1.1 var(--font-display); font-variant-numeric: tabular-nums; }
+.stat-sub { color: var(--muted); font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+/* An empty message slot (status line, copy note, price note) takes no height but would still get a grid gap. */
+.muted:empty, .stack:empty { display: none; }
 .progress { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
 progress { width: min(100%, 20rem); accent-color: var(--accent); }
 .table-wrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
