@@ -33,7 +33,8 @@ test('the phone list is shorter than it was with a Qty column', async ({ page, i
   test.skip(!isMobile, 'phones only');
   await openEdgarDeck(page);
   await expect(page.locator('table.cards tbody tr').first()).toBeVisible();
-  // 8486px at Pixel 7 width on the seeded 100-card deck with the Qty column; 8026px without it.
+  // Pixel 7 width, seeded 100-card deck. With the Qty column: 8486px. Without it: 8026px on a dev
+  // machine, 8191px on the CI runner (its fonts wrap differently). The limit sits between the two.
   const height = await page.evaluate(() => document.documentElement.scrollHeight);
-  expect(height).toBeLessThanOrEqual(8100);
+  expect(height).toBeLessThanOrEqual(8300);
 });
