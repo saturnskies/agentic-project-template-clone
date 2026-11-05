@@ -1,6 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { readFileSync } from 'node:fs';
-import { edgarFull, mockScryfall, pasteAndFix, showPane } from './helpers';
+import { edgarFull, mockScryfall, pasteAndFix, seedTwoEdgarDecks, showPane, suggestionsPanel } from './helpers';
 
 // Deck from tests/fixtures/e2e-list.txt: total $36.35, of which 8 Swamps ($0.88) are owned by default.
 
@@ -39,24 +38,12 @@ test('owned cards are remembered across reloads, and belong to one deck only', a
   await expect(page.getByRole('listitem').filter({ hasText: 'Second' })).toContainText('$35.47 to buy');
 });
 
-// Two copies of the full Edgar deck, so the same card is in both. Minas Tirith is $6.08, so it has cheaper replacements
-// unless it is owned.
+// Minas Tirith ($6.08) has cheaper replacements unless it is owned.
 const MINAS = '7b0d7e62-0287-454a-8702-b0bfa7b41245';
-async function seedTwoDecks(page: import('@playwright/test').Page, store: (a: object, b: object) => object) {
-  const edgar = JSON.parse(readFileSync(new URL('../fixtures/edgar-deck.json', import.meta.url), 'utf8'));
-  const a = { ...edgar, id: 'deck-a', name: 'Deck A' };
-  const b = { ...edgar, id: 'deck-b', name: 'Deck B' };
-  await page.addInitScript(
-    ([payload]) => {
-      if (!localStorage.getItem('swapsmith:v1')) localStorage.setItem('swapsmith:v1', payload);
-    },
-    [JSON.stringify(store(a, b))],
-  );
-}
 
 test('ticking a card in one deck leaves it unticked in another deck that has it', async ({ page }) => {
   await mockScryfall(page, edgarFull);
-  await seedTwoDecks(page, (a, b) => ({ version: 2, decks: [a, b], prefs: { view: 'list' } }));
+  await seedTwoEdgarDecks(page, (a, b) => ({ version: 2, decks: [a, b], prefs: { view: 'list' } }));
 
   await page.goto('./#/deck/deck-a');
   await expect(page.getByTestId('deck-total')).toHaveText(/\$/);
@@ -73,13 +60,13 @@ test('ticking a card in one deck leaves it unticked in another deck that has it'
 test("suggestions in a deck ignore what you own in another deck", async ({ page }) => {
   await mockScryfall(page, edgarFull);
   // Minas Tirith is owned for Deck A only.
-  await seedTwoDecks(page, (a, b) => ({ version: 2, decks: [{ ...a, owned: [MINAS], unownedBasics: [] }, b], prefs: { view: 'list' } }));
+  await seedTwoEdgarDecks(page, (a, b) => ({ version: 2, decks: [{ ...a, owned: [MINAS], unownedBasics: [] }, b], prefs: { view: 'list' } }));
 
   await page.goto('./#/deck/deck-b');
   await expect(page.getByTestId('deck-total')).toHaveText(/\$/);
   await showPane(page, 'Suggestions');
   await page.getByRole('button', { name: 'Find suggestions' }).click();
-  const panel = page.getByRole('complementary', { name: 'Suggestions' });
+  const panel = suggestionsPanel(page);
   await panel.getByRole('button', { name: 'Cheaper' }).click();
   await expect(panel.getByRole('region', { name: 'Cheaper than Minas Tirith' })).toBeVisible();
 
@@ -88,7 +75,7 @@ test("suggestions in a deck ignore what you own in another deck", async ({ page 
   await expect(page.getByTestId('deck-total')).toHaveText(/\$/);
   await showPane(page, 'Suggestions');
   await page.getByRole('button', { name: 'Find suggestions' }).click();
-  const panelA = page.getByRole('complementary', { name: 'Suggestions' });
+  const panelA = suggestionsPanel(page);
   await panelA.getByRole('button', { name: 'Cheaper' }).click();
   await expect(panelA).toContainText('Cheaper cards that do the same job'); // the Cheaper view has drawn
   await expect(panelA.getByRole('region', { name: 'Cheaper than Minas Tirith' })).toHaveCount(0);
@@ -97,7 +84,7 @@ test("suggestions in a deck ignore what you own in another deck", async ({ page 
 test('data saved before ownership moved into each deck opens with every deck looking the same', async ({ page }) => {
   await mockScryfall(page, edgarFull);
   // The old shape: one owned list for the whole app.
-  await seedTwoDecks(page, (a, b) => ({ version: 1, decks: [a, b], owned: [MINAS], unownedBasics: [], prefs: { view: 'list' } }));
+  await seedTwoEdgarDecks(page, (a, b) => ({ version: 1, decks: [a, b], owned: [MINAS], unownedBasics: [], prefs: { view: 'list' } }));
 
   await page.goto('./#/deck/deck-a');
   await expect(page.getByRole('checkbox', { name: 'Own Minas Tirith' })).toBeChecked();
