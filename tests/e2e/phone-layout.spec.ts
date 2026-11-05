@@ -319,6 +319,23 @@ test.describe('Cards | Suggestions switch', () => {
     await expect(paneBar(page).getByRole('button', { name: 'Suggestions', exact: true })).toBeFocused();
   });
 
+  test('List and Grid are only offered where they apply: hidden while Suggestions shows, always on a wide screen', async ({ page }) => {
+    await openDeck(page);
+    const view = page.getByRole('group', { name: 'View' });
+    await view.getByRole('button', { name: 'Grid' }).click();
+    await expect(view).toBeVisible();
+
+    await showPane(page, 'Suggestions');
+    await expect(view).toBeHidden(); // it would control a list you cannot see
+    await showPane(page, 'Cards');
+    await expect(view).toBeVisible();
+    await expect(view.getByRole('button', { name: 'Grid' })).toHaveAttribute('aria-pressed', 'true'); // your choice is kept
+
+    await showPane(page, 'Suggestions');
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await expect(view).toBeVisible(); // side by side: the list is on screen too
+  });
+
   test('a wide screen shows both side by side with no switch, and narrowing keeps your pane', async ({ page }) => {
     await openDeck(page);
     await showPane(page, 'Suggestions');
