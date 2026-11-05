@@ -16,6 +16,8 @@ export interface AppContext {
   deleteDeck(id: string): void;
   /** Remembers the list or grid view for every deck. */
   setView(view: 'list' | 'grid'): void;
+  /** Remembers on this device that the first-use note about Owned and Keep was dismissed. */
+  dismissHelp(): void;
   go(route: string): void;
   /** Like go, but swaps the current history entry, so back skips the screen we just left. */
   replace(route: string): void;
@@ -42,6 +44,10 @@ export function startApp(root: HTMLElement): void {
     },
     setView(view) {
       store.prefs = { ...store.prefs, view };
+      save();
+    },
+    dismissHelp() {
+      store.prefs = { ...store.prefs, helpDismissed: true };
       save();
     },
     deleteDeck(id) {
