@@ -1,20 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
-import { readFileSync } from 'node:fs';
-import { edgarFull, mockScryfall, seedEdgarDeck, showPane } from './helpers';
+import { edgarFull, mockScryfall, openEdgarDeck, seedTwoEdgarDecks, showPane } from './helpers';
 
 // A first-use note above the card list explains Owned and Keep (docs/superpowers/plans/2026-11-05-keep-owned-help.md).
 
 const note = (page: Page) => page.getByRole('note', { name: 'How Owned and Keep work' });
 
-async function openFirstVisit(page: Page) {
-  await mockScryfall(page, edgarFull);
-  const deck = await seedEdgarDeck(page, { firstVisit: true });
-  await page.goto(`./#/deck/${deck.id}`);
-  await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
-}
-
 test('a first-time visitor is told what Owned and Keep mean, and can dismiss it for good', async ({ page }) => {
-  await openFirstVisit(page);
+  await openEdgarDeck(page, { firstVisit: true });
   await expect(note(page)).toBeVisible();
   await expect(note(page)).toContainText('Owned');
   await expect(note(page)).toContainText('Other decks keep their own ticks');
@@ -32,11 +24,7 @@ test('a first-time visitor is told what Owned and Keep mean, and can dismiss it 
 
 test('dismissing it once means no deck shows it again', async ({ page }) => {
   await mockScryfall(page, edgarFull);
-  const edgar = JSON.parse(readFileSync(new URL('../fixtures/edgar-deck.json', import.meta.url), 'utf8'));
-  const decks = [{ ...edgar, id: 'deck-a', name: 'Deck A' }, { ...edgar, id: 'deck-b', name: 'Deck B' }];
-  await page.addInitScript(([payload]) => {
-    if (!localStorage.getItem('swapsmith:v1')) localStorage.setItem('swapsmith:v1', payload);
-  }, [JSON.stringify({ version: 2, decks, prefs: { view: 'list' } })]);
+  await seedTwoEdgarDecks(page, (a, b) => ({ version: 2, decks: [a, b], prefs: { view: 'list' } }));
 
   await page.goto('./#/deck/deck-a');
   await expect(note(page)).toBeVisible();
@@ -49,7 +37,7 @@ test('dismissing it once means no deck shows it again', async ({ page }) => {
 
 test('on a phone the note belongs to the Cards pane and its button is a 44px target', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'the Cards | Suggestions switch only exists on a phone');
-  await openFirstVisit(page);
+  await openEdgarDeck(page, { firstVisit: true });
   const gotIt = note(page).getByRole('button', { name: 'Got it' });
   const box = await gotIt.boundingBox();
   expect(box!.height).toBeGreaterThanOrEqual(44);
