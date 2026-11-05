@@ -19,9 +19,12 @@ updated: 2026-11-05
 
 ## Slice
 
-- [ ] Failing tests first (phone): while a search runs and you are on Cards the tab shows `Searching`, then `Ready`; the tab's accessible name stays "Suggestions"; a polite live region announces both; opening Suggestions clears `Ready`; a search that finishes while you are already on Suggestions never shows a badge; a search that fails (every Scryfall search aborted) shows `Failed` on the tab and opening the pane shows the panel's own error and clears the badge; a second Find after a failure shows `Searching` again; the badge fits on one line in the bar at 360px and 412px wide.
-- [ ] `src/ui/suggestions.ts` reports `searching` / `ready` / `failed` through a callback, only for the current run (replies from an older run are ignored, as the panel already does); `src/ui/panes.ts` returns the bar plus a `setSearch` and draws the badge and live region; `src/ui/deckView.ts` connects them; `src/style.css` for the badge.
+- [x] Failing tests first (phone): while a search runs and you are on Cards the tab shows `Searching`, then `Ready`; the tab's accessible name stays "Suggestions"; a polite live region announces both; opening Suggestions clears `Ready`; a search that finishes while you are already on Suggestions never shows a badge; a search that fails (every Scryfall search aborted) shows `Failed` on the tab and opening the pane shows the panel's own error and clears the badge; a second Find after a failure shows `Searching` again; the badge fits on one line in the bar at 360px and 412px wide.
+- [x] `src/ui/suggestions.ts` reports `searching` / `ready` / `failed` through a callback, only for the current run (replies from an older run are ignored, as the panel already does); `src/ui/panes.ts` returns the bar plus a `setSearch` and draws the badge and live region; `src/ui/deckView.ts` connects them; `src/style.css` for the badge.
 - Failure paths: a superseded run never changes the badge; every Scryfall search failing is the only way to `Failed` (one failed search among several still gives results, with the panel's note, as today).
+
+- Built as planned, in 5 tests in `tests/e2e/suggestions-status.spec.ts` (phone only): Searching then Ready from the Cards pane with an unchanged tab name and a live-region announcement; no badge when the search finishes while you are on Suggestions (a guard that cannot fail before the code exists, so the first test is the one that proves the badge); Failed after every search is aborted, cleared by opening the pane, and Searching again on retry; one line in the bar at 360px; the dot only pulses when motion is allowed. One test locator was wrong at first (the live region sits next to the Show group, not inside it) and was fixed.
+- The tab segments now size to their content (`flex: 1 1 auto`) so the badge fits at 360px; the Cards segment is a little narrower while a badge shows.
 
 ## Done when
 
