@@ -1,4 +1,4 @@
-import { h } from './dom';
+import { h, segmented } from './dom';
 
 type Pane = 'cards' | 'suggestions';
 
@@ -40,30 +40,26 @@ export function paneSwitch(columns: HTMLElement, panel: HTMLElement): { root: HT
     live.textContent = show ? SPOKEN[search] : '';
   };
 
-  const choices: Array<{ pane: Pane; label: string }> = [
-    { pane: 'cards', label: 'Cards' },
-    { pane: 'suggestions', label: 'Suggestions' },
-  ];
-  const buttons = choices.map(({ pane: target, label }) => {
-    const button = h('button', { type: 'button', class: 'segment', 'aria-pressed': String(target === pane) }, label);
-    if (target === 'suggestions') button.append(badge);
-    button.addEventListener('click', () => {
+  const switcher = segmented<Pane>(
+    'Show',
+    [{ id: 'cards', label: 'Cards' }, { id: 'suggestions', label: 'Suggestions' }],
+    pane,
+    (target) => {
       if (target === pane) return;
       scrollAt[pane] = window.scrollY;
       pane = target;
       columns.dataset.pane = pane;
-      buttons.forEach((b, i) => b.setAttribute('aria-pressed', String(choices[i].pane === pane)));
       if (pane === 'suggestions' && search !== 'searching') search = 'idle'; // Ready and Failed have been seen
       render();
       // Read after the switch: the page is a different height now.
       const top = scrollAt[pane] ?? Math.max(0, panel.getBoundingClientRect().top + window.scrollY - 8);
       window.scrollTo(0, top);
-    });
-    return button;
-  });
+    },
+  );
+  switcher.lastElementChild!.append(badge); // the Suggestions tab carries the search badge
 
   return {
-    root: h('div', { class: 'pane-bar' }, h('div', { class: 'segmented', role: 'group', 'aria-label': 'Show' }, ...buttons), live),
+    root: h('div', { class: 'pane-bar' }, switcher, live),
     setSearch(state) {
       // Finishing while you are already looking at the panel needs no badge: it shows its own result.
       search = pane === 'suggestions' && (state === 'ready' || state === 'failed') ? 'idle' : state;
