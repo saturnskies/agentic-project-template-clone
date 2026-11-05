@@ -15,7 +15,7 @@ updated: 2026-11-05
 - **The button's name does not change.** The badge is `aria-hidden`, so the tab is still just "Suggestions" to a screen reader and to tests that find it by name. A separate hidden live region in the bar announces the change ("Searching Scryfall for suggestions…", "Suggestions are ready.", "Couldn't search Scryfall.").
 - **"Ready" means the search finished**, not that the deck's own roles have loaded (that continues quietly afterwards, as today).
 - **Motion:** a small pulsing dot with `Searching`, only when the user has not asked for reduced motion.
-- **Out of scope:** the List/Grid switch above the Suggestions panel (still a follow-up).
+- **Out of scope here, done right after:** the List/Grid switch above the Suggestions panel. On a phone it is now hidden while the Suggestions pane shows (it controls a list you cannot see) and always shown on a wide screen; the choice is kept. One CSS rule under 70rem (`body:has(.deck-columns[data-pane="suggestions"]) .view-switch`) and a class on the switch; one test in the Cards | Suggestions group.
 
 ## Slice
 
