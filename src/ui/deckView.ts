@@ -3,7 +3,7 @@ import { deckFileName, deckToText } from '../lib/export';
 import { decodeDeck, encodeDeck, ShareError } from '../lib/share';
 import { cardWarnings, DECK_SIZE, isBasicLand, warningText } from '../lib/format';
 import { cardImage, compareLines, GROUP_ORDER, groupByType, typeGroup, typeName, type SortKey } from '../lib/groups';
-import { isOwned, stillToBuy } from '../lib/owned';
+import { deckCollection, isOwned, setOwned as setOwnedIn, stillToBuy } from '../lib/owned';
 import { sortPrintings } from '../lib/price';
 import { autocompleteNames, cardByName } from '../scryfall/cards';
 import { oracleIdOf, priceDeck, priceEntries, withPrinting, type PricedCard } from '../scryfall/resolve';
@@ -110,7 +110,8 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   }
   drawTitle();
 
-  const owned = (p: PricedCard) => isOwned(ctx.store, p.entry.card.oracleId, p.typeLine);
+  // What you own belongs to this deck only: a physical card is in one deck at a time.
+  const owned = (p: PricedCard) => isOwned(deckCollection(deck), p.entry.card.oracleId, p.typeLine);
   const summary = () => ({
     ...deckTotals(priced.map((p) => ({ qty: p.entry.qty, price: p.price }))),
     toBuy: stillToBuy(priced.map((p) => ({ qty: p.entry.qty, price: p.price, owned: owned(p) }))),
@@ -172,7 +173,8 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
         onRemove: remove,
         owned,
         onOwned: (p, value) => {
-          ctx.setOwned(p.entry.card.oracleId, p.typeLine, value);
+          const next = setOwnedIn(deckCollection(deck), p.entry.card.oracleId, p.typeLine, value);
+          deck = { ...deck, owned: next.owned, unownedBasics: next.unownedBasics, updatedAt: new Date().toISOString() };
           deck = { ...deck, summary: summary() };
           persist(deck);
           redraw();
@@ -472,7 +474,7 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
       else {
         adder.append(search.root, warningBox, status, viewSwitch);
         columns.classList.add('with-panel');
-        panel = suggestionsPanel(ctx, () => priced, { add, swap, undo, lastSwap: () => lastSwap?.label ?? null });
+        panel = suggestionsPanel(ctx, () => priced, { add, swap, undo, lastSwap: () => lastSwap?.label ?? null, collection: () => deckCollection(deck) });
         columns.append(panel.root);
         columns.after(paneSwitch(columns, panel.root));
       }
