@@ -28,7 +28,8 @@ Status: **current** = in force or in progress; **draft** = proposed, not approve
 ## docs/superpowers/plans/
 
 - [2026-11-02-swapsmith-v1.md](superpowers/plans/2026-11-02-swapsmith-v1.md) — current, 2026-11-02 — Swapsmith v1 build plan — eight test-gated vertical slices from skeleton and deploy to swap suggestions
-- [2026-11-04-phone-layout.md](superpowers/plans/2026-11-04-phone-layout.md) — draft, 2026-11-04 — Phone layout fixes from the 2026-11-04 UI critique, dark mode first — five test-gated slices (dark contrast, empty alert bug, touch targets, Cards|Suggestions switch, deck header)
+- [2026-11-04-phone-layout.md](superpowers/plans/2026-11-04-phone-layout.md) — done, 2026-11-05 — Phone layout fixes from the 2026-11-04 UI critique, dark mode first — five test-gated slices (dark contrast, empty alert bug, touch targets, Cards|Suggestions switch, deck header)
+- [2026-11-05-undo-remove-and-short-rows.md](superpowers/plans/2026-11-05-undo-remove-and-short-rows.md) — draft, 2026-11-05 — Two follow-ups from the 2026-11-05 UI critique (29/40) — Undo for removing a card, and shorter phone list rows by showing a quantity only above 1
 
 ## docs/superpowers/specs/
 

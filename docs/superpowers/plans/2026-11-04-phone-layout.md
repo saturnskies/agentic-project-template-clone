@@ -1,7 +1,7 @@
 ---
 description: Phone layout fixes from the 2026-11-04 UI critique, dark mode first — five test-gated slices (dark contrast, empty alert bug, touch targets, Cards|Suggestions switch, deck header)
-status: draft
-updated: 2026-11-04
+status: done
+updated: 2026-11-05
 ---
 
 # Phone layout fixes (dark mode first)
