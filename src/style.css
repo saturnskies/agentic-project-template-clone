@@ -106,8 +106,6 @@ h3 { font: 500 1.05rem/1.3 var(--font-display); margin: 0; }
 .banner { margin: 0; padding: 0.75rem 1rem; border-radius: var(--radius); background: var(--tag-bg); border: 1px solid var(--line); }
 .notice { margin: 0; padding: 0.75rem 1rem; border-radius: var(--radius); border: 1px solid var(--danger); }
 .notice ul { margin: 0.25rem 0 0; padding-left: 1.2rem; }
-/* A message slot that is mounted but empty (an alert waiting for an error) must take no space. */
-.notice:empty { display: none; }
 .tag { display: inline-block; margin-left: 0.4rem; font-size: 0.75rem; padding: 0 0.4rem; border-radius: 999px; background: var(--tag-bg); color: var(--muted); vertical-align: middle; }
 
 /* Home */
@@ -141,8 +139,10 @@ h3 { font: 500 1.05rem/1.3 var(--font-display); margin: 0; }
 .stat-label { color: var(--muted); font-size: 0.85rem; }
 .stat-hero { font: 700 2.25rem/1.1 var(--font-display); font-variant-numeric: tabular-nums; }
 .stat-sub { color: var(--muted); font-size: 0.9rem; font-variant-numeric: tabular-nums; }
-/* An empty message slot (status line, copy note, price note) takes no height but would still get a grid gap. */
-.muted:empty, .stack:empty { display: none; }
+/* An empty message slot (status line, copy note, price note, alert) must take no room and paint nothing, yet stay in the
+   accessibility tree: display:none would drop a live region, and text added to it later might not be announced. Out of
+   flow, so it also gets no grid gap. */
+.muted:empty, .notice:empty, .stack:empty { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .progress { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
 progress { width: min(100%, 20rem); accent-color: var(--accent); }
 .table-wrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
@@ -176,7 +176,6 @@ th[aria-sort="descending"] .sort::after { content: " ↓"; }
 .combo-list li { padding: 0.45rem 0.75rem; cursor: pointer; display: grid; gap: 0.1rem; }
 .combo-list li[aria-selected="true"], .combo-list li:hover { background: var(--tag-bg); }
 .combo-detail { color: var(--muted); font-size: 0.85rem; }
-.combo-note:empty { display: none; }
 .icon-button { font: inherit; font-size: 1.1rem; line-height: 1; width: 2rem; height: 2rem; border-radius: 50%; border: 1px solid transparent; background: none; color: var(--muted); cursor: pointer; }
 .icon-button:hover { color: var(--danger); border-color: var(--line); }
 .cards td.remove { width: 2.5rem; padding-block: 0.25rem; text-align: right; }
@@ -312,7 +311,6 @@ dialog.picker::backdrop { background: rgb(0 0 0 / 0.45); }
 
 /* The Undo offer after removing a card: above the Cards | Suggestions bar below 70rem, near the bottom above it. */
 .toast-host { position: fixed; left: 0; right: 0; bottom: 1rem; z-index: 5; display: flex; justify-content: center; padding-inline: 16px; pointer-events: none; }
-.toast-host:empty { display: none; }
 .toast { pointer-events: auto; display: flex; align-items: center; gap: 0.75rem; max-width: min(100%, 28rem); padding: 0.4rem 0.5rem 0.4rem 1rem; border-radius: var(--radius); background: var(--ink); color: var(--panel); box-shadow: 0 8px 24px rgb(0 0 0 / 0.25); }
 @media (max-width: 69.999rem) { .toast-host { bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px)); } }
 
