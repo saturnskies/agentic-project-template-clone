@@ -304,3 +304,9 @@ dialog.picker::backdrop { background: rgb(0 0 0 / 0.45); }
   .deck-columns[data-pane="cards"] > .suggestions { display: none; }
   .deck-columns[data-pane="suggestions"] > :not(.suggestions) { display: none; }
 }
+
+/* The Undo offer after removing a card: above the Cards | Suggestions bar below 70rem, near the bottom above it. */
+.toast-host { position: fixed; left: 0; right: 0; bottom: 1rem; z-index: 5; display: flex; justify-content: center; padding-inline: 16px; pointer-events: none; }
+.toast-host:empty { display: none; }
+.toast { pointer-events: auto; display: flex; align-items: center; gap: 0.75rem; max-width: min(100%, 28rem); padding: 0.4rem 0.5rem 0.4rem 1rem; border-radius: var(--radius); background: var(--ink); color: var(--panel); box-shadow: 0 8px 24px rgb(0 0 0 / 0.25); }
+@media (max-width: 69.999rem) { .toast-host { bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px)); } }
