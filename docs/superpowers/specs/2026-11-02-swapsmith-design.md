@@ -1,7 +1,7 @@
 ---
 description: Swapsmith v1 design spec — free static Commander deckbuilder with live TCGplayer prices via Scryfall, owned-card tracking, and rules-based swap/upgrade/cheaper-replacement suggestions
 status: current
-updated: 2026-11-02
+updated: 2026-11-05
 ---
 
 # Swapsmith v1: design spec
@@ -18,7 +18,7 @@ A free website where someone builds or pastes a Commander deck, sees what each c
 
 1. **Commander deck building.** Pick a commander, then add cards by search with autocomplete. Or paste a text list.
 2. **Live prices.** Each card shows its cheapest TCGplayer market price, with a link to that printing's TCGplayer page. A printing picker overrides the default per card.
-3. **Owned cards.** Tick the cards you own. Totals show the deck cost and the cost still to buy.
+3. **Owned cards.** Tick the cards you own for each deck. A physical card is in one deck at a time, so what you own for one deck says nothing about another. Totals show the deck cost and the cost still to buy.
 4. **Suggestions**, all from rules over Scryfall data:
    - upgrades by price tier
    - swap pairs (cut one card, add another)
@@ -95,7 +95,7 @@ UnownedBasics = Set<oracleId> // basic lands are owned by default; unticking one
 Prefs    = { view: 'grid' | 'list', budgetTier?: 'budget' | 'mid' | 'premium' }
 ```
 
-- **Storage.** Decks, owned cards and preferences go in `localStorage` under one versioned key (`swapsmith:v1`). Cached API responses go in IndexedDB. If storage is blocked, as in some private windows, the app still works for the session and shows a banner saying decks won't be saved.
+- **Storage.** Decks (each with the cards owned for it) and preferences go in `localStorage` under one versioned key (`swapsmith:v1`; the `version` inside is 2 since 2026-11-05, see "Decisions after review"). Cached API responses go in IndexedDB. If storage is blocked, as in some private windows, the app still works for the session and shows a banner saying decks won't be saved.
 - **Owned cards are matched by Oracle ID.** Owning any printing of a card counts as owning it. Basic lands (type line `Basic Land`, including Wastes and snow basics) count as owned unless unticked.
 
 ### Share links
@@ -270,4 +270,5 @@ Each slice works end to end and is gated by its tests. The detailed plan comes n
 ## Decisions after review (2026-11-02)
 
 - **Repo name:** the repo is renamed `swapsmith` on GitHub, so the site lives at `https://saturnskies.github.io/swapsmith/`. Vite's `base` is `/swapsmith/`.
-- **Basic lands are owned by default.** Unticking one records it in `UnownedBasics`. Still-to-buy totals exclude owned basics.
+- **Basic lands are owned by default.** Unticking one records it in the deck's `unownedBasics`. Still-to-buy totals exclude owned basics.
+- **Owned belongs to each deck (2026-11-05).** Each deck stores `owned` and `unownedBasics` itself; nothing is shared between decks, in suggestions, totals, backups or restores. Data saved before this change (one list for every deck) is migrated when it loads or when an old backup is restored: each deck gets the ticks for the cards it contains, so it looks exactly as it did, and the old shared list is dropped. A deck that already has its own ticks is never overwritten. The storage key and package id are unchanged ([ADR-004](../../decisions/ADR-004-apk-signing-and-data-safety.md)). Plan: [owned per deck](../plans/2026-11-05-owned-per-deck.md).
