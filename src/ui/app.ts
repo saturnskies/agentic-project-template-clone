@@ -1,5 +1,4 @@
 import type { Deck } from '../lib/deck';
-import { setOwned as setOwnedIn } from '../lib/owned';
 import { browserStorage, loadStore, saveStore, type Store } from '../lib/storage';
 import { createClient, type ScryfallClient } from '../scryfall/client';
 import { renderDeck, renderShared } from './deckView';
@@ -15,8 +14,6 @@ export interface AppContext {
   persistent: boolean;
   saveDeck(deck: Deck): void;
   deleteDeck(id: string): void;
-  /** Ticks or unticks a card in the owned collection shared by every deck. */
-  setOwned(oracleId: string, typeLine: string, owned: boolean): void;
   /** Remembers the list or grid view for every deck. */
   setView(view: 'list' | 'grid'): void;
   go(route: string): void;
@@ -24,7 +21,7 @@ export interface AppContext {
   replace(route: string): void;
   /** Redraws the current screen (after the store changed underneath it). */
   refresh(): void;
-  /** Overwrites the saved decks, owned cards and view with `next` (used by restore) and saves. */
+  /** Overwrites the saved decks (with their owned cards) and view with `next` (used by restore) and saves. */
   replaceStore(next: Store): void;
 }
 
@@ -41,12 +38,6 @@ export function startApp(root: HTMLElement): void {
       const i = store.decks.findIndex((d) => d.id === deck.id);
       if (i >= 0) store.decks[i] = deck;
       else store.decks.unshift(deck);
-      save();
-    },
-    setOwned(oracleId, typeLine, owned) {
-      const next = setOwnedIn(store, oracleId, typeLine, owned);
-      store.owned = next.owned;
-      store.unownedBasics = next.unownedBasics;
       save();
     },
     setView(view) {
@@ -68,8 +59,6 @@ export function startApp(root: HTMLElement): void {
     refresh: () => render(),
     replaceStore(next) {
       store.decks = next.decks;
-      store.owned = next.owned;
-      store.unownedBasics = next.unownedBasics;
       store.prefs = next.prefs;
       save();
     },
