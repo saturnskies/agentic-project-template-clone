@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { edgarFull, mockScryfall, seedEdgarDeck, showPane } from './helpers';
+import { edgarFull, mockScryfall, seedEdgarDeck, showPane, suggestionsPanel } from './helpers';
 
 // The full Edgar Markov deck with Scryfall replies recorded 2026-11-02 (tests/fixtures/scryfall-edgar-full.json).
 // Prices are that recording's: re-recording moves them, so update the totals below with it.
@@ -17,7 +17,7 @@ test('find upgrades by price tier that fit the deck', async ({ page }) => {
   await expect(profile).toContainText('Tribe: Vampire');
   await expect(profile).toContainText('Themes: sacrifice, lifegain, +1/+1 counters, graveyard');
 
-  const panel = page.getByRole('complementary', { name: 'Suggestions' });
+  const panel = suggestionsPanel(page);
   await expect(panel.getByRole('button', { name: 'Budget (10)' })).toHaveAttribute('aria-pressed', 'true');
   const budget = panel.getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem');
   await expect(budget).toHaveCount(10);
@@ -65,7 +65,7 @@ test('swap a weak card for a suggestion, then undo it', async ({ page }) => {
   await page.goto(`./#/deck/${deck.id}`);
   await showPane(page, 'Suggestions');
   await page.getByRole('button', { name: 'Find suggestions' }).click();
-  const panel = page.getByRole('complementary', { name: 'Suggestions' });
+  const panel = suggestionsPanel(page);
   await panel.getByRole('button', { name: 'Swaps' }).click();
 
   const first = panel.getByRole('list', { name: 'Swap pairs' }).getByRole('listitem').first();
@@ -99,7 +99,7 @@ test('cards marked Keep are never offered as cuts', async ({ page }) => {
 
   await showPane(page, 'Suggestions');
   await page.getByRole('button', { name: 'Find suggestions' }).click();
-  const panel = page.getByRole('complementary', { name: 'Suggestions' });
+  const panel = suggestionsPanel(page);
   await panel.getByRole('button', { name: 'Swaps' }).click();
   await expect(panel.getByRole('list', { name: 'Swap pairs' })).not.toContainText('Cut Purify');
 
@@ -113,7 +113,7 @@ test('replace an expensive card with a cheaper one that does the same job', asyn
   await page.goto(`./#/deck/${deck.id}`);
   await showPane(page, 'Suggestions');
   await page.getByRole('button', { name: 'Find suggestions' }).click();
-  const panel = page.getByRole('complementary', { name: 'Suggestions' });
+  const panel = suggestionsPanel(page);
   await panel.getByRole('button', { name: 'Cheaper' }).click();
 
   const group = panel.getByRole('region', { name: 'Cheaper than Minas Tirith' });
@@ -140,7 +140,7 @@ test('if the role lookup fails, upgrades still show and swaps say matching is ap
   await showPane(page, 'Suggestions');
   await page.getByRole('button', { name: 'Find suggestions' }).click();
 
-  const panel = page.getByRole('complementary', { name: 'Suggestions' });
+  const panel = suggestionsPanel(page);
   await expect(panel.getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem').first()).toContainText('Indulgent Aristocrat');
   await panel.getByRole('button', { name: 'Swaps' }).click();
   await expect(panel).toContainText("Couldn't check what every card in your deck does", { timeout: 30_000 });
@@ -155,7 +155,7 @@ test('if one search fails, the rest still give suggestions and a note says what 
   await showPane(page, 'Suggestions');
   await page.getByRole('button', { name: 'Find suggestions' }).click();
 
-  const panel = page.getByRole('complementary', { name: 'Suggestions' });
+  const panel = suggestionsPanel(page);
   await expect(panel).toContainText("Scryfall didn't answer every search (ramp)", { timeout: 30_000 });
   await expect(panel.getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem').first()).toContainText('Indulgent Aristocrat');
 });
@@ -165,7 +165,7 @@ async function openSuggestions(page: import('@playwright/test').Page, view: 'Swa
   await page.goto(`./#/deck/${deck.id}`);
   await showPane(page, 'Suggestions');
   await page.getByRole('button', { name: 'Find suggestions' }).click();
-  const panel = page.getByRole('complementary', { name: 'Suggestions' });
+  const panel = suggestionsPanel(page);
   await panel.getByRole('button', { name: view }).click();
   return panel;
 }
