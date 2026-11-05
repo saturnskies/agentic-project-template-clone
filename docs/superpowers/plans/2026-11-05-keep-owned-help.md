@@ -1,6 +1,6 @@
 ---
 description: A short first-use note explaining Owned and Keep above the card list, dismissed for good with "Got it" — one test-gated slice
-status: draft
+status: done
 updated: 2026-11-05
 ---
 
