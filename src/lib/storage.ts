@@ -19,11 +19,14 @@ export function emptyStore(): Store {
   return { version: 2, decks: [], prefs: { view: 'list' } };
 }
 
+const strings = (x: unknown): string[] => (Array.isArray(x) ? x.filter((s): s is string => typeof s === 'string') : []);
+
 /** A deck holds at most a few hundred cards; a backup file is untrusted, so a deck's own lists are deduplicated and capped. */
 const MAX_OWNED_IDS = 1000;
 const boundedIds = (x: unknown): string[] => [...new Set(strings(x))].slice(0, MAX_OWNED_IDS);
 
-const strings = (x: unknown): string[] => (Array.isArray(x) ? x.filter((s): s is string => typeof s === 'string') : []);
+/** The old shape kept one `owned` / `unownedBasics` list for every deck at the top of the store (see `withOwnership`). */
+const isLegacyShape = (data: Record<string, unknown>) => 'owned' in data || 'unownedBasics' in data;
 
 /** Reads the store. `persistent` is false when storage is missing or blocked (some private windows). */
 export function loadStore(storage: Storage | null): { store: Store; persistent: boolean } {
@@ -51,7 +54,7 @@ export function loadStore(storage: Storage | null): { store: Store; persistent: 
 
   // The first time the old shared owned list is migrated into the decks, keep the old data as it was.
   // Nothing reads this copy; it only exists so a mistake can never cost anyone their decks.
-  if (('owned' in data || 'unownedBasics' in data) && !storage.getItem(MIGRATION_BACKUP_KEY)) {
+  if (isLegacyShape(data) && !storage.getItem(MIGRATION_BACKUP_KEY)) {
     try {
       storage.setItem(MIGRATION_BACKUP_KEY, raw);
     } catch {
@@ -69,7 +72,7 @@ export function loadStore(storage: Storage | null): { store: Store; persistent: 
  */
 export function sanitizeStore(data: Record<string, unknown>): Store {
   const prefs = (data.prefs ?? {}) as Record<string, unknown>;
-  const legacy = 'owned' in data || 'unownedBasics' in data ? { owned: strings(data.owned), unownedBasics: strings(data.unownedBasics) } : null;
+  const legacy = isLegacyShape(data) ? { owned: strings(data.owned), unownedBasics: strings(data.unownedBasics) } : null;
   return {
     version: 2,
     decks: (Array.isArray(data.decks) ? data.decks.filter(isDeck) : []).map((d) => withOwnership(d, legacy)),
@@ -83,8 +86,7 @@ export function sanitizeStore(data: Record<string, unknown>): Store {
  * old shared lists are copied in, keeping only the cards this deck contains, so it looks as it did before.
  */
 function withOwnership(deck: Deck, legacy: { owned: string[]; unownedBasics: string[] } | null): Deck {
-  const raw = deck as unknown as Record<string, unknown>;
-  if ('owned' in raw || 'unownedBasics' in raw) return { ...deck, owned: boundedIds(raw.owned), unownedBasics: boundedIds(raw.unownedBasics) };
+  if ('owned' in deck || 'unownedBasics' in deck) return { ...deck, owned: boundedIds(deck.owned), unownedBasics: boundedIds(deck.unownedBasics) };
   if (!legacy) return deck;
   const ids = new Set([deck.commander.oracleId, ...deck.cards.map((e) => e.card.oracleId)]);
   const mine = (list: string[]) => [...new Set(list.filter((id) => ids.has(id)))];
