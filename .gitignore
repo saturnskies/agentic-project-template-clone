@@ -31,3 +31,8 @@ playwright-report/
 android/keystore.properties
 *.keystore
 *.jks
+
+# Impeccable per-developer config
+.impeccable/config.local.json
+# Impeccable: the launcher runs a binary here after only a version check, so never commit one
+.claude/skills/impeccable/scripts/bin/

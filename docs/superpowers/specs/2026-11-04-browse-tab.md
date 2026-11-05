@@ -62,7 +62,7 @@ A modal `<dialog>` opened from a result: large image (a **Flip** button for doub
   - **Color identity** (decided 2026-11-04): if the card is outside the chosen deck's commander colors, a warning ("<card> is outside <commander>'s colors.", the deck screen's wording) shows under the select and Add still works; banned and not-legal cards warn the same way. If the commander's colors cannot be looked up (offline, lookup failed), Add works with a "Couldn't check <commander>'s colors." note. Add waits until the check has settled, and an answer for a deck that is no longer chosen is dropped.
   - **Add once.** After a card is added the button stays disabled until another choice is made, so pressing it twice adds one copy (basic lands included).
   - A deck made here with this card as its commander does not add it again as a main-deck card (picked from the search or by the shortcut).
-- **Mark as owned / Owned** toggles through `ctx.setOwned`, the same collection every deck reads.
+- ~~**Mark as owned / Owned** toggles through `ctx.setOwned`, the same collection every deck reads.~~ **Removed 2026-11-05:** ownership now belongs to each deck (see the main spec, "Owned belongs to each deck"), so there is no shared collection for Browse to mark. You tick Owned inside a deck; the Owned badges on results and the list column went with it.
 
 The dialog closes with Escape, its Close button and the Android back gesture (`native.ts` closes `dialog[open]` first), and `app.ts` closes it when the tab is hidden. It has no route of its own, so a reload returns to the results screen.
 

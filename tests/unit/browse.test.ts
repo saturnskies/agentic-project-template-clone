@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { SAMPLES } from '../support/browse-samples';
-import { allFormats, buildQuery, defaultFilters, defaultPrefs, legalityLabel, loadPrefs, MAX_QUERY, ownableId, PREFS_KEY, savePrefs, sortParams, SORTS, type Filters } from '../../src/lib/browse';
+import { allFormats, buildQuery, defaultFilters, defaultPrefs, legalityLabel, loadPrefs, MAX_QUERY, realOracleId, PREFS_KEY, savePrefs, sortParams, SORTS, type Filters } from '../../src/lib/browse';
 
 const base: Filters = defaultFilters();
 const ok = (f: Partial<Filters>) => {
@@ -276,17 +276,17 @@ describe('allFormats', () => {
   });
 });
 
-describe('ownableId', () => {
+describe('realOracleId', () => {
   const card = (extra: object) => ({ id: 'printing-1', name: 'X', set: 's', set_name: 'S', collector_number: '1', color_identity: [], legalities: {}, finishes: [], prices: { usd: null, usd_foil: null, usd_etched: null }, ...extra });
 
   it('is the Oracle ID, from the card or from its first face', () => {
-    expect(ownableId(card({ oracle_id: 'o1' }))).toBe('o1');
-    expect(ownableId(card({ card_faces: [{ name: 'A', oracle_id: 'o2' }, { name: 'B' }] }))).toBe('o2');
+    expect(realOracleId(card({ oracle_id: 'o1' }))).toBe('o1');
+    expect(realOracleId(card({ card_faces: [{ name: 'A', oracle_id: 'o2' }, { name: 'B' }] }))).toBe('o2');
   });
 
-  it('is null when there is none, never the printing id, so the owned list cannot be polluted', () => {
-    expect(ownableId(card({}))).toBeNull();
-    expect(ownableId(card({ card_faces: [{ name: 'A' }] }))).toBeNull();
-    expect(ownableId(card({ oracle_id: '' }))).toBeNull();
+  it('is null when there is none, never the printing id, so a printing id is never taken for an Oracle ID', () => {
+    expect(realOracleId(card({}))).toBeNull();
+    expect(realOracleId(card({ card_faces: [{ name: 'A' }] }))).toBeNull();
+    expect(realOracleId(card({ oracle_id: '' }))).toBeNull();
   });
 });

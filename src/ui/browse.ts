@@ -1,6 +1,5 @@
-import { addCardToDeck, allFormats, buildQuery, COLORS, defaultFilters, canBeCommander, checkAdd, legalityLabel, loadPrefs, ownableId, RARITIES, savePrefs, SORTS, type ColorMode, type Field, type Filters, type SortKey } from '../lib/browse';
+import { addCardToDeck, allFormats, buildQuery, COLORS, defaultFilters, canBeCommander, checkAdd, legalityLabel, loadPrefs, realOracleId, RARITIES, savePrefs, SORTS, type ColorMode, type Field, type Filters, type SortKey } from '../lib/browse';
 import { cardImage } from '../lib/groups';
-import { isOwned } from '../lib/owned';
 import { bestPrice, cheapestPrinting, tcgplayerUrl } from '../lib/price';
 import { THEMES } from '../lib/profile';
 import { searchCards, type SearchPage } from '../scryfall/browse';
@@ -182,11 +181,6 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext, storage: Storag
   }
 
   const typeOf = (card: ScryCard) => card.type_line ?? card.card_faces?.[0]?.type_line ?? '';
-  /** Whether the card is in the owned collection; a card with no Oracle ID cannot be. */
-  const ownedNow = (card: ScryCard) => {
-    const id = ownableId(card);
-    return id != null && isOwned(ctx.store, id, typeOf(card));
-  };
 
   /** A card's name as a real button (keyboard and screen readers); the whole tile opens the detail too, for a mouse or a finger. */
   function opener(card: ScryCard): HTMLButtonElement {
@@ -204,7 +198,6 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext, storage: Storag
         'div',
         { class: 'card-art' },
         src ? h('img', { src, alt: '', loading: 'lazy', width: 488, height: 680 }) : h('div', { class: 'card-missing', 'aria-hidden': 'true' }, card.name),
-        ownedNow(card) ? h('span', { class: 'qty-badge' }, 'Owned') : null,
       ),
       h('div', { class: 'card-meta' }, h('span', { class: 'card-tile-name' }, open), h('span', { class: 'card-tile-price' }, price ? usd(price.price) : 'No price')),
     );
@@ -222,7 +215,6 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext, storage: Storag
       h('span', { class: 'card-row-cost' }, card.mana_cost ?? ''),
       h('span', { class: 'card-row-type' }, typeOf(card)),
       h('span', { class: 'card-row-rarity' }, card.rarity ? cap(card.rarity) : ''),
-      ownedNow(card) ? h('span', { class: 'card-row-owned' }, 'Owned') : null,
       h('span', { class: 'card-row-price' }, price ? usd(price.price) : 'No price'),
     );
     li.addEventListener('click', () => openDetail(card, open));
@@ -287,7 +279,7 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext, storage: Storag
     };
     const own = bestPrice(card);
     showPrice('', own?.price ?? null, own ? tcgplayerUrl(card, own.finish) : null);
-    const oid = ownableId(card);
+    const oid = realOracleId(card);
     if (oid) {
       priceNote.textContent = 'Checking other printings…';
       printings(ctx.client, oid).then(
@@ -301,22 +293,6 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext, storage: Storag
         () => (priceNote.textContent = "Couldn't check other printings, so this is the price of the version shown."),
       );
     } else priceNote.textContent = '';
-
-    // Owned.
-    let ownedChanged = false;
-    const ownButton = h('button', { type: 'button', class: 'button' });
-    const drawOwn = () => {
-      const on = ownedNow(card);
-      ownButton.textContent = on ? 'Owned' : 'Mark as owned';
-      ownButton.toggleAttribute('disabled', oid == null);
-    };
-    drawOwn();
-    ownButton.addEventListener('click', () => {
-      if (!oid) return;
-      ctx.setOwned(oid, typeOf(card), !ownedNow(card));
-      ownedChanged = true;
-      drawOwn();
-    });
 
 
     // ---- Add to deck… -------------------------------------------------------------------------
@@ -474,16 +450,14 @@ export function renderBrowse(view: HTMLElement, ctx: AppContext, storage: Storag
           formats.length > 1 ? h('details', {}, h('summary', {}, 'All formats'), h('ul', { class: 'formats' }, ...formats.map((f) => h('li', {}, `${f.format}: ${f.status}`)))) : null,
           h('p', {}, priceText, ' ', buy),
           priceNote,
-          h('div', { class: 'actions' }, ownButton, addToggle),
+          h('div', { class: 'actions' }, addToggle),
           addPanel,
-          oid ? null : h('p', { class: 'muted small' }, "This card can't be tracked as owned: Scryfall gave it no Oracle ID."),
         ),
       ),
     );
     dialog.addEventListener('close', () => {
       dialog.remove();
-      // A change to what is owned shows on the results; redrawing replaces the button, so focus goes to its twin.
-      if (ownedChanged) drawResults();
+      // The results may have been redrawn while the dialog was open, so find the opener again before giving focus back.
       const back = from.isConnected ? from : [...results.children].find((li) => (li as HTMLElement).dataset.card === card.id)?.querySelector('button');
       (back as HTMLElement | null | undefined)?.focus();
     });

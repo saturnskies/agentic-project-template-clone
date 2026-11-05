@@ -54,16 +54,6 @@ test('lists the cards a search finds, with prices, and shows the query it ran', 
   expect(misses).toEqual([]);
 });
 
-test('a card the person owns says so', async ({ page }) => {
-  const first = recorded(CRYPT)[0];
-  await page.addInitScript((id) => localStorage.setItem('swapsmith:v1', JSON.stringify({ version: 1, decks: [], owned: [id], unownedBasics: [], prefs: { view: 'list' } })), first.oracle_id);
-  await page.goto('./#/browse');
-  await search(page, 'crypt');
-  await expect(page.locator('.card-tile')).toHaveCount(49);
-  await expect(page.locator('.card-tile').first().getByText('Owned')).toBeVisible();
-  await expect(page.locator('.card-tile').nth(1).getByText('Owned')).toHaveCount(0);
-});
-
 test('changing the sort or its direction searches again from the start', async ({ page }) => {
   await page.goto('./#/browse');
   await search(page, 'crypt');

@@ -1,7 +1,7 @@
 ---
 description: Tools agents can use today by need (built here, installed and tested, no-account web tools); how to add a vetted tool
 status: current
-updated: 2026-10-29
+updated: 2026-11-04
 ---
 # Toolbox
 
@@ -31,6 +31,7 @@ Installed or configured, and exercised. Record the version and the exact command
 
 | Need | Tool | How |
 |---|---|---|
+| Design, critique, audit or polish UI (hierarchy, type, color, a11y, UX copy) | `impeccable` skill (v4.8.0, Apache 2.0) | `/impeccable critique <target>`, `/impeccable audit`, `/impeccable polish`. Skill only; hooks and live mode deliberately off. Engine download not yet exercised here. See Gotchas in `.claude/skills/impeccable/SKILL.md` |
 
 ## Human tools
 

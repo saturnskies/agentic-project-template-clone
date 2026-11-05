@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { edgarEdhrec, edgarFull, mockScryfall, seedEdgarDeck } from './helpers';
+import { edgarEdhrec, edgarFull, mockScryfall, seedEdgarDeck, showPane } from './helpers';
 
 // The full Edgar Markov deck, with EDHREC's Edgar pages and their Scryfall lookups recorded 2026-11-03
 // (tests/fixtures/edhrec-edgar.json). Prices are that recording's. The deck runs no Game Changers, so
@@ -9,6 +9,7 @@ test('upgrades come from what Edgar Markov decks play, grouped by category, incl
   const misses = await mockScryfall(page, edgarFull, edgarEdhrec);
   const deck = await seedEdgarDeck(page);
   await page.goto(`./#/deck/${deck.id}`);
+  await showPane(page, 'Suggestions'); // below 70rem the panel is its own pane
   await page.getByRole('button', { name: 'Find suggestions' }).click();
 
   const panel = page.getByRole('complementary', { name: 'Suggestions' });
@@ -46,11 +47,14 @@ test('adding an EDHREC suggestion puts it in the deck and takes it off the list'
   const misses = await mockScryfall(page, edgarFull, edgarEdhrec);
   const deck = await seedEdgarDeck(page);
   await page.goto(`./#/deck/${deck.id}`);
+  await showPane(page, 'Suggestions'); // below 70rem the panel is its own pane
   await page.getByRole('button', { name: 'Find suggestions' }).click();
 
   await page.getByRole('button', { name: "Add Herald's Horn" }).click();
   await expect(page.getByTestId('deck-count')).toHaveText('101 / 100 cards');
+  await showPane(page, 'Cards');
   await expect(page.getByRole('row').filter({ hasText: "Herald's Horn" })).toBeVisible();
+  await showPane(page, 'Suggestions');
   await expect(page.getByRole('button', { name: "Add Herald's Horn" })).toHaveCount(0);
   // The list refills from the rest of the page without new requests.
   await expect(page.getByRole('list', { name: 'Utility Artifacts upgrades' }).getByRole('listitem')).toHaveCount(5);
@@ -61,6 +65,7 @@ test('when EDHREC has no page for the commander, upgrades fall back to card rule
   const misses = await mockScryfall(page, edgarFull);
   const deck = await seedEdgarDeck(page);
   await page.goto(`./#/deck/${deck.id}`);
+  await showPane(page, 'Suggestions'); // below 70rem the panel is its own pane
   await page.getByRole('button', { name: 'Find suggestions' }).click();
 
   const panel = page.getByRole('complementary', { name: 'Suggestions' });
@@ -74,6 +79,7 @@ test("when EDHREC doesn't answer, upgrades fall back to card rules and say so", 
   await page.route('https://json.edhrec.com/**', (route) => route.abort());
   const deck = await seedEdgarDeck(page);
   await page.goto(`./#/deck/${deck.id}`);
+  await showPane(page, 'Suggestions'); // below 70rem the panel is its own pane
   await page.getByRole('button', { name: 'Find suggestions' }).click();
 
   const panel = page.getByRole('complementary', { name: 'Suggestions' });
@@ -84,6 +90,7 @@ test("when EDHREC doesn't answer, upgrades fall back to card rules and say so", 
 async function findSuggestions(page: import('@playwright/test').Page, timeout = 15_000) {
   const deck = await seedEdgarDeck(page);
   await page.goto(`./#/deck/${deck.id}`);
+  await showPane(page, 'Suggestions'); // below 70rem the panel is its own pane
   await page.getByRole('button', { name: 'Find suggestions' }).click();
   const panel = page.getByRole('complementary', { name: 'Suggestions' });
   await expect(panel.getByTestId('edhrec-source')).toBeVisible({ timeout });
@@ -134,6 +141,7 @@ test('a bracket pick is saved with the deck and used next time', async ({ page }
   await expect(panel.getByTestId('bracket-estimate')).toHaveCount(0);
 
   await page.reload();
+  await showPane(page, 'Suggestions'); // below 70rem the panel is its own pane
   await page.getByRole('button', { name: 'Find suggestions' }).click();
   await expect(sourceLink(panel)).toHaveAttribute('href', EDGAR);
   await expect(panel.getByLabel('Bracket')).toHaveValue('0');
@@ -248,7 +256,9 @@ test('types the deck is short of are named, and their categories come first', as
   expect((await regionOrder())[0]).toBe('Creatures');
 
   // Three artifacts fewer is a gap; the lists recompute without new requests.
+  await showPane(page, 'Cards');
   for (const name of ['Sol Ring', 'Arcane Signet', 'Talisman of Hierarchy']) await page.getByRole('button', { name: `Remove ${name}` }).click();
+  await showPane(page, 'Suggestions');
   await expect(gaps.getByRole('listitem')).toHaveText(['Creatures: you run 30, typical is 35', 'Artifacts: you run 5, typical is 8']);
   expect((await regionOrder()).slice(0, 3)).toEqual(['Creatures', 'Utility Artifacts', 'Mana Artifacts']);
   expect(misses).toEqual([]);
@@ -283,11 +293,14 @@ test("swaps cut the card Edgar Markov decks play least for one they play more, a
   await first.getByRole('button', { name: 'Swap Kalastria Highborn for Blood Artist' }).click();
 
   await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
+  await showPane(page, 'Cards');
   await expect(page.getByRole('row').filter({ hasText: 'Blood Artist' })).toBeVisible();
   await expect(page.getByRole('row').filter({ hasText: 'Kalastria Highborn' })).toHaveCount(0);
+  await showPane(page, 'Suggestions');
   await expect(panel.getByRole('list', { name: 'Swap pairs' }).getByRole('listitem').first()).not.toContainText('Blood Artist');
 
   await panel.getByRole('button', { name: 'Undo' }).click();
+  await showPane(page, 'Cards');
   await expect(page.getByRole('row').filter({ hasText: 'Kalastria Highborn' })).toBeVisible();
   await expect(page.getByRole('row').filter({ hasText: 'Blood Artist' })).toHaveCount(0);
   await expect(page.getByTestId('deck-total')).toHaveText('$119.73');
@@ -308,6 +321,7 @@ test('cheaper replacements come from what Edgar Markov decks play', async ({ pag
   await expect(option).toContainText(/Save \$\d+\.\d\d/);
   await expect(option).toContainText(/In \d+% of Edgar Markov decks/);
   await option.getByRole('button', { name: /^Swap Emeritus of Woe/ }).click();
+  await showPane(page, 'Cards');
   await expect(page.getByRole('row').filter({ hasText: 'Preacher of the Schism' })).toBeVisible();
   await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
   expect(misses).toEqual([]);
@@ -332,6 +346,7 @@ test("when EDHREC has nothing and Scryfall's searches all fail, a message says s
   await page.route(/api\.scryfall\.com\/cards\/search\?q=f%3Acommander[^&]*prefer%3Ausd-low/, (route) => route.abort());
   const deck = await seedEdgarDeck(page);
   await page.goto(`./#/deck/${deck.id}`);
+  await showPane(page, 'Suggestions'); // below 70rem the panel is its own pane
   await page.getByRole('button', { name: 'Find suggestions' }).click();
   const panel = page.getByRole('complementary', { name: 'Suggestions' });
   await expect(panel).toContainText('EDHREC has no decks for Edgar Markov, so these come from card rules, not real decks.');

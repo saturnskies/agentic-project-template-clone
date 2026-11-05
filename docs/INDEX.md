@@ -8,9 +8,9 @@ Status: **current** = in force or in progress; **draft** = proposed, not approve
 ## docs/
 
 - [android-build.md](android-build.md) — current, 2026-11-02 — How to build, sign and update the Swapsmith Android APK, and what keeps users' decks safe across updates
-- [template-sync.md](template-sync.md) — current, 2026-11-04 — Workflow improvements to send back to agentic-project-template; how /go logs rows and core/pack/local triage
+- [template-sync.md](template-sync.md) — current, 2026-11-05 — Workflow improvements to send back to agentic-project-template; how /go logs rows and core/pack/local triage
 - [tool-watchlist.md](tool-watchlist.md) — current, 2026-10-29 — Tools vetted but not set up or ruled out, and where to search when the toolbox has nothing
-- [toolbox.md](toolbox.md) — current, 2026-10-29 — Tools agents can use today by need (built here, installed and tested, no-account web tools); how to add a vetted tool
+- [toolbox.md](toolbox.md) — current, 2026-11-04 — Tools agents can use today by need (built here, installed and tested, no-account web tools); how to add a vetted tool
 
 ## docs/decisions/
 
@@ -31,11 +31,16 @@ Status: **current** = in force or in progress; **draft** = proposed, not approve
 - [2026-11-02-swapsmith-v1.md](superpowers/plans/2026-11-02-swapsmith-v1.md) — current, 2026-11-02 — Swapsmith v1 build plan — eight test-gated vertical slices from skeleton and deploy to swap suggestions
 - [2026-11-03-recommendations-revamp.md](superpowers/plans/2026-11-03-recommendations-revamp.md) — current, 2026-11-04 — Recommendations revamp build plan — five test-gated vertical slices from EDHREC client and category upgrades to filters, gaps, EDHREC-scored swaps and the wider Scryfall fallback
 - [2026-11-04-browse-tab.md](superpowers/plans/2026-11-04-browse-tab.md) — current, 2026-11-04 — Browse tab build plan — five test-gated vertical slices from a first search with a result grid to every filter, Load more, the card detail, and Add to deck with New deck
+- [2026-11-04-phone-layout.md](superpowers/plans/2026-11-04-phone-layout.md) — done, 2026-11-05 — Phone layout fixes from the 2026-11-04 UI critique, dark mode first — five test-gated slices (dark contrast, empty alert bug, touch targets, Cards|Suggestions switch, deck header)
 - [2026-11-04-tab-bar-life-counter.md](superpowers/plans/2026-11-04-tab-bar-life-counter.md) — current, 2026-11-04 — Tab bar and Life Counter build plan — four test-gated vertical slices from the bottom tab bar and routes to a playable, saved, awake life counter
+- [2026-11-05-keep-owned-help.md](superpowers/plans/2026-11-05-keep-owned-help.md) — done, 2026-11-05 — A short first-use note explaining Owned and Keep above the card list, dismissed for good with "Got it" — one test-gated slice
+- [2026-11-05-owned-per-deck.md](superpowers/plans/2026-11-05-owned-per-deck.md) — done, 2026-11-05 — Make "Owned" belong to each deck instead of one list shared by every deck, with a migration so no one loses the ticks they already made — two test-gated slices (storage and migration, then the screens)
+- [2026-11-05-suggestions-tab-status.md](superpowers/plans/2026-11-05-suggestions-tab-status.md) — done, 2026-11-05 — A small status badge on the Suggestions tab (Searching, Ready, Failed) so a search started in the Suggestions pane is visible from the Cards pane on a phone — one test-gated slice
+- [2026-11-05-undo-remove-and-short-rows.md](superpowers/plans/2026-11-05-undo-remove-and-short-rows.md) — done, 2026-11-05 — Two follow-ups from the 2026-11-05 UI critique (29/40) — Undo for removing a card, and shorter phone list rows by showing a quantity only above 1
 
 ## docs/superpowers/specs/
 
-- [2026-11-02-swapsmith-design.md](superpowers/specs/2026-11-02-swapsmith-design.md) — current, 2026-11-04 — Swapsmith v1 design spec — free static Commander deckbuilder with live TCGplayer prices via Scryfall, owned-card tracking, and rules-based swap/upgrade/cheaper-replacement suggestions
+- [2026-11-02-swapsmith-design.md](superpowers/specs/2026-11-02-swapsmith-design.md) — current, 2026-11-05 — Swapsmith v1 design spec — free static Commander deckbuilder with live TCGplayer prices via Scryfall, owned-card tracking, and rules-based swap/upgrade/cheaper-replacement suggestions
 - [2026-11-03-recommendations-revamp.md](superpowers/specs/2026-11-03-recommendations-revamp.md) — current, 2026-11-04 — Recommendations revamp spec — EDHREC per-commander deck data (inclusion, synergy, themes, brackets, average deck) as the main signal, grouped by card category with gap hints, and a wider Scryfall rules fallback
 - [2026-11-04-browse-tab.md](superpowers/specs/2026-11-04-browse-tab.md) — current, 2026-11-04 — Browse tab spec — search every card by name, set, type, tribe, keyword, role, color identity, mana value, rarity and price (plus raw Scryfall syntax), image grid or list, sorting, Load more, and a card detail with Add to deck and Mark as owned
 - [2026-11-04-tab-bar-life-counter.md](superpowers/specs/2026-11-04-tab-bar-life-counter.md) — current, 2026-11-04 — Tab bar and Life Counter spec — bottom tabs (Decks, Browse, Life Counter) with hash routes and per-tab place, plus an offline 1–6 player life counter with commander damage, poison, undo, wake lock and a saved game

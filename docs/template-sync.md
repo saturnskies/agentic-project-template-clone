@@ -1,7 +1,7 @@
 ---
 description: Workflow improvements to send back to agentic-project-template; how /go logs rows and core/pack/local triage
 status: current
-updated: 2026-11-04
+updated: 2026-11-05
 ---
 # Template Sync
 
@@ -20,6 +20,8 @@ Only the review changes the template. Never edit the template directly from a pr
 | Date | Change | Files | Belongs in | Synced |
 |---|---|---|---|---|
 | 2026-11-02 | New path rule for async UI state (re-find after await, guard concurrent actions, drop stale replies); external-tools rule: partial results from parallel calls, silent truncation; testing rule: retrying assertions can pass on in-between states | `.claude/rules/ui-state.md`, `.claude/rules/external-tools.md`, `.claude/rules/testing.md` | core (ui-state could be a frontend pack) | |
+| 2026-11-05 | Two more `ui-state` lines (build the new list after the `await`; keep empty live regions in the accessibility tree) and two `testing` lines (role queries skip hidden elements so `toHaveCount(0)` can pass vacuously; re-measure a baseline before guarding a number) | `.claude/rules/ui-state.md`, `.claude/rules/testing.md` | core (ui-state could be a frontend pack) | |
+| 2026-11-05 | Vendored the third-party `impeccable` design skill as a skill only (no hooks, no agents, live-mode browser scripts deleted, Gotchas hardened after a security audit); `/go` ran the high-risk tier on it | `.claude/skills/impeccable/`, `.gitignore` | local (project-specific UI tooling; if another project wants it, a pack that ships these Gotchas) | |
 | 2026-11-04 | external-tools rules: a failed optional variant falls back to the broader request; follow a redirect only to the same resource | `.claude/rules/external-tools.md` | core | |
 | 2026-11-04 | ui-state rules: bump a run counter only when the action starts; an overlap test must delay a step that can finish out of order | `.claude/rules/ui-state.md` | core | |
 | 2026-11-04 | ui-state rules: close a modal dialog when its container is hidden or redrawn; timers and animations belong to a draw (id guard, lock controls mid-step) | `.claude/rules/ui-state.md` | core | |

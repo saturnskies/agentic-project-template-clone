@@ -10,11 +10,16 @@
   --ink: #242424;
   --muted: #5e5e5e;
   --line: #dddddd;
-  --accent: #8a0f1a;      /* blood red */
+  --accent: #8a0f1a;      /* blood red: fills (white text on it) */
+  --accent-text: #8a0f1a; /* the same red as text, links and rings; lighter in dark mode so it reads on dark surfaces */
   --accent-ink: #ffffff;
+  --field-line: #767676;  /* text-field borders: 3:1 or better on every surface in both themes */
   --font-display: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
   --font-body: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --radius: 10px;
+  --tap: 44px;           /* the smallest touch target (Material asks for 48dp) */
+  --tabbar-h: 3.5rem;    /* the fixed bottom tab bar's links; everything else fixed to the bottom sits above it */
+  --tabbar-total: calc(var(--tabbar-h) + 1px); /* the whole bar: its links plus the 1px top border */
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -25,6 +30,7 @@
     --muted: #a6a6a6;
     --line: #3a3a3a;
     --accent: #c0202b;      /* blood red */
+    --accent-text: #ff6b73; /* 5.6:1 on the panel; --accent itself is 2.6:1 there, too low for text */
     --accent-ink: #ffffff;
     color-scheme: dark;
   }
@@ -37,8 +43,9 @@ body {
   font: 16px/1.5 var(--font-body);
   -webkit-font-smoothing: antialiased;
 }
-a { color: var(--accent); }
-a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+a { color: var(--accent-text); }
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible,
+summary:focus-visible, [tabindex]:not([tabindex="-1"]):focus-visible { outline: 2px solid var(--accent-text); outline-offset: 2px; }
 
 .wrap {
   max-width: 72rem;
@@ -49,7 +56,7 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid 
 .site-header { border-bottom: 1px solid var(--line); background: var(--panel); padding-top: env(safe-area-inset-top, 0px); }
 .site-header .wrap { display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; padding-block: 1rem; }
 .site-header h1 { font: 700 1.6rem/1.1 'God Of War', var(--font-display); margin: 0; letter-spacing: -0.01em; }
-.site-header h1 span { color: var(--accent); }
+.site-header h1 span { color: var(--accent-text); }
 
 main.wrap { padding-block: 2rem; display: grid; gap: 1.5rem; }
 main section { display: grid; gap: 0.75rem; }
@@ -85,9 +92,10 @@ h2 { font: 500 1.25rem/1.2 var(--font-display); margin: 0; }
 .button:hover { border-color: var(--muted); }
 .button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
 .button.danger { color: var(--danger); }
-.button:disabled { opacity: 0.5; cursor: not-allowed; }
+/* Disabled controls are restyled, not faded: fading the whole button also fades its label below readable contrast. */
+.button:disabled, .button.primary:disabled { background: var(--tag-bg); border-color: var(--line); color: var(--muted); cursor: not-allowed; }
 input[type=text], textarea, select {
-  font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line);
+  font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--field-line);
   border-radius: var(--radius); padding: 0.5rem 0.65rem; min-width: 0; max-width: 100%;
 }
 textarea { width: 100%; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9rem; line-height: 1.45; }
@@ -106,7 +114,7 @@ h3 { font: 500 1.05rem/1.3 var(--font-display); margin: 0; }
 /* Home */
 .deck-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr)); }
 .deck-card { position: relative; display: grid; align-items: end; aspect-ratio: 626 / 457; overflow: hidden; background: var(--tag-bg); border: 1px solid var(--line); border-radius: var(--radius); color: inherit; text-decoration: none; }
-.deck-card:hover { border-color: var(--accent); }
+.deck-card:hover { border-color: var(--accent-text); }
 .deck-card-art-slot { position: absolute; inset: 0; display: block; }
 .deck-card-art { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0; transition: opacity 0.2s; }
 .deck-card-art.loaded { opacity: 1; }
@@ -127,10 +135,17 @@ h3 { font: 500 1.05rem/1.3 var(--font-display); margin: 0; }
 .back { text-decoration: none; font-size: 0.9rem; }
 .deck-head h2 { font-size: 1.6rem; }
 .deck-head p { margin: 0.25rem 0 0; }
-.stats { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-.stat { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.75rem 1rem; display: grid; min-width: 9rem; }
+.tip { display: grid; gap: 0.5rem; }
+.tip .button { justify-self: start; }
+.stat-row { align-items: end; }
+.stat-main { display: grid; gap: 0.1rem; justify-items: start; justify-self: start; min-width: 12rem; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.75rem 1rem; }
 .stat-label { color: var(--muted); font-size: 0.85rem; }
-.stat-value { font: 700 1.5rem/1.2 var(--font-display); font-variant-numeric: tabular-nums; }
+.stat-hero { font: 700 2.25rem/1.1 var(--font-display); font-variant-numeric: tabular-nums; }
+.stat-sub { color: var(--muted); font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+/* An empty message slot (status line, copy note, price note, alert) must take no room and paint nothing, yet stay in the
+   accessibility tree: display:none would drop a live region, and text added to it later might not be announced. Out of
+   flow, so it also gets no grid gap. */
+.muted:empty, .notice:empty, .stack:empty { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .progress { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
 progress { width: min(100%, 20rem); accent-color: var(--accent); }
 .table-wrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
@@ -141,13 +156,15 @@ table.cards { width: 100%; border-collapse: collapse; font-variant-numeric: tabu
 .cards .num { text-align: right; white-space: nowrap; }
 .cards td.printing { white-space: nowrap; color: var(--muted); }
 .cards td.name a { color: var(--ink); text-decoration-color: var(--line); text-underline-offset: 3px; }
-.cards td.name a:hover { text-decoration-color: var(--accent); }
+.cards td.name a:hover { text-decoration-color: var(--accent-text); }
 .sort { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
 th[aria-sort="ascending"] .sort::after { content: " ↑"; }
 th[aria-sort="descending"] .sort::after { content: " ↓"; }
 @media (max-width: 40rem) { .hide-narrow { display: none; } }
 .show-narrow { display: none; }
 @media (max-width: 40rem) { .show-narrow { display: block; } }
+.qty-mark { display: none; }
+@media (max-width: 40rem) { .qty-mark { display: inline; margin-left: 0.4rem; color: var(--muted); font-weight: 600; } }
 .cards td .sub { font-size: 0.85rem; color: var(--muted); margin-top: 0.15rem; }
 
 /* Combobox (commander and add-card search) */
@@ -162,7 +179,6 @@ th[aria-sort="descending"] .sort::after { content: " ↓"; }
 .combo-list li { padding: 0.45rem 0.75rem; cursor: pointer; display: grid; gap: 0.1rem; }
 .combo-list li[aria-selected="true"], .combo-list li:hover { background: var(--tag-bg); }
 .combo-detail { color: var(--muted); font-size: 0.85rem; }
-.combo-note:empty { display: none; }
 .icon-button { font: inherit; font-size: 1.1rem; line-height: 1; width: 2rem; height: 2rem; border-radius: 50%; border: 1px solid transparent; background: none; color: var(--muted); cursor: pointer; }
 .icon-button:hover { color: var(--danger); border-color: var(--line); }
 .cards td.remove { width: 2.5rem; padding-block: 0.25rem; text-align: right; }
@@ -172,7 +188,7 @@ th[aria-sort="descending"] .sort::after { content: " ↓"; }
 .cards td.owned, .cards th.owned { text-align: center; width: 4rem; }
 .cards td.owned input { width: 1.1rem; height: 1.1rem; accent-color: var(--accent); }
 .link-button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
-.link-button:hover { color: var(--accent); }
+.link-button:hover { color: var(--accent-text); }
 dialog.picker { width: min(40rem, calc(100vw - 32px)); max-height: min(80vh, 46rem); padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); color: var(--ink); }
 dialog.picker::backdrop { background: rgb(0 0 0 / 0.45); }
 .picker-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
@@ -239,13 +255,13 @@ dialog.picker::backdrop { background: rgb(0 0 0 / 0.45); }
 
 /* Keep toggle */
 .keep-toggle { font: inherit; font-size: 0.72rem; margin-left: 0.4rem; padding: 0 0.45rem; border-radius: 999px; border: 1px dashed var(--line); background: none; color: var(--muted); cursor: pointer; vertical-align: middle; }
-.keep-toggle[aria-pressed="true"] { border-style: solid; border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.keep-toggle[aria-pressed="true"] { border-style: solid; border-color: var(--accent-text); color: var(--accent-text); font-weight: 600; }
 .card-tools .keep-toggle { margin-left: 0; }
 
 /* Swaps and cheaper replacements */
 .swap-cut { margin: 0; color: var(--muted); }
 .swap-cut strong { color: var(--ink); font-weight: 600; }
-.save { margin: 0; color: var(--accent); font-weight: 600; }
+.save { margin: 0; color: var(--accent-text); font-weight: 600; }
 .replace-group { display: grid; gap: 0.5rem; }
 .replace-group h4 { margin: 0; font: 500 0.95rem/1.3 var(--font-display); }
 .undo-box:empty { display: none; }
@@ -258,9 +274,68 @@ dialog.picker::backdrop { background: rgb(0 0 0 / 0.45); }
 .backup .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 .backup p { margin: 0; }
 
+/* Touch targets: --tap (44px) on touch screens (pointer: coarse), so a thumb can hit them (Material asks for 48dp).
+   Dense rows keep their height by growing the tap area with a ::after instead of the visible control. */
+.own-cell { cursor: pointer; }
+@media (pointer: coarse) {
+  .button, .segment, .sort, .link-button, input[type=text], select, .back { min-height: var(--tap); }
+  .segment { min-width: var(--tap); }
+  .sort { min-width: var(--tap); padding-inline: 0.25rem; display: inline-flex; align-items: center; }
+  .back { display: inline-flex; align-items: center; }
+  .link-button { display: inline-flex; align-items: center; }
+  .icon-button, .card-tools .icon-button { width: var(--tap); height: var(--tap); }
+  .cards td.remove { width: var(--tap); padding: 0; }
+  .cards td.owned, .cards th.owned { width: 46px; padding-inline: 0; }
+  .own-cell, .own-label { min-height: var(--tap); min-width: var(--tap); }
+  .own-cell { display: grid; place-items: center; }
+  .own-label { display: inline-flex; align-items: center; gap: 0.3rem; }
+  .cards td.owned input, .own-label input { width: 1.4rem; height: 1.4rem; margin: 0; } /* margin: the browser's own checkbox margin cost 7px a tile */
+  .card-tools { min-height: var(--tap); flex-wrap: wrap; gap: 0.4rem; }
+  .keep-toggle { position: relative; }
+  .keep-toggle::after { content: ''; position: absolute; inset: -13px -6px; }
+}
+@media (max-width: 40rem) {
+  .show-narrow.sub { display: flex; align-items: center; flex-wrap: wrap; column-gap: 0.5rem; row-gap: 0; }
+  .cards th, .cards td { padding-inline: 0.5rem; }
+  .cards .sub .keep-toggle { margin: 13px 0; } /* its row is about 45px tall even when it wraps onto a line alone */
+}
+
+/* Cards | Suggestions: below 70rem the two share the screen and a bar at the bottom picks one (src/ui/panes.ts).
+   From 70rem up the bar is hidden and the panel sits beside the cards, so resizing needs no script. */
+.pane-bar { display: none; }
+@media (max-width: 69.999rem) {
+  .pane-bar {
+    display: flex; justify-content: center; position: fixed; z-index: 4;
+    inset: auto 0 calc(var(--tabbar-total) + env(safe-area-inset-bottom, 0px)) 0; /* sits above the tab bar */
+    padding: 0.5rem max(16px, env(safe-area-inset-right, 0px)) 0.5rem max(16px, env(safe-area-inset-left, 0px));
+    background: var(--panel); border-top: 1px solid var(--line);
+  }
+  .pane-bar .segmented { width: min(100%, 24rem); }
+  .pane-bar .segment { flex: 1 1 auto; padding-inline: 0.5rem; white-space: nowrap; }
+  body:has([data-tab="decks"]:not([hidden]) .pane-bar) { padding-bottom: calc(var(--tabbar-total) + 4rem + env(safe-area-inset-bottom, 0px)); } /* the last card and the footer stay reachable above both bars */
+  .deck-columns[data-pane="cards"] > .suggestions { display: none; }
+  .deck-columns[data-pane="suggestions"] > :not(.suggestions) { display: none; }
+  body:has(.deck-columns[data-pane="suggestions"]) .view-switch { display: none; } /* List/Grid controls the list, which is hidden here */
+}
+
+/* The Undo offer after removing a card: above the Cards | Suggestions bar below 70rem, near the bottom above it. */
+.toast-host { position: fixed; left: 0; right: 0; bottom: calc(var(--tabbar-total) + env(safe-area-inset-bottom, 0px) + 1rem); z-index: 5; display: flex; justify-content: center; padding-inline: 16px; pointer-events: none; }
+.toast { pointer-events: auto; display: flex; align-items: center; gap: 0.75rem; max-width: min(100%, 28rem); padding: 0.4rem 0.5rem 0.4rem 1rem; border-radius: var(--radius); background: var(--ink); color: var(--panel); box-shadow: 0 8px 24px rgb(0 0 0 / 0.25); }
+@media (max-width: 69.999rem) { .toast-host { bottom: calc(var(--tabbar-total) + env(safe-area-inset-bottom, 0px) + 4.5rem); } }
+
+/* The search badge on the Suggestions tab (src/ui/panes.ts): shown only while you are on Cards. */
+.pane-badge { margin-left: 0.4rem; padding: 0.05rem 0.45rem; border-radius: 999px; background: var(--tag-bg); color: var(--muted); font-size: 0.7rem; font-weight: 600; white-space: nowrap; }
+.pane-badge:empty { display: none; }
+.pane-badge[data-state="ready"] { background: var(--accent); color: var(--accent-ink); }
+.pane-badge[data-state="failed"] { background: transparent; border: 1px solid var(--danger); color: var(--danger); }
+.pane-badge[data-state="searching"]::before { content: ''; display: inline-block; width: 0.45rem; height: 0.45rem; margin-right: 0.3rem; border-radius: 50%; background: currentColor; }
+@media (prefers-reduced-motion: no-preference) {
+  .pane-badge[data-state="searching"]::before { animation: pane-pulse 1.2s ease-in-out infinite; }
+}
+@keyframes pane-pulse { 50% { opacity: 0.25; } }
 /* Bottom tab bar (Decks, Browse, Life Counter). The body pads the page so the footer is not hidden behind it. */
 [hidden] { display: none !important; }
-body { padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px)); }
+body { padding-bottom: calc(var(--tabbar-total) + env(safe-area-inset-bottom, 0px)); }
 .tabbar {
   position: fixed;
   inset: auto 0 0 0;
@@ -274,7 +349,7 @@ body { padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px)); }
 .tabbar a {
   flex: 1;
   max-width: 12rem;
-  min-height: 3.5rem;
+  min-height: var(--tabbar-h);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -429,17 +504,16 @@ dialog.sheet[open] { display: grid; gap: 0.5rem; }
 .card-row {
   display: grid; gap: 0.25rem 0.75rem; align-items: baseline; padding: 0.5rem 0.7rem; min-width: 0;
   background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
-  grid-template-columns: minmax(0, 2fr) minmax(3.5rem, auto) minmax(0, 2fr) 5.5rem 3.5rem 4.5rem;
-  grid-template-areas: "name cost type rarity owned price";
+  grid-template-columns: minmax(0, 2fr) minmax(3.5rem, auto) minmax(0, 2fr) 5.5rem 4.5rem;
+  grid-template-areas: "name cost type rarity price";
 }
 .card-row-name { grid-area: name; font-weight: 600; overflow-wrap: anywhere; }
 .card-row-cost { grid-area: cost; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.85rem; }
 .card-row-type { grid-area: type; color: var(--muted); font-size: 0.9rem; overflow-wrap: anywhere; }
 .card-row-rarity { grid-area: rarity; font-size: 0.85rem; color: var(--muted); }
-.card-row-owned { grid-area: owned; font-size: 0.8rem; font-weight: 700; }
 .card-row-price { grid-area: price; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
 @media (max-width: 40rem) {
-  .card-row { grid-template-columns: minmax(0, 1fr) auto auto auto; grid-template-areas: "name name name price" "type type type type" "cost rarity owned owned"; }
+  .card-row { grid-template-columns: minmax(0, 1fr) auto auto auto; grid-template-areas: "name name name price" "type type type type" "cost rarity rarity rarity"; }
 }
 
 /* Card detail */

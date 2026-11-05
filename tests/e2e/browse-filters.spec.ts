@@ -262,17 +262,6 @@ test.describe('list view', () => {
     await expect(page.locator('.card-row')).toHaveCount(187);
     await expect(page.locator('.card-tile')).toHaveCount(0);
   });
-
-  test('the owned badge shows in rows too', async ({ page }) => {
-    const first = cardsFor(CRYPT)[0];
-    await page.addInitScript((id) => localStorage.setItem('swapsmith:v1', JSON.stringify({ version: 1, decks: [], owned: [id], unownedBasics: [], prefs: { view: 'list' } })), first.oracle_id);
-    await page.goto('./#/browse');
-    await page.getByRole('button', { name: 'List', exact: true }).click();
-    await page.getByLabel('Card name').fill('crypt');
-    await searchButton(page);
-    await expect(page.locator('.card-row').first().getByText('Owned')).toBeVisible();
-    await expect(page.locator('.card-row').nth(1).getByText('Owned')).toHaveCount(0);
-  });
 });
 
 test.describe('saved preferences', () => {

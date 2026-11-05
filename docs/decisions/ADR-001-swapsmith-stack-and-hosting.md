@@ -19,7 +19,7 @@ Swapsmith is a Commander deckbuilder with live TCGplayer prices and rules-based 
 
 - **Language and build:** TypeScript, built with Vite into a static site. No UI framework: plain DOM modules, with a small render helper for repeated parts. The screens are few and mostly lists, so a framework would add more weight than it saves.
 - **Data:** Scryfall's REST API, called from the browser through one client module that queues requests at about 10 a second, retries on 429, and caches responses in IndexedDB for 24 hours.
-- **Storage:** `localStorage` holds decks, owned cards and preferences under the versioned key `swapsmith:v1`. Share links carry a deck in the URL hash, compressed with the browser's built-in `CompressionStream`.
+- **Storage:** `localStorage` holds decks (each with the cards owned for it) and preferences under the versioned key `swapsmith:v1`. Share links carry a deck in the URL hash, compressed with the browser's built-in `CompressionStream`.
 - **Tests and checks:** `tsc --noEmit` as the lint step, Vitest for unit tests and Playwright for end-to-end tests, with Scryfall answered from recorded fixtures.
 - **Hosting:** GitHub Pages at `https://saturnskies.github.io/swapsmith/` (repo renamed `swapsmith`), deployed by a GitHub Actions workflow from `main` after lint and tests pass.
 

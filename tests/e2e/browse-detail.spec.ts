@@ -1,8 +1,7 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
-import { browseSearches, flows, mockScryfall, pasteAndFix } from './helpers';
+import { browseSearches, flows, mockScryfall } from './helpers';
 
 const CRYPT = 'legal:commander name:"crypt"';
-const SOL = 'legal:commander name:"sol"';
 type Face = { name: string; oracle_text?: string; type_line?: string; image_uris?: { normal?: string } };
 type Card = {
   id: string; oracle_id?: string; name: string; mana_cost?: string; type_line?: string; oracle_text?: string; rarity?: string;
@@ -119,41 +118,6 @@ test('a single-faced card has no Flip button', async ({ page }) => {
   await expect(dialog.getByRole('button', { name: 'Flip' })).toHaveCount(0);
 });
 
-test.describe('Mark as owned', () => {
-  const owned = (page: Page) => page.evaluate(() => JSON.parse(localStorage.getItem('swapsmith:v1') ?? '{"owned":[]}').owned as string[]);
-
-  test('ticks the card in the shared collection, and the result says Owned once the detail closes', async ({ page }) => {
-    const ghast = named(CRYPT, 'Crypt Ghast');
-    const { dialog } = await open(page, 'Crypt Ghast');
-    const toggle = dialog.getByRole('button', { name: 'Mark as owned' });
-    // One signal only: the label says the state, so there is no aria-pressed on top of it.
-    await expect(toggle).not.toHaveAttribute('aria-pressed');
-    await toggle.click();
-    await expect(dialog.getByRole('button', { name: 'Owned', exact: true })).not.toHaveAttribute('aria-pressed');
-    expect(await owned(page)).toEqual([ghast.oracle_id]);
-    await dialog.getByRole('button', { name: 'Close' }).click();
-    await expect(page.locator('.card-tile').filter({ hasText: 'Crypt Ghast' }).getByText('Owned')).toBeVisible();
-    // Marking redrew the results, replacing the button that opened the detail: focus must land on its twin.
-    await expect(page.getByRole('button', { name: 'Crypt Ghast', exact: true })).toBeFocused();
-
-    await page.getByRole('button', { name: 'Crypt Ghast', exact: true }).click();
-    await page.getByRole('dialog', { name: 'Crypt Ghast' }).getByRole('button', { name: 'Owned', exact: true }).click();
-    expect(await owned(page)).toEqual([]);
-    await page.getByRole('dialog', { name: 'Crypt Ghast' }).getByRole('button', { name: 'Close' }).click();
-    await expect(page.locator('.card-tile').filter({ hasText: 'Crypt Ghast' }).getByText('Owned')).toHaveCount(0);
-  });
-
-  test('a card with no Oracle ID cannot be marked, and nothing is written', async ({ page }) => {
-    await editFirstCrypt(page, (c) => delete c.oracle_id);
-    const { dialog } = await open(page, 'Blood Crypt');
-    await expect(dialog.getByRole('button', { name: 'Mark as owned' })).toBeDisabled();
-    await expect(dialog.getByText(/can't be tracked/i)).toBeVisible();
-    await dialog.getByRole('button', { name: 'Mark as owned' }).click({ force: true });
-    await page.waitForTimeout(300);
-    expect(await owned(page)).toEqual([]);
-  });
-});
-
 test.describe('what the detail says when data is odd', () => {
   test('printings that cannot be loaded leave the price of the card as shown, with a note', async ({ page }) => {
     await page.route((u) => u.hostname === 'api.scryfall.com' && (u.searchParams.get('q') ?? '').startsWith('oracleid:'), (route) => route.fulfill({ status: 503, json: { object: 'error', details: 'Service Unavailable' } }));
@@ -222,25 +186,4 @@ test('an open detail is closed when another tab shows, and the page stays usable
   await expect(page.getByRole('heading', { name: 'Your decks' })).toBeVisible();
   await page.getByRole('link', { name: 'New deck' }).click();
   await expect(page.getByRole('heading', { name: 'New deck' })).toBeVisible();
-});
-
-test('Decks shows a card marked owned in Browse when you come back to it', async ({ page }) => {
-  await pasteAndFix(page);
-  await expect(page.getByTestId('deck-to-buy')).toHaveText('$35.47');
-  await expect(page.getByRole('checkbox', { name: 'Own Sol Ring' })).not.toBeChecked();
-
-  const nav = page.getByRole('navigation', { name: 'Main' });
-  await nav.getByRole('link', { name: 'Browse' }).click();
-  await page.getByLabel('Card name').fill('sol');
-  await page.getByRole('button', { name: 'Search', exact: true }).click();
-  await page.getByRole('button', { name: 'Sol Ring', exact: true }).click();
-  const dialog = page.getByRole('dialog', { name: 'Sol Ring' });
-  await dialog.getByRole('button', { name: 'Mark as owned' }).click();
-  await expect(dialog.getByRole('button', { name: 'Owned', exact: true })).toBeVisible();
-  await dialog.getByRole('button', { name: 'Close' }).click();
-
-  await nav.getByRole('link', { name: 'Decks' }).click();
-  await expect(page.getByRole('checkbox', { name: 'Own Sol Ring' })).toBeChecked();
-  await expect(page.getByTestId('deck-to-buy')).toHaveText('$34.37');
-  expect(SOL).toContain('sol');
 });

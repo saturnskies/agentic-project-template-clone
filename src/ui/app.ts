@@ -1,5 +1,4 @@
 import type { Deck } from '../lib/deck';
-import { setOwned as setOwnedIn } from '../lib/owned';
 import { browserStorage, loadStore, saveStore, type Store } from '../lib/storage';
 import { createEdhrecClient } from '../edhrec/page';
 import { createClient, type ScryfallClient } from '../scryfall/client';
@@ -22,16 +21,16 @@ export interface AppContext {
   persistent: boolean;
   saveDeck(deck: Deck): void;
   deleteDeck(id: string): void;
-  /** Ticks or unticks a card in the owned collection shared by every deck. */
-  setOwned(oracleId: string, typeLine: string, owned: boolean): void;
   /** Remembers the list or grid view for every deck. */
   setView(view: 'list' | 'grid'): void;
+  /** Remembers on this device that the first-use note about Owned and Keep was dismissed. */
+  dismissHelp(): void;
   go(route: string): void;
   /** Like go, but swaps the current history entry, so back skips the screen we just left. */
   replace(route: string): void;
   /** Redraws the current screen (after the store changed underneath it). */
   refresh(): void;
-  /** Overwrites the saved decks, owned cards and view with `next` (used by restore) and saves. */
+  /** Overwrites the saved decks (with their owned cards) and view with `next` (used by restore) and saves. */
   replaceStore(next: Store): void;
 }
 
@@ -39,7 +38,7 @@ export function startApp(root: HTMLElement): void {
   const storage = browserStorage();
   const { store, persistent } = loadStore(storage);
   const save = () => void saveStore(storage, store);
-  /** The Decks screen draws from the store: a change made while another tab shows (a card marked owned in Browse) must redraw it on return. */
+  /** The Decks screen draws from the store: a change made while another tab shows (a card added from Browse) must redraw it on return. */
   let decksStale = false;
   const touch = () => {
     if (active !== 'decks') decksStale = true;
@@ -59,15 +58,12 @@ export function startApp(root: HTMLElement): void {
       save();
       touch();
     },
-    setOwned(oracleId, typeLine, owned) {
-      const next = setOwnedIn(store, oracleId, typeLine, owned);
-      store.owned = next.owned;
-      store.unownedBasics = next.unownedBasics;
-      save();
-      touch();
-    },
     setView(view) {
       store.prefs = { ...store.prefs, view };
+      save();
+    },
+    dismissHelp() {
+      store.prefs = { ...store.prefs, helpDismissed: true };
       save();
     },
     deleteDeck(id) {
@@ -86,8 +82,6 @@ export function startApp(root: HTMLElement): void {
     refresh: () => render(true),
     replaceStore(next) {
       store.decks = next.decks;
-      store.owned = next.owned;
-      store.unownedBasics = next.unownedBasics;
       store.prefs = next.prefs;
       save();
       touch();

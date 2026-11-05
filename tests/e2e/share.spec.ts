@@ -11,7 +11,8 @@ test('share a deck by link; a friend sees it read-only and can save a copy', asy
   await page.getByRole('dialog').getByRole('listitem').nth(1).getByRole('button', { name: 'Use this printing' }).click();
   await expect(page.getByTestId('deck-total')).toHaveText('$39.93');
 
-  await page.getByRole('button', { name: 'Share' }).click();
+  await page.getByRole('button', { name: 'Share & export' }).click();
+  await page.getByRole('dialog', { name: 'Share & export' }).getByRole('button', { name: 'Copy share link' }).click();
   const link = await page.getByRole('textbox', { name: 'Share link' }).inputValue();
   expect(link).toMatch(/\/swapsmith\/#d=[A-Za-z0-9_-]+$/);
   await expect(page.getByRole('status').filter({ hasText: 'owned cards are not included' })).toBeVisible();
@@ -34,6 +35,16 @@ test('share a deck by link; a friend sees it read-only and can save a copy', asy
   await expect(friend.getByRole('combobox', { name: 'Add a card' })).toHaveCount(0);
   await expect(friend.getByRole('button', { name: 'Delete deck' })).toHaveCount(0);
   await expect(friend.getByRole('button', { name: 'Share' })).toHaveCount(0);
+  await expect(friend.getByRole('note', { name: 'How Owned and Keep work' })).toHaveCount(0); // nothing to explain: no Owned or Keep controls
+  // They can still copy or download what they were sent, but have no link of their own to make.
+  await friend.getByRole('button', { name: 'Export' }).click();
+  const exportOptions = friend.getByRole('dialog', { name: 'Export' });
+  await expect(exportOptions.getByRole('button', { name: 'Copy deck' })).toBeVisible();
+  await expect(exportOptions.getByRole('button', { name: 'Download .txt' })).toBeVisible();
+  await expect(exportOptions.getByRole('button', { name: 'Copy share link' })).toHaveCount(0);
+  await exportOptions.getByRole('button', { name: 'Close' }).click();
+  await expect(exportOptions).toBeHidden();
+  await expect(friend.getByRole('group', { name: 'Show' })).toHaveCount(0); // no suggestions, so no Cards | Suggestions switch
 
   await friend.getByRole('button', { name: 'Save to my decks' }).click();
   await expect(friend).toHaveURL(/#\/deck\//);

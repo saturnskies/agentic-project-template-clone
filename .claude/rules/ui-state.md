@@ -11,6 +11,8 @@ For screen code with async actions (fetching, pricing, swapping):
 - **One action of a kind at a time.** Disabling only the clicked button lets a second button start the same change; guard the action itself.
 - **Ignore replies from an older request.** Give each user-started load a run number and drop results whose run is no longer current, so a slow earlier reply can't overwrite a newer one.
 - **Redraw everything a change feeds.** When a toggle changes data another panel reads (owned cards → cheaper replacements), refresh that panel too.
+- **Build the new list after the `await`, not before.** `priced = [...priced, await price(card)]` spreads the old array first, so a removal, an Undo or another add made while pricing is silently reverted. Await into a variable, then re-find and build from the current state.
+- **Keep empty live regions in the accessibility tree.** `display:none` on an empty `aria-live`, `role="status"` or `role="alert"` element means text added later may not be announced. Take an empty slot out of the layout with a 1px clipped, out-of-flow box instead, and check it with a test that looks at the DOM, not at what is visible.
 - **Bump a run counter only when the action starts.** Bumping before an early return orphans the action still in flight: it sees itself as stale and never clears its "loading" state.
 - **Close a modal `<dialog>` when its container is hidden or redrawn.** A modal left open in a hidden tab or a replaced view still blocks the whole page, unseen. Close open dialogs in the views you hide; redrawing removes them.
 - **Timers and animations belong to a draw.** Give each screen draw an id and have a delayed step (a roll, a countdown) bail when the id has moved on, and lock the controls that could change state mid-step.

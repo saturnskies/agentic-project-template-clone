@@ -3,15 +3,19 @@ import { deckFileName, deckToText } from '../lib/export';
 import { decodeDeck, encodeDeck, ShareError } from '../lib/share';
 import { cardWarnings, DECK_SIZE, isBasicLand, warningText } from '../lib/format';
 import { cardImage, compareLines, GROUP_ORDER, groupByType, typeGroup, typeName, type SortKey } from '../lib/groups';
-import { isOwned, stillToBuy } from '../lib/owned';
+import { deckCollection, isOwned, setOwned as setOwnedIn, stillToBuy } from '../lib/owned';
 import { sortPrintings } from '../lib/price';
 import { autocompleteNames, cardByName } from '../scryfall/cards';
 import { oracleIdOf, priceDeck, priceEntries, withPrinting, type PricedCard } from '../scryfall/resolve';
 import type { ScryCard } from '../scryfall/types';
 import type { AppContext } from './app';
 import { combobox } from './combobox';
+import { undoToast } from './undoToast';
+import { helpTip } from './helpTip';
+import { paneSwitch } from './panes';
 import { saveFile } from './saveFile';
 import { suggestionsPanel } from './suggestions';
+import { segmented } from './controls';
 import { h, usd } from './dom';
 
 const FINISH_LABEL = { nonfoil: '', foil: 'Foil', etched: 'Etched' } as const;
@@ -59,20 +63,20 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   let priced: PricedCard[] = [];
   let sort: SortKey = 'type';
 
-  const viewButtons = (['list', 'grid'] as const).map((v) => {
-    const btn = h('button', { type: 'button', class: 'segment', 'aria-pressed': String(ctx.store.prefs.view === v) }, v === 'list' ? 'List' : 'Grid');
-    btn.addEventListener('click', () => {
+  const viewSwitch = segmented(
+    'View',
+    [{ id: 'list', label: 'List' }, { id: 'grid', label: 'Grid' }],
+    ctx.store.prefs.view,
+    (v) => {
       ctx.setView(v);
-      viewButtons.forEach((b, i) => b.setAttribute('aria-pressed', String(['list', 'grid'][i] === v)));
       redraw();
-    });
-    return btn;
-  });
-  const viewSwitch = h('div', { class: 'segmented', role: 'group', 'aria-label': 'View' }, ...viewButtons);
+    },
+    'view-switch',
+  );
 
-  const total = h('span', { class: 'stat-value', 'data-testid': 'deck-total' }, '—');
-  const toBuy = h('span', { class: 'stat-value', 'data-testid': 'deck-to-buy' }, '—');
-  const count = h('span', { class: 'stat-value', 'data-testid': 'deck-count' }, '—');
+  const total = h('span', { 'data-testid': 'deck-total' }, '—');
+  const toBuy = h('span', { class: 'stat-hero', 'data-testid': 'deck-to-buy' }, '—');
+  const count = h('span', { 'data-testid': 'deck-count' }, '—');
   const note = h('p', { class: 'muted' });
   const adder = h('div', { class: 'stack' });
   const body = h('div', { class: 'stack' });
@@ -84,7 +88,7 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
     rename.addEventListener('click', editTitle);
     titleBox.replaceChildren(
       h('div', { class: 'deck-title-row' }, h('h2', {}, deck.name || 'Shared deck'), readOnly ? null : rename),
-      h('p', { class: 'muted' }, `Commander: ${deck.commander.name}`),
+      h('p', { class: 'muted' }, `Commander: ${deck.commander.name} · `, count),
     );
     return rename;
   };
@@ -120,7 +124,8 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   }
   drawTitle();
 
-  const owned = (p: PricedCard) => isOwned(ctx.store, p.entry.card.oracleId, p.typeLine);
+  // What you own belongs to this deck only: a physical card is in one deck at a time.
+  const owned = (p: PricedCard) => isOwned(deckCollection(deck), p.entry.card.oracleId, p.typeLine);
   const summary = () => ({
     ...deckTotals(priced.map((p) => ({ qty: p.entry.qty, price: p.price }))),
     toBuy: stillToBuy(priced.map((p) => ({ qty: p.entry.qty, price: p.price, owned: owned(p) }))),
@@ -129,9 +134,16 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   let panel: { root: HTMLElement; refresh(): void } | null = null;
   let lastSwap: { removed: PricedCard; index: number; addedOracleId: string; label: string } | null = null;
 
+  // Undo for a removal lives here, on the Cards pane, not in the suggestions panel (a different pane on a phone). The
+  // offer holds the deck as it was just before the removal and is dropped by the next change to the cards (`commit`), so
+  // Undo can only ever bring back that one removal and never reverts something newer. Ticking Owned does not end it:
+  // ownership is stored apart from the cards, which Undo does not touch.
+  const removalUndo = undoToast();
+
   /** Saves the deck and redraws totals, the cards and the suggestions from `priced`. Any edit other than a swap ends the Undo offer. */
   const commit = (cards: DeckEntry[], extra: Partial<Deck> = {}, opts: { keepUndo?: boolean } = {}) => {
     if (!opts.keepUndo) lastSwap = null;
+    removalUndo.clear(); // any change ends the removal Undo offer; remove() makes a new one after this
     deck = { ...deck, ...extra, cards, updatedAt: new Date().toISOString(), summary: summary() };
     persist(deck);
     redraw();
@@ -157,7 +169,8 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
         onRemove: remove,
         owned,
         onOwned: (p, value) => {
-          ctx.setOwned(p.entry.card.oracleId, p.typeLine, value);
+          const next = setOwnedIn(deckCollection(deck), p.entry.card.oracleId, p.typeLine, value);
+          deck = { ...deck, owned: next.owned, unownedBasics: next.unownedBasics, updatedAt: new Date().toISOString() };
           deck = { ...deck, summary: summary() };
           persist(deck);
           redraw();
@@ -177,15 +190,28 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   };
 
   // ---- Removing -------------------------------------------------------------------------------
-  /** Removes one copy; the last copy removes the card. The commander can't be removed. */
+  /** Removes one copy; the last copy removes the card. The commander can't be removed. Offers Undo for 10 s. */
   const remove = (p: PricedCard) => {
     if (p.isCommander) return;
+    const before = priced.map((x) => ({ ...x, entry: { ...x.entry } }));
+    // A keyboard user cannot reach a toast that is last in the page within 10 s, so hand it focus; touch and mouse
+    // users are not moved (a focus ring would only be noise).
+    const byKeyboard = !!document.activeElement?.matches(':focus-visible');
+    const label = p.entry.qty > 1 ? `one copy of ${p.entry.card.name}` : p.entry.card.name;
     if (p.entry.qty > 1) {
       p.entry = { ...p.entry, qty: p.entry.qty - 1 };
     } else {
       priced = priced.filter((x) => x !== p);
     }
     commit(cardsOf());
+    removalUndo.offer(
+      `Removed ${label}.`,
+      () => {
+        priced = before;
+        commit(cardsOf()); // also ends the offer
+      },
+      byKeyboard,
+    );
   };
 
   // ---- Printing picker ------------------------------------------------------------------------
@@ -239,11 +265,18 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   };
   const add = async (card: ScryCard) => {
     const oid = oracleIdOf(card);
-    const existing = priced.find((p) => !p.isCommander && p.entry.card.oracleId === oid);
+    const bump = (p: PricedCard) => (p.entry = { ...p.entry, qty: p.entry.qty + 1 });
+    const find = () => priced.find((p) => !p.isCommander && p.entry.card.oracleId === oid);
+    const existing = find();
     if (existing) {
-      existing.entry = { ...existing.entry, qty: existing.entry.qty + 1 };
+      bump(existing);
     } else {
-      priced = [...priced, await priceCard(card)];
+      const added = await priceCard(card);
+      // Re-find after the wait (ui-state rules): the deck may have changed while pricing, with a removal, an Undo or
+      // the same card added twice. Build on the deck as it is now, not as it was when the pick started.
+      const now = find();
+      if (now) bump(now);
+      else priced = [...priced, added];
     }
     commit(cardsOf());
   };
@@ -350,12 +383,14 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   });
   confirmBox.append(del);
 
-  // On wide screens the upgrades panel sits beside the cards; on phones it follows them.
-  const columns = h('div', { class: 'deck-columns' }, body);
+  // On wide screens the upgrades panel sits beside the cards; below 70rem a bar switches between the two.
+  // The card list and, above it, the first-use note about Owned and Keep (one column, so the panel beside it stays put).
+  const cardsPane = h('div', { class: 'stack' }, body);
+  const columns = h('div', { class: 'deck-columns' }, cardsPane);
 
   // ---- Sharing --------------------------------------------------------------------------------
   const shareBox = h('div', { class: 'stack' });
-  const shareBtn = h('button', { type: 'button', class: 'button' }, 'Share');
+  const shareBtn = h('button', { type: 'button', class: 'button' }, 'Copy share link');
   shareBtn.addEventListener('click', async () => {
     const link = `${location.origin}${location.pathname}#d=${await encodeDeck(deck)}`;
     const field = h('input', { type: 'text', readonly: true, value: link, 'aria-label': 'Share link', class: 'share-field' });
@@ -392,6 +427,20 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
     }
   });
 
+  // Copy, download and the share link live behind one button, so the header stays short. A shared
+  // (read-only) deck can still be exported but has no link of its own to make.
+  const options = h('dialog', { class: 'picker', 'aria-labelledby': 'options-h' });
+  const closeOptions = h('button', { type: 'button', class: 'button' }, 'Close');
+  closeOptions.addEventListener('click', () => options.close());
+  options.append(
+    h('div', { class: 'picker-head' }, h('h3', { id: 'options-h' }, readOnly ? 'Export' : 'Share & export'), closeOptions),
+    h('div', { class: 'actions' }, copyBtn, downloadBtn, readOnly ? null : shareBtn),
+    exportMsg,
+    shareBox,
+  );
+  const openOptions = h('button', { type: 'button', class: 'button' }, readOnly ? 'Export' : 'Share & export');
+  openOptions.addEventListener('click', () => options.showModal());
+
   const save = h('button', { type: 'button', class: 'button primary' }, 'Save to my decks');
   save.addEventListener('click', () => {
     ctx.saveDeck(deck);
@@ -405,26 +454,21 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
       { class: 'stack' },
       h('a', { href: '#/', class: 'back' }, '← Your decks'),
       readOnly ? sharedBanner : null,
+      titleBox,
+      // What you came for is what is left to buy; the deck total is context, and the card count sits on the commander line.
       h(
         'div',
-        { class: 'row-between' },
-        titleBox,
-        h('div', { class: 'actions' }, copyBtn, downloadBtn, readOnly ? null : shareBtn),
-      ),
-      exportMsg,
-      shareBox,
-      h(
-        'div',
-        { class: 'stats' },
-        h('div', { class: 'stat' }, h('span', { class: 'stat-label' }, 'Deck total'), total),
-        h('div', { class: 'stat' }, h('span', { class: 'stat-label' }, 'Still to buy'), toBuy),
-        h('div', { class: 'stat' }, h('span', { class: 'stat-label' }, 'Cards'), count),
+        { class: 'row-between stat-row' },
+        h('div', { class: 'stat-main' }, h('span', { class: 'stat-label' }, 'Still to buy'), toBuy, h('span', { class: 'stat-sub' }, 'Deck total ', total)),
+        openOptions,
       ),
       note,
       adder,
       columns,
       readOnly ? null : confirmBox,
       picker,
+      options,
+      removalUndo.root,
     ),
   );
 
@@ -450,6 +494,8 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
           swap,
           undo,
           lastSwap: () => lastSwap?.label ?? null,
+          collection: () => deckCollection(deck),
+          onSearch: (state) => panes.setSearch(state),
           bracket: () => savedBracket(deck),
           // Saved quietly: not a deck edit, so it neither redraws the cards nor ends the Undo offer.
           setBracket: (bracket) => {
@@ -458,6 +504,9 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
           },
         });
         columns.append(panel.root);
+        const panes = paneSwitch(columns, panel.root);
+        columns.after(panes.root);
+        if (!ctx.store.prefs.helpDismissed) cardsPane.prepend(helpTip(() => ctx.dismissHelp()));
       }
       redraw();
     })
@@ -584,17 +633,21 @@ function table(priced: PricedCard[], sort: SortKey, handlers: TableHandlers): HT
         'td',
         { class: 'name' },
         nameEl,
+        // On phones the Qty column is hidden, so several copies show as ×N beside the name.
+        p.entry.qty > 1 ? h('span', { class: 'qty-mark' }, `×${p.entry.qty}`) : null,
         p.isCommander ? h('span', { class: 'tag' }, 'Commander') : null,
-        c.keepToggle(),
-        // On phones the Printing column is hidden, so the printing shows under the name.
-        h('div', { class: 'show-narrow sub' }, c.printingControl(), c.finishTag()),
+        h('span', { class: 'hide-narrow' }, c.keepToggle()),
+        // On phones the Printing column is hidden, so the printing shows under the name, in one row with
+        // Keep: stacked small controls would need overlapping touch targets.
+        h('div', { class: 'show-narrow sub' }, c.printingControl(), c.keepToggle(), c.finishTag()),
       ),
       h('td', { class: 'type hide-narrow' }, p.isCommander ? 'Commander' : typeName(p.typeLine)),
       h('td', { class: 'printing hide-narrow' }, c.printingControl(), c.finishTag()),
-      h('td', { class: 'num' }, p.entry.qty),
+      h('td', { class: 'num hide-narrow' }, p.entry.qty),
       h('td', { class: 'num' }, c.priceText),
       h('td', { class: 'num hide-narrow' }, p.price == null ? '—' : usd(p.price * p.entry.qty)),
-      handlers.readOnly ? null : h('td', { class: 'owned' }, c.own()),
+      // The label is the touch target: the checkbox alone is too small to hit reliably.
+      handlers.readOnly ? null : h('td', { class: 'owned' }, h('label', { class: 'own-cell' }, c.own())),
       handlers.readOnly ? null : h('td', { class: 'remove' }, c.remove()),
     );
   });
@@ -610,7 +663,7 @@ function table(priced: PricedCard[], sort: SortKey, handlers: TableHandlers): HT
         h(
           'thead',
           {},
-          h('tr', {}, th('name', 'Card'), th('type', 'Type', 'hide-narrow'), th(null, 'Printing', 'hide-narrow'), th(null, 'Qty', 'num'), th('price', 'Price', 'num'), th(null, 'Line total', 'num hide-narrow'), handlers.readOnly ? null : th(null, 'Owned', 'owned'), handlers.readOnly ? null : h('th', { scope: 'col' }, h('span', { class: 'visually-hidden' }, 'Remove'))),
+          h('tr', {}, th('name', 'Card'), th('type', 'Type', 'hide-narrow'), th(null, 'Printing', 'hide-narrow'), th(null, 'Qty', 'num hide-narrow'), th('price', 'Price', 'num'), th(null, 'Line total', 'num hide-narrow'), handlers.readOnly ? null : th(null, 'Owned', 'owned'), handlers.readOnly ? null : h('th', { scope: 'col' }, h('span', { class: 'visually-hidden' }, 'Remove'))),
         ),
         h('tbody', {}, ...rows),
       ),

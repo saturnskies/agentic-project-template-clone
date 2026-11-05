@@ -6,6 +6,7 @@ import { cardImage } from '../lib/groups';
 import { deckProfile, type DeckProfile } from '../lib/profile';
 import { tcgplayerUrl } from '../lib/price';
 import { byCategory, roleLookupNames, scoreEdhrec, scoreSuggestions, tierOf, TIERS, type PoolEntry, type Suggestion, type Tier } from '../lib/suggest';
+import type { Collection } from '../lib/owned';
 import { cheaperReplacements, edhrecKeepScores, swapPairs } from '../lib/swaps';
 import { frontFace } from '../scryfall/cards';
 import type { PricedCard } from '../scryfall/resolve';
@@ -41,6 +42,10 @@ export interface PanelActions {
   undo(): void;
   /** A short label for the last swap, or null when there is nothing to undo. */
   lastSwap(): string | null;
+  /** The cards owned for this deck only: suggestions never look at what you own for another deck. */
+  collection(): Collection;
+  /** Where the latest search is, for the badge on the Suggestions tab. Only the current run reports. */
+  onSearch(state: 'searching' | 'ready' | 'failed'): void;
   /** The bracket saved with the deck for EDHREC suggestions (0 = all decks), if any. */
   bracket(): number | undefined;
   /** Saves a bracket picked in the panel with the deck (0 = all decks). */
@@ -105,8 +110,8 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
     body,
   );
 
-  const facts = () => deckCardFacts(priced(), roles, pool ?? [], ctx.store, candidateRoles);
-  const ownedIds = () => new Set(ctx.store.owned);
+  const facts = () => deckCardFacts(priced(), roles, pool ?? [], actions.collection(), candidateRoles);
+  const ownedIds = () => new Set(actions.collection().owned);
   /** EDHREC's cards for the page shown, scored against the deck as it is now. */
   const edhrecScored = (res: Extract<EdhState, { status: 'ok' }>, oracleIds: Set<string>) =>
     scoreEdhrec(res.candidates, { colorIdentity: profile!.colorIdentity, oracleIds }, ownedIds(), commanderName, candidateRoles);
@@ -466,6 +471,9 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
     body.replaceChildren(...parts.filter((x): x is HTMLElement => !!x));
   };
 
+  /** Whether a search left anything to show: EDHREC's page, or the rules-based pool. (A function, so a run's awaits are not narrowed away.) */
+  const hasResults = () => edh?.status === 'ok' || pool != null;
+
   find.addEventListener('click', async () => {
     const mine = ++run;
     const cards = priced();
@@ -493,6 +501,7 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
     shown.clear();
     poolStatus.textContent = 'Searching Scryfall…';
     find.disabled = true;
+    actions.onSearch('searching');
     draw();
 
     // The deck's own roles, for matching swaps and cheaper replacements by job.
@@ -532,6 +541,8 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
     if (mine === run) {
       find.disabled = false;
       find.textContent = 'Refresh suggestions';
+      // Failed only when there is nothing to show: EDHREC gave no page and the rules-based fallback found no pool either.
+      actions.onSearch(hasResults() ? 'ready' : 'failed');
     }
   });
 

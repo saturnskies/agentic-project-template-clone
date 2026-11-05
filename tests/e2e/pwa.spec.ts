@@ -17,7 +17,9 @@ test('manifest is linked and every icon it lists loads', async ({ page, request 
     expect(res.status(), icon.src).toBe(200);
     expect(res.headers()['content-type']).toContain('image/png');
   }
-  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#000000');
+  // The browser bar follows the colour scheme (header surface colours); the manifest keeps the brand black.
+  await expect(page.locator('meta[name="theme-color"]')).toHaveCount(2);
+  expect(manifest.theme_color).toBe('#000000');
   await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveCount(1);
 });
 

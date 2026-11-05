@@ -265,10 +265,10 @@ export function allFormats(legalities: Record<string, string | undefined>): Arra
 }
 
 /**
- * The Oracle ID the owned collection is keyed by, or null when the card has none (never the printing id:
- * a printing id in the owned list would match nothing and could not be told apart from a real entry).
+ * The Oracle ID that all printings of a card share, or null when the card has none. Never falls back to the
+ * printing id: looking a printing id up as an Oracle ID would match nothing and could not be told apart from a real one.
  */
-export function ownableId(card: ScryCard): string | null {
+export function realOracleId(card: ScryCard): string | null {
   return card.oracle_id || card.card_faces?.[0]?.oracle_id || null;
 }
 
