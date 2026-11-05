@@ -87,11 +87,11 @@ Deck = {
   commander: CardRef,
   cards: DeckEntry[],         // excludes the commander
   updatedAt: string,          // ISO time
+  owned?: string[],           // oracle ids owned for THIS deck only (a physical card is in one deck at a time)
+  unownedBasics?: string[],   // basic lands are owned by default; unticking one in this deck adds it here
 }
 DeckEntry = { card: CardRef, qty: number, printingId?: string /* user-picked printing; absent = cheapest */ }
 CardRef  = { oracleId: string, name: string }
-Owned    = Set<oracleId>      // one collection across all decks
-UnownedBasics = Set<oracleId> // basic lands are owned by default; unticking one adds it here
 Prefs    = { view: 'grid' | 'list', budgetTier?: 'budget' | 'mid' | 'premium' }
 ```
 
@@ -271,4 +271,4 @@ Each slice works end to end and is gated by its tests. The detailed plan comes n
 
 - **Repo name:** the repo is renamed `swapsmith` on GitHub, so the site lives at `https://saturnskies.github.io/swapsmith/`. Vite's `base` is `/swapsmith/`.
 - **Basic lands are owned by default.** Unticking one records it in the deck's `unownedBasics`. Still-to-buy totals exclude owned basics.
-- **Owned belongs to each deck (2026-11-05).** Each deck stores `owned` and `unownedBasics` itself; nothing is shared between decks, in suggestions, totals, backups or restores. Data saved before this change (one list for every deck) is migrated when it loads or when an old backup is restored: each deck gets the ticks for the cards it contains, so it looks exactly as it did, and the old shared list is dropped. A deck that already has its own ticks is never overwritten. The storage key and package id are unchanged ([ADR-004](../../decisions/ADR-004-apk-signing-and-data-safety.md)). Plan: [owned per deck](../plans/2026-11-05-owned-per-deck.md).
+- **Owned belongs to each deck (2026-11-05).** Each deck stores `owned` and `unownedBasics` itself; nothing is shared between decks, in suggestions, totals, backups or restores. Data saved before this change (one list for every deck) is migrated when it loads or when an old backup is restored: each deck gets the ticks for the cards it contains, so it looks exactly as it did, and the old shared list is dropped. A deck that already has its own ticks is never overwritten. The storage key and package id are unchanged ([ADR-004](../../decisions/ADR-004-apk-signing-and-data-safety.md)). Edge cases, all deliberate: ticks made by an old cached copy of the app after the upgrade are dropped for any deck that already has its own ticks; legacy ticks for cards that were in no deck at migration time survive only in the untouched safety copy (`swapsmith:v1:before-owned-per-deck`, written once, never read); and the old top-level lists leave storage on the next save, not at load. A restore keeps the newer copy of a deck together with its ticks, so the other copy's ticks are replaced, not combined. Ticking a card counts as editing the deck (`updatedAt`), so it moves that deck up the home list. Plan: [owned per deck](../plans/2026-11-05-owned-per-deck.md).
