@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { composite, contrastRatio, effectiveBackground, parseColor } from '../support/contrast';
-import { edgarFull, mockScryfall, seedEdgarDeck, showPane } from './helpers';
+import { openEdgarDeck, paneBar, seedEdgarDeck, showPane, suggestionsPanel } from './helpers';
 
 // Phone layout fixes (docs/superpowers/plans/2026-11-04-phone-layout.md). These check what the page
 // really renders, in both colour schemes. They never assert prices: re-recording fixtures moves them.
@@ -42,13 +42,6 @@ function seenRatio(s: Sample): number {
   return contrastRatio(seenFg, seenBg);
 }
 
-async function openDeck(page: Page) {
-  await mockScryfall(page, edgarFull);
-  const deck = await seedEdgarDeck(page);
-  await page.goto(`./#/deck/${deck.id}`);
-  await expect(page.getByTestId('deck-total')).toHaveText(/\$/);
-}
-
 for (const scheme of ['light', 'dark'] as const) {
   test.describe(`${scheme} mode`, () => {
     test.beforeEach(async ({ page }) => {
@@ -56,7 +49,7 @@ for (const scheme of ['light', 'dark'] as const) {
     });
 
     test('links and the logo name are readable', async ({ page }) => {
-      await openDeck(page);
+      await openEdgarDeck(page);
       const back = await sample(page.getByRole('link', { name: '← Your decks' }));
       expect(ratio(back.color, back.bgs), 'text link').toBeGreaterThanOrEqual(4.5);
       const logo = await sample(page.getByRole('heading', { level: 1 }).locator('span'));
@@ -64,7 +57,7 @@ for (const scheme of ['light', 'dark'] as const) {
     });
 
     test('a pressed Keep chip is readable', async ({ page }) => {
-      await openDeck(page);
+      await openEdgarDeck(page);
       const keep = page.getByRole('button', { name: /^Keep / }).first();
       await keep.click();
       const pressed = page.locator('.keep-toggle[aria-pressed="true"]:visible').first();
@@ -74,10 +67,9 @@ for (const scheme of ['light', 'dark'] as const) {
     });
 
     test('"Save $x" on a cheaper replacement is readable', async ({ page }) => {
-      await openDeck(page);
-      await showPane(page, 'Suggestions');
-      await page.getByRole('button', { name: 'Find suggestions' }).click();
-      const panel = page.getByRole('complementary', { name: 'Suggestions' });
+      await openEdgarDeck(page);
+      await findSuggestions(page);
+      const panel = suggestionsPanel(page);
       await panel.getByRole('button', { name: 'Cheaper' }).click();
       const save = panel.locator('.save').first();
       await expect(save).toContainText('Save $');
@@ -86,7 +78,7 @@ for (const scheme of ['light', 'dark'] as const) {
     });
 
     test('the keyboard focus ring is visible on links, buttons and fields', async ({ page }) => {
-      await openDeck(page);
+      await openEdgarDeck(page);
       await page.keyboard.press('Tab'); // so focus counts as keyboard focus (:focus-visible)
       const targets = [page.getByRole('link', { name: '← Your decks' }), page.getByRole('button', { name: 'Rename' }), page.getByRole('combobox', { name: 'Add a card' })];
       for (const target of targets) {
@@ -98,7 +90,7 @@ for (const scheme of ['light', 'dark'] as const) {
     });
 
     test('a text field has a border you can see against both the field and the page', async ({ page }) => {
-      await openDeck(page);
+      await openEdgarDeck(page);
       const s = await sample(page.getByRole('combobox', { name: 'Add a card' }));
       expect(ratio(s.borderColor, s.bgs), 'against the field').toBeGreaterThanOrEqual(3);
       expect(ratio(s.borderColor, s.parentBgs), 'against the page').toBeGreaterThanOrEqual(3);
@@ -186,16 +178,14 @@ test.describe('touch targets', () => {
   });
 
   test('every control in the card list has a 44px target of its own', async ({ page }) => {
-    await openDeck(page);
+    await openEdgarDeck(page);
     expect(await missedTaps(page), 'card list').toEqual([]);
-    await showPane(page, 'Suggestions');
-    await page.getByRole('button', { name: 'Find suggestions' }).click();
-    await expect(page.getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem').first()).toBeVisible();
+    await findSuggestions(page);
     expect(await missedTaps(page), 'suggestions').toEqual([]);
   });
 
   test('every control in the card grid has a 44px target of its own', async ({ page }) => {
-    await openDeck(page);
+    await openEdgarDeck(page);
     await page.getByRole('button', { name: 'Grid' }).click();
     await expect(page.locator('.card-tile').first()).toBeVisible();
     // Owned, Keep and remove share one line under each tile; a taller row means one of them wrapped.
@@ -208,7 +198,7 @@ test.describe('touch targets', () => {
   });
 
   test('bigger targets do not make the screen longer to scroll', async ({ page }) => {
-    await openDeck(page);
+    await openEdgarDeck(page);
     await expect(page.locator('table.cards tbody tr').first()).toBeVisible();
     // Measured before this slice on the seeded 100-card deck at Pixel 7 width: list 9318px, grid 16542px.
     // The list must not grow (Keep now shares the printing line); the grid may grow 15% for 44px tool rows.
@@ -224,8 +214,6 @@ test.describe('touch targets', () => {
 // Below 70rem the card list and the suggestions panel share the screen: a bar at the bottom switches
 // between them, so suggestions are one tap away instead of a 100-row scroll.
 
-const paneBar = (page: Page) => page.getByRole('group', { name: 'Show' });
-const suggestionsPanel = (page: Page) => page.getByRole('complementary', { name: 'Suggestions' });
 
 async function findSuggestions(page: Page) {
   await showPane(page, 'Suggestions');
@@ -235,7 +223,7 @@ async function findSuggestions(page: Page) {
 
 test.describe('Cards | Suggestions switch', () => {
   test('suggestions are one tap away from the top of a 100-card list', async ({ page }) => {
-    await openDeck(page);
+    await openEdgarDeck(page);
     const bar = paneBar(page);
     await expect(bar).toBeInViewport();
     await expect(bar.getByRole('button', { name: 'Cards', exact: true })).toHaveAttribute('aria-pressed', 'true');
@@ -248,13 +236,13 @@ test.describe('Cards | Suggestions switch', () => {
   });
 
   test('the bar stays on screen while you scroll the list', async ({ page }) => {
-    await openDeck(page);
+    await openEdgarDeck(page);
     await page.evaluate(() => window.scrollTo(0, 4000));
     await expect(paneBar(page)).toBeInViewport();
   });
 
   test('Cards brings the list back where you were', async ({ page }) => {
-    await openDeck(page);
+    await openEdgarDeck(page);
     await page.evaluate(() => window.scrollTo(0, 3000));
     const before = await page.evaluate(() => window.scrollY);
     expect(before).toBeGreaterThan(2000);
@@ -264,7 +252,7 @@ test.describe('Cards | Suggestions switch', () => {
   });
 
   test('a card added from suggestions is in the list when you switch back', async ({ page }) => {
-    await openDeck(page);
+    await openEdgarDeck(page);
     await findSuggestions(page);
     await suggestionsPanel(page).getByRole('button', { name: 'Add Indulgent Aristocrat' }).click();
     await expect(page.getByTestId('deck-count')).toHaveText('101 / 100 cards');
@@ -274,7 +262,7 @@ test.describe('Cards | Suggestions switch', () => {
   });
 
   test('a change made in the list updates suggestions while they are hidden', async ({ page }) => {
-    await openDeck(page);
+    await openEdgarDeck(page);
     await findSuggestions(page);
     await suggestionsPanel(page).getByRole('button', { name: 'Cheaper' }).click();
     await expect(suggestionsPanel(page).getByRole('region', { name: 'Cheaper than Minas Tirith' })).toBeVisible();
@@ -286,7 +274,7 @@ test.describe('Cards | Suggestions switch', () => {
   });
 
   test('Undo is still offered after you leave suggestions and come back', async ({ page }) => {
-    await openDeck(page);
+    await openEdgarDeck(page);
     await findSuggestions(page);
     await suggestionsPanel(page).getByRole('button', { name: 'Cheaper' }).click();
     await suggestionsPanel(page).getByRole('button', { name: 'Swap Minas Tirith for Buried Ruin' }).click();
@@ -300,7 +288,7 @@ test.describe('Cards | Suggestions switch', () => {
   });
 
   test('leaving while a search runs does not lose it', async ({ page }) => {
-    await openDeck(page);
+    await openEdgarDeck(page);
     await showPane(page, 'Suggestions');
     await suggestionsPanel(page).getByRole('button', { name: 'Find suggestions' }).click();
     await showPane(page, 'Cards');
@@ -310,7 +298,7 @@ test.describe('Cards | Suggestions switch', () => {
   });
 
   test('switching panes does not touch the history, so Back still leaves the deck', async ({ page }) => {
-    await openDeck(page);
+    await openEdgarDeck(page);
     const before = await page.evaluate(() => ({ length: history.length, hash: location.hash }));
     await showPane(page, 'Suggestions');
     await showPane(page, 'Cards');
@@ -318,13 +306,13 @@ test.describe('Cards | Suggestions switch', () => {
   });
 
   test('the switch keeps keyboard focus on the button you pressed', async ({ page }) => {
-    await openDeck(page);
+    await openEdgarDeck(page);
     await showPane(page, 'Suggestions');
     await expect(paneBar(page).getByRole('button', { name: 'Suggestions', exact: true })).toBeFocused();
   });
 
   test('List and Grid are only offered where they apply: hidden while Suggestions shows, always on a wide screen', async ({ page }) => {
-    await openDeck(page);
+    await openEdgarDeck(page);
     const view = page.getByRole('group', { name: 'View' });
     await view.getByRole('button', { name: 'Grid' }).click();
     await expect(view).toBeVisible();
@@ -341,7 +329,7 @@ test.describe('Cards | Suggestions switch', () => {
   });
 
   test('a wide screen shows both side by side with no switch, and narrowing keeps your pane', async ({ page }) => {
-    await openDeck(page);
+    await openEdgarDeck(page);
     await showPane(page, 'Suggestions');
     await page.setViewportSize({ width: 1280, height: 900 });
     await expect(paneBar(page)).toBeHidden();
@@ -358,7 +346,7 @@ test.describe('Cards | Suggestions switch', () => {
 
 test.describe('deck header', () => {
   test('"Still to buy" is the biggest number and the card count sits on the commander line', async ({ page }) => {
-    await openDeck(page);
+    await openEdgarDeck(page);
     const size = (id: string) => page.getByTestId(id).evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
     const toBuy = await size('deck-to-buy');
     expect(toBuy, 'still to buy vs deck total').toBeGreaterThan(await size('deck-total'));
@@ -368,7 +356,7 @@ test.describe('deck header', () => {
   });
 
   test('empty message lines take no space above the cards', async ({ page }) => {
-    await openDeck(page);
+    await openEdgarDeck(page);
     // A message slot that is mounted but empty (copy status, share link, price note) has no height, yet
     // each one still gets a grid gap around it: that was the ~100px hole between the buttons and the stats.
     const gaps = await page.evaluate(() => {
@@ -388,7 +376,7 @@ test.describe('deck header', () => {
   });
 
   test('empty status and alert slots stay in the accessibility tree, so filling them is announced', async ({ page }) => {
-    await openDeck(page);
+    await openEdgarDeck(page);
     const gone = await page.evaluate(() =>
       [...document.querySelectorAll<HTMLElement>('[aria-live], [role="status"], [role="alert"]')]
         .filter((el) => !(el.textContent ?? '').trim() && !el.closest('dialog'))
@@ -399,14 +387,14 @@ test.describe('deck header', () => {
   });
 
   test('the first cards are on the first screen', async ({ page }) => {
-    await openDeck(page);
+    await openEdgarDeck(page);
     const top = await page.locator('table.cards thead').evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
     // 696px down at Pixel 7 size before this slice, 520px after: a guard so the header does not creep back down.
     expect(top).toBeLessThanOrEqual(530);
   });
 
   test('copy, download and share are behind one button, and Escape closes it', async ({ page }) => {
-    await openDeck(page);
+    await openEdgarDeck(page);
     // Counted in the DOM, not by role: a closed dialog's buttons are hidden from role queries, which would make
     // this pass even if the header still had them.
     const outside = await page.locator('button').evaluateAll((els) => els.filter((e) => /Copy deck|Download \.txt/.test(e.textContent ?? '') && !e.closest('dialog')).length);
