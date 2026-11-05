@@ -51,14 +51,23 @@ export async function pasteAndFix(page: Page, name = 'Edgar test') {
   await expect(page.getByTestId('deck-total')).toHaveText(/\$/);
 }
 
-/** The full 100-card Edgar Markov deck, saved before the page loads, as if the user had built it. */
-export async function seedEdgarDeck(page: Page) {
+/**
+ * The full 100-card Edgar Markov deck, saved before the page loads, as if the user had built it. The
+ * first-use note about Owned and Keep starts dismissed, as for a returning user, so it does not move
+ * what other specs measure; pass `{ firstVisit: true }` to see it. (Saved in the old shape on purpose:
+ * it is migrated on load, so every spec that uses this also exercises the migration.)
+ */
+export async function seedEdgarDeck(page: Page, opts: { firstVisit?: boolean } = {}) {
   const deck = JSON.parse(readFileSync(new URL('../fixtures/edgar-deck.json', import.meta.url), 'utf8'));
-  await page.addInitScript((d) => {
-    if (!localStorage.getItem('swapsmith:v1')) {
-      localStorage.setItem('swapsmith:v1', JSON.stringify({ version: 1, decks: [d], owned: [], unownedBasics: [], prefs: { view: 'list' } }));
-    }
-  }, deck);
+  await page.addInitScript(
+    ([d, firstVisit]) => {
+      if (!localStorage.getItem('swapsmith:v1')) {
+        const prefs = firstVisit ? { view: 'list' } : { view: 'list', helpDismissed: true };
+        localStorage.setItem('swapsmith:v1', JSON.stringify({ version: 1, decks: [d], owned: [], unownedBasics: [], prefs }));
+      }
+    },
+    [deck, !!opts.firstVisit] as const,
+  );
   return deck as { id: string };
 }
 
