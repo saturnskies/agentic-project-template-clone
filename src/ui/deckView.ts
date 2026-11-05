@@ -119,9 +119,34 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   let panel: { root: HTMLElement; refresh(): void } | null = null;
   let lastSwap: { removed: PricedCard; index: number; addedOracleId: string; label: string } | null = null;
 
+  // Undo for a removal lives here, on the Cards pane, not in the suggestions panel (a different pane on a phone).
+  // It keeps the whole deck as it was just before the removal and is dropped by the next change of any kind,
+  // so Undo can only ever bring back that one removal and never reverts something newer.
+  const toastHost = h('div', { class: 'toast-host', role: 'status', 'aria-live': 'polite' });
+  let lastRemoval: { before: PricedCard[] } | null = null;
+  let removalTimer: ReturnType<typeof setTimeout> | undefined;
+  const clearRemoval = () => {
+    lastRemoval = null;
+    clearTimeout(removalTimer);
+    toastHost.replaceChildren();
+  };
+  const offerRemovalUndo = (before: PricedCard[], label: string) => {
+    clearRemoval();
+    lastRemoval = { before };
+    const undoBtn = h('button', { type: 'button', class: 'button' }, 'Undo');
+    undoBtn.addEventListener('click', () => {
+      if (!lastRemoval) return;
+      priced = lastRemoval.before;
+      commit(cardsOf()); // also ends the offer
+    });
+    toastHost.replaceChildren(h('div', { class: 'toast' }, h('span', {}, `Removed ${label}.`), undoBtn));
+    removalTimer = setTimeout(clearRemoval, 10_000);
+  };
+
   /** Saves the deck and redraws totals, the cards and the suggestions from `priced`. Any edit other than a swap ends the Undo offer. */
   const commit = (cards: DeckEntry[], extra: Partial<Deck> = {}, opts: { keepUndo?: boolean } = {}) => {
     if (!opts.keepUndo) lastSwap = null;
+    clearRemoval(); // any change ends the removal Undo offer; remove() makes a new one after this
     deck = { ...deck, ...extra, cards, updatedAt: new Date().toISOString(), summary: summary() };
     persist(deck);
     redraw();
@@ -167,15 +192,18 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   };
 
   // ---- Removing -------------------------------------------------------------------------------
-  /** Removes one copy; the last copy removes the card. The commander can't be removed. */
+  /** Removes one copy; the last copy removes the card. The commander can't be removed. Offers Undo for 10 s. */
   const remove = (p: PricedCard) => {
     if (p.isCommander) return;
+    const before = priced.map((x) => ({ ...x, entry: { ...x.entry } }));
+    const label = p.entry.qty > 1 ? `one copy of ${p.entry.card.name}` : p.entry.card.name;
     if (p.entry.qty > 1) {
       p.entry = { ...p.entry, qty: p.entry.qty - 1 };
     } else {
       priced = priced.filter((x) => x !== p);
     }
     commit(cardsOf());
+    offerRemovalUndo(before, label);
   };
 
   // ---- Printing picker ------------------------------------------------------------------------
@@ -423,6 +451,7 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
       readOnly ? null : confirmBox,
       picker,
       options,
+      toastHost,
     ),
   );
 
