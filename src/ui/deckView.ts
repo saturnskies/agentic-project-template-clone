@@ -477,9 +477,17 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
       else {
         adder.append(search.root, warningBox, status, viewSwitch);
         columns.classList.add('with-panel');
-        panel = suggestionsPanel(ctx, () => priced, { add, swap, undo, lastSwap: () => lastSwap?.label ?? null, collection: () => deckCollection(deck) });
+        panel = suggestionsPanel(ctx, () => priced, {
+          add,
+          swap,
+          undo,
+          lastSwap: () => lastSwap?.label ?? null,
+          collection: () => deckCollection(deck),
+          onSearch: (state) => panes.setSearch(state),
+        });
         columns.append(panel.root);
-        columns.after(paneSwitch(columns, panel.root));
+        const panes = paneSwitch(columns, panel.root);
+        columns.after(panes.root);
         if (!ctx.store.prefs.helpDismissed) cardsPane.prepend(helpTip(() => ctx.dismissHelp()));
       }
       redraw();
