@@ -35,6 +35,7 @@ test('share a deck by link; a friend sees it read-only and can save a copy', asy
   await expect(friend.getByRole('combobox', { name: 'Add a card' })).toHaveCount(0);
   await expect(friend.getByRole('button', { name: 'Delete deck' })).toHaveCount(0);
   await expect(friend.getByRole('button', { name: 'Share' })).toHaveCount(0);
+  await expect(friend.getByRole('note', { name: 'How Owned and Keep work' })).toHaveCount(0); // nothing to explain: no Owned or Keep controls
   // They can still copy or download what they were sent, but have no link of their own to make.
   await friend.getByRole('button', { name: 'Export' }).click();
   const exportOptions = friend.getByRole('dialog', { name: 'Export' });
