@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { edgarFull, mockScryfall, seedEdgarDeck } from './helpers';
+import { edgarFull, mockScryfall, seedEdgarDeck, showPane } from './helpers';
 
 // Removing a card shows "Removed X." with an Undo for 10 seconds (docs/superpowers/plans/2026-11-05-undo-remove-and-short-rows.md).
 // Quantities are checked through the card count, not the Qty column, which phones hide.
@@ -90,4 +90,33 @@ test('on a phone the offer sits above the bottom bar and Undo is a 44px target',
   expect(box!.y + box!.height, 'toast bottom vs bar top').toBeLessThanOrEqual(bar!.y + 1);
   expect(undo!.height).toBeGreaterThanOrEqual(44);
   expect(undo!.width).toBeGreaterThanOrEqual(44);
+});
+
+test('after a keyboard removal Undo has focus so it can be reached in time; after a mouse click it does not', async ({ page }) => {
+  await openDeck(page);
+  await page.keyboard.press('Tab'); // so focus counts as keyboard focus (:focus-visible)
+  await page.getByRole('button', { name: 'Remove Cordial Vampire' }).focus();
+  await page.keyboard.press('Enter');
+  await expect(toast(page)).toBeVisible();
+  await expect(toast(page).getByRole('button', { name: 'Undo' })).toBeFocused();
+
+  await page.keyboard.press('Enter'); // Undo, by keyboard
+  await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
+
+  await page.getByRole('button', { name: 'Remove Cordial Vampire' }).click(); // a mouse or touch removal
+  await expect(toast(page)).toBeVisible();
+  await expect(toast(page).getByRole('button', { name: 'Undo' })).not.toBeFocused();
+});
+
+test('adding a card from suggestions also ends the offer, so Undo cannot revert the add', async ({ page }) => {
+  await openDeck(page);
+  await page.getByRole('button', { name: 'Remove Cordial Vampire' }).click();
+  await expect(toast(page)).toBeVisible();
+
+  await showPane(page, 'Suggestions');
+  await page.getByRole('button', { name: 'Find suggestions' }).click();
+  await page.getByRole('button', { name: 'Add Indulgent Aristocrat' }).click();
+  await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards'); // -1 +1
+  await showPane(page, 'Cards');
+  await expect(toast(page)).toHaveCount(0);
 });
