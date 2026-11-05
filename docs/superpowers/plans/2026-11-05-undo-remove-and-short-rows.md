@@ -1,6 +1,6 @@
 ---
 description: Two follow-ups from the 2026-11-05 UI critique (29/40) — Undo for removing a card, and shorter phone list rows by showing a quantity only above 1
-status: draft
+status: done
 updated: 2026-11-05
 ---
 
