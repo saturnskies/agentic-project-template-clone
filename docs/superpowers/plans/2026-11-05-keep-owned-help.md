@@ -18,9 +18,11 @@ updated: 2026-11-05
 
 ## Slice
 
-- [ ] Failing tests first: a first-time visitor sees the note with both terms and "Other decks keep their own ticks"; "Got it" removes it and it stays gone after a reload; dismissing in one deck means no note in another deck; on a phone it is hidden while the Suggestions pane shows; a shared read-only deck never shows it; its button is a 44px target; unit tests that the preference is kept only when it is exactly `true`, survives a save and load, and is absent by default. Existing specs that measure the header or the first cards start with the note already dismissed (the seeded store says so), as a returning user would.
-- [ ] `src/lib/storage.ts` (the preference), `src/ui/app.ts` (`dismissHelp`), `src/ui/helpTip.ts` (new), `src/ui/deckView.ts` (the note at the top of the Cards pane), `src/style.css`.
+- [x] Failing tests first: a first-time visitor sees the note with both terms and "Other decks keep their own ticks"; "Got it" removes it and it stays gone after a reload; dismissing in one deck means no note in another deck; on a phone it is hidden while the Suggestions pane shows; a shared read-only deck never shows it; its button is a 44px target; unit tests that the preference is kept only when it is exactly `true`, survives a save and load, and is absent by default. Existing specs that measure the header or the first cards start with the note already dismissed (the seeded store says so), as a returning user would.
+- [x] `src/lib/storage.ts` (the preference), `src/ui/app.ts` (`dismissHelp`), `src/ui/helpTip.ts` (new), `src/ui/deckView.ts` (the note at the top of the Cards pane), `src/style.css`.
 - Failure paths: storage that is blocked or full means the note comes back next visit, which is harmless; a backup restore keeps the current device's preference (the existing merge keeps current prefs).
+
+- Built as planned. Tests: 3 e2e specs in `tests/e2e/help-tip.spec.ts` (first visit, device-wide dismissal, phone pane and 44px button), one assertion in `share.spec.ts` (a read-only deck has no note) and 3 unit tests for the preference. `seedEdgarDeck` now starts as a returning user (note dismissed) unless `{ firstVisit: true }` is passed, so the layout measurements in other specs are unchanged.
 
 ## Done when
 
