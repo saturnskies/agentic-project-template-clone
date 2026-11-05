@@ -333,6 +333,59 @@ test.describe('Cards | Suggestions switch', () => {
   });
 });
 
+// ---- Deck header (slice 5) ---------------------------------------------------------------------
+
+test.describe('deck header', () => {
+  test('"Still to buy" is the biggest number and the card count sits on the commander line', async ({ page }) => {
+    await openDeck(page);
+    const size = (id: string) => page.getByTestId(id).evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+    const toBuy = await size('deck-to-buy');
+    expect(toBuy, 'still to buy vs deck total').toBeGreaterThan(await size('deck-total'));
+    expect(toBuy, 'still to buy vs card count').toBeGreaterThan(await size('deck-count'));
+    await expect(page.locator('.deck-head').getByTestId('deck-count')).toHaveText('100 / 100 cards');
+    await expect(page.locator('.deck-head')).toContainText('Commander: Edgar Markov');
+  });
+
+  test('empty message lines take no space above the cards', async ({ page }) => {
+    await openDeck(page);
+    // A message slot that is mounted but empty (copy status, share link, price note) has no height, yet
+    // each one still gets a grid gap around it: that was the ~100px hole between the buttons and the stats.
+    const gaps = await page.evaluate(() => {
+      const section = document.querySelector('main section.stack');
+      const out: string[] = [];
+      for (const el of section?.querySelectorAll<HTMLElement>('*') ?? []) {
+        if (el.closest('.deck-columns, dialog, table')) continue;
+        const parent = el.parentElement;
+        if (!parent || !/grid|flex/.test(getComputedStyle(parent).display)) continue;
+        if (getComputedStyle(el).display === 'none' || el.hidden) continue;
+        if (el.getBoundingClientRect().height === 0) out.push(`${el.tagName}.${el.className || '(no class)'}`);
+      }
+      return out;
+    });
+    expect(gaps).toEqual([]);
+  });
+
+  test('the first cards are on the first screen', async ({ page }) => {
+    await openDeck(page);
+    const top = await page.locator('table.cards thead').evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+    // 696px down at Pixel 7 size before this slice, 520px after: a guard so the header does not creep back down.
+    expect(top).toBeLessThanOrEqual(530);
+  });
+
+  test('copy, download and share are behind one button, and Escape closes it', async ({ page }) => {
+    await openDeck(page);
+    await expect(page.getByRole('button', { name: 'Copy deck' })).toHaveCount(0);
+    await page.getByRole('button', { name: 'Share & export' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Share & export' });
+    await expect(dialog.getByRole('button', { name: 'Copy deck' })).toBeVisible();
+    await expect(dialog.getByRole('button', { name: 'Download .txt' })).toBeVisible();
+    await expect(dialog.getByRole('button', { name: 'Copy share link' })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+    await expect(page.getByRole('button', { name: 'Share & export' })).toBeFocused();
+  });
+});
+
 test('the browser bar colour follows the colour scheme', async ({ page }) => {
   await page.goto('./');
   const metas = await page.locator('meta[name="theme-color"]').evaluateAll((els) => els.map((e) => ({ content: e.getAttribute('content'), media: e.getAttribute('media') })));
