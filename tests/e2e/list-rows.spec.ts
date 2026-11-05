@@ -16,7 +16,8 @@ const row = (page: Page, name: string) => page.getByRole('row').filter({ has: pa
 test('on a phone the Qty column is gone and several copies show as ×N beside the name', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'phones only');
   await openDeck(page);
-  await expect(page.getByRole('columnheader', { name: 'Qty' })).toBeHidden();
+  await expect(page.locator('th', { hasText: 'Qty' })).toHaveCount(1); // still in the table...
+  await expect(page.locator('th', { hasText: 'Qty' })).toBeHidden(); // ...but not shown on a phone
   await expect(row(page, 'Swamp').locator('.qty-mark')).toHaveText('×8');
   await expect(row(page, 'Cordial Vampire').locator('.qty-mark')).toHaveCount(0); // a single copy needs no mark
   await expect(row(page, 'Cordial Vampire')).toBeVisible();
