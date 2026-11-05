@@ -32,7 +32,13 @@ export interface Deck {
   owned?: string[];
   /** Basic lands count as owned unless unticked; the ones unticked in this deck. */
   unownedBasics?: string[];
+  /** The bracket picked for EDHREC suggestions: 0 for all decks, or 1–5. Kept out of share links. */
+  bracket?: number;
 }
+
+/** The deck's bracket pick, or undefined when none was saved (or the saved value is odd). */
+export const savedBracket = (deck: Deck): number | undefined =>
+  Number.isInteger(deck.bracket) && deck.bracket! >= 0 && deck.bracket! <= 5 ? deck.bracket : undefined;
 
 export interface PricedLine {
   qty: number;

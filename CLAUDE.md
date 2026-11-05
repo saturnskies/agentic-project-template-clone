@@ -20,7 +20,7 @@ Any developer should be able to say "run the tests" and have it work on the firs
 |------|---------|
 | Install | `npm ci` (CI also runs `npx playwright install --with-deps chromium`) |
 | Dev server | `npm run dev` → http://localhost:5173/swapsmith/ (run as a background task so logs stay visible) |
-| Test (all) | `npm run check` (typecheck, unit, e2e); live Scryfall test: `SCRYFALL_LIVE=1 npm test` |
+| Test (all) | `npm run check` (typecheck, unit, e2e); live tests: `SCRYFALL_LIVE=1 npm test`, `EDHREC_LIVE=1 npm test` |
 | Test (single file) | `npx vitest run tests/unit/<file>.test.ts` · `npx playwright test tests/e2e/<file>.spec.ts` |
 | Lint / typecheck | `npm run typecheck` |
 | Format | none yet (no formatter chosen) |
@@ -30,6 +30,7 @@ Any developer should be able to say "run the tests" and have it work on the firs
 ## Architecture
 
 - `src/scryfall/` — the only code that calls Scryfall: queued ~100 ms apart (500 ms for search/named/collection), 429 and network-error retry, 24 h IndexedDB cache. Scryfall quirks that shaped it (query length cap, 429s without CORS, lenient batch matching) are listed in the spec's "Data source" section
+- `src/edhrec/` — the only code that calls EDHREC (commander pages: inclusion, synergy, themes, brackets, average deck), on the same client one request at a time about a second apart ([ADR-005](docs/decisions/ADR-005-edhrec-commander-data.md)). Suggestions use it first and fall back to Scryfall rules when it has nothing ([spec](docs/superpowers/specs/2026-11-03-recommendations-revamp.md))
 - `src/lib/` — pure logic (parser, pricing, suggestions, share links), unit-tested in `tests/unit/`
 - `src/ui/` — screens; `tests/e2e/` drives them with Scryfall answered from `tests/fixtures/` (real replies; re-record with `RECORD=1 npx vitest run tests/unit/record-fixtures.test.ts`)
 - `public/` — manifest, `sw.js` (shell cache, same-origin only), icons; regenerate PNG icons with `node tools/make-icons.mjs` ([ADR-002](docs/decisions/ADR-002-installable-pwa.md))
@@ -105,6 +106,7 @@ Test gates and commits are shell scripts (run the tests, then `git commit` only 
 
 ## Gotchas
 
+- **EDHREC is unofficial** (ADR-005): its JSON can change without notice. `parsePage` checks every field and treats anything odd as "no page" (the fallback). An unknown commander answers 403; a partner pair in the wrong order answers `{redirect}` (followed once). Run `EDHREC_LIVE=1 npm test` before review. Re-record with `RECORD=1 npx vitest run tests/unit/record-fixtures.test.ts -t EDHREC`; the e2e mock answers name and role lookups from the recorded cards, since their batches depend on the order a test changes filters.
 - **Android signing (data safety):** every APK people install must be signed with the one original key and keep the package id `io.github.saturnskies.swapsmith`, or Android refuses the update and uninstalling deletes users' decks. Never generate a new keystore, never commit `*.keystore`, `*.jks` or `android/keystore.properties` (the repo is public), and never change the package id or the `swapsmith:v1` storage key without a migration. The key lives in the owner's safe copy and in the repo's GitHub secrets. Releases are CI builds only; local builds have a lower `versionCode` and cannot update a phone that has a CI build. Details: ADR-004.
 - Gradle downloads from Maven Central can fail with HTTP 429 in cloud sandboxes; rerun the same command, since Gradle keeps what it already fetched.
 - Scripted file edits on Windows: Python text mode rewrites LF as CRLF and can double carriage returns; read and write bytes or use `newline=""`, or prefer the Edit tool. Backslashes in a heredoc'd Python string get unescaped twice (`\1` became a control character), so sed or regex text goes through the Edit tool. `git ls-files --eol | grep i/crlf` finds files stored with the wrong endings.

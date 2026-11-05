@@ -1,4 +1,4 @@
-import { cleanDeckName, deckTotals, newDeckId, type Deck, type DeckEntry } from '../lib/deck';
+import { cleanDeckName, deckTotals, newDeckId, savedBracket, type Deck, type DeckEntry } from '../lib/deck';
 import { deckFileName, deckToText } from '../lib/export';
 import { decodeDeck, encodeDeck, ShareError } from '../lib/share';
 import { cardWarnings, DECK_SIZE, isBasicLand, warningText } from '../lib/format';
@@ -15,7 +15,8 @@ import { helpTip } from './helpTip';
 import { paneSwitch } from './panes';
 import { saveFile } from './saveFile';
 import { suggestionsPanel } from './suggestions';
-import { h, segmented, usd } from './dom';
+import { segmented } from './controls';
+import { h, usd } from './dom';
 
 const FINISH_LABEL = { nonfoil: '', foil: 'Foil', etched: 'Etched' } as const;
 const SCRYFALL_DOWN = "Couldn't reach Scryfall. Check your connection and try again.";
@@ -44,9 +45,20 @@ export async function renderShared(view: HTMLElement, ctx: AppContext, code: str
 
 function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnly: boolean): void {
   let deck: Deck = start;
-  /** Saves the deck, except for a shared deck that hasn't been saved to this browser. */
+  /** The `updatedAt` of the stored deck as this screen last saw it. */
+  let seen = start.updatedAt;
+  /**
+   * Saves the deck, except for a shared deck that hasn't been saved to this browser. If the stored deck has moved
+   * on since this screen last saw it (Browse added a card while this screen sat hidden, mid-pricing), this copy is
+   * stale and saving it would put the old deck back; skip it, the app redraws this screen from the store when it
+   * is shown again.
+   */
   const persist = (d: Deck) => {
-    if (!readOnly) ctx.saveDeck(d);
+    if (readOnly) return;
+    const stored = ctx.store.decks.find((x) => x.id === d.id);
+    if (stored && stored.updatedAt !== seen) return;
+    ctx.saveDeck(d);
+    seen = d.updatedAt;
   };
   let priced: PricedCard[] = [];
   let sort: SortKey = 'type';
@@ -484,6 +496,12 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
           lastSwap: () => lastSwap?.label ?? null,
           collection: () => deckCollection(deck),
           onSearch: (state) => panes.setSearch(state),
+          bracket: () => savedBracket(deck),
+          // Saved quietly: not a deck edit, so it neither redraws the cards nor ends the Undo offer.
+          setBracket: (bracket) => {
+            deck = { ...deck, bracket };
+            persist(deck);
+          },
         });
         columns.append(panel.root);
         const panes = paneSwitch(columns, panel.root);

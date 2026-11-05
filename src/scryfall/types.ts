@@ -9,11 +9,16 @@ export interface ScryCard {
   set_name: string;
   collector_number: string;
   type_line?: string;
+  mana_cost?: string;
+  cmc?: number;
+  rarity?: string;
+  keywords?: string[];
   oracle_text?: string;
   /** Popularity across all Commander decks on EDHREC; 1 is the most played card. */
   edhrec_rank?: number;
   color_identity: string[];
-  legalities: { commander?: string };
+  /** Legality by format ("legal", "not_legal", "banned", "restricted"); only Commander is kept in most fixtures. */
+  legalities: { commander?: string } & Record<string, string | undefined>;
   finishes: string[];
   prices: { usd: string | null; usd_foil: string | null; usd_etched: string | null };
   tcgplayer_id?: number;
@@ -29,4 +34,6 @@ export interface ScryList<T> {
   has_more?: boolean;
   total_cards?: number;
   not_found?: Array<Record<string, string>>;
+  /** Terms Scryfall ignored instead of failing (an unknown keyword, a bad regex); the results then ignore them too. */
+  warnings?: string[];
 }

@@ -28,15 +28,38 @@ export function fixtureFetch(map: FixtureMap): typeof fetch & { misses: string[]
 }
 
 const CARD_KEYS = [
-  'id', 'oracle_id', 'name', 'flavor_name', 'set', 'set_name', 'collector_number', 'type_line', 'oracle_text', 'edhrec_rank', 'color_identity', 'legalities',
+  'id', 'oracle_id', 'name', 'flavor_name', 'set', 'set_name', 'collector_number', 'type_line', 'mana_cost', 'cmc', 'rarity', 'keywords', 'oracle_text', 'edhrec_rank', 'color_identity', 'legalities',
   'finishes', 'prices', 'tcgplayer_id', 'tcgplayer_etched_id', 'image_uris', 'card_faces', 'object',
 ];
 
+/** Keeps only the EDHREC page fields src/lib/edhrec.ts reads, in the same shape, so fixtures stay small. */
+export function trimEdhrec(body: unknown): unknown {
+  if (!body || typeof body !== 'object') return body;
+  const b = body as Record<string, any>;
+  if ('redirect' in b) return { redirect: b.redirect };
+  const dict = b.container?.json_dict;
+  return {
+    header: b.header,
+    container: {
+      json_dict: {
+        card: { num_decks: dict?.card?.num_decks },
+        cardlists: (dict?.cardlists ?? []).map((l: Record<string, any>) => ({
+          header: l.header,
+          tag: l.tag,
+          cardviews: (l.cardviews ?? []).map((v: Record<string, unknown>) => ({ name: v.name, num_decks: v.num_decks, potential_decks: v.potential_decks, synergy: v.synergy })),
+        })),
+      },
+    },
+    panels: { taglinks: b.panels?.taglinks, piechart: b.panels?.piechart },
+    bracket_counts: b.bracket_counts,
+  };
+}
+
 /** Keeps only the card fields Swapsmith reads, so fixtures stay small. */
-export function trim(body: unknown): unknown {
+export function trim(body: unknown, opts: { allLegalities?: boolean } = {}): unknown {
   if (!body || typeof body !== 'object') return body;
   const b = body as Record<string, unknown>;
-  if (b.object === 'list') return { ...b, data: (b.data as unknown[]).map(trim) };
+  if (b.object === 'list') return { ...b, data: (b.data as unknown[]).map((c) => trim(c, opts)) };
   if (b.object !== 'card') return b;
   const out: Record<string, unknown> = {};
   for (const k of CARD_KEYS) if (k in b) out[k] = b[k];
@@ -46,7 +69,7 @@ export function trim(body: unknown): unknown {
     out.card_faces = (out.card_faces as Array<Record<string, unknown>>).map((f) => ({ name: f.name, oracle_id: f.oracle_id, type_line: f.type_line, oracle_text: f.oracle_text, ...(f.image_uris ? { image_uris: img(f.image_uris) } : {}) }));
   }
   const legal = out.legalities as Record<string, string> | undefined;
-  if (legal) out.legalities = { commander: legal.commander };
+  if (legal) out.legalities = opts.allLegalities ? legal : { commander: legal.commander };
   const prices = out.prices as Record<string, string | null> | undefined;
   if (prices) out.prices = { usd: prices.usd, usd_foil: prices.usd_foil, usd_etched: prices.usd_etched };
   return out;

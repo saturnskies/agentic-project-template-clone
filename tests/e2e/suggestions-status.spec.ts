@@ -29,7 +29,7 @@ test('the tab shows that a search is running while you look at the list, then th
 
   await showPane(page, 'Suggestions');
   await expect(badge(page)).toBeHidden(); // seen, so it goes away
-  await expect(suggestionsPanel(page).getByRole('list', { name: 'Budget upgrades' })).toBeVisible();
+  await expect(suggestionsPanel(page).getByRole('list', { name: 'Creatures upgrades' })).toBeVisible();
   await showPane(page, 'Cards');
   await expect(badge(page)).toBeHidden(); // and does not come back
 });
@@ -39,25 +39,28 @@ test('a search that finishes while you are already on Suggestions shows no badge
   await showPane(page, 'Suggestions');
   await suggestionsPanel(page).getByRole('button', { name: 'Find suggestions' }).click();
   await expect(badge(page)).toBeHidden();
-  await expect(suggestionsPanel(page).getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem').first()).toBeVisible({ timeout: 60_000 });
+  await expect(suggestionsPanel(page).getByRole('list', { name: 'Creatures upgrades' }).getByRole('listitem').first()).toBeVisible({ timeout: 60_000 });
   await expect(badge(page)).toBeHidden();
   await showPane(page, 'Cards');
   await expect(badge(page)).toBeHidden();
 });
 
 test('a search that cannot reach Scryfall says Failed on the tab, and a retry says Searching again', async ({ page }) => {
+  // The client retries each failed search with backoff before giving up. EDHREC has no recording here, so the
+  // rules-based pool runs; abort its searches (as edhrec.spec does) and nothing is left to show.
+  test.setTimeout(180_000);
   await openEdgarDeck(page);
-  await page.route(/api\.scryfall\.com\/cards\/search/, (route) => route.abort());
+  await page.route(/api\.scryfall\.com\/cards\/search\?q=f%3Acommander[^&]*prefer%3Ausd-low/, (route) => route.abort());
   await startSearchAndLeave(page);
 
-  await expect(badge(page)).toHaveText('Failed', { timeout: 90_000 });
+  await expect(badge(page)).toHaveText('Failed', { timeout: 150_000 });
   await expect(live(page)).toContainText("Couldn't search Scryfall");
 
   await showPane(page, 'Suggestions');
   await expect(badge(page)).toBeHidden();
   await expect(suggestionsPanel(page)).toContainText("Couldn't reach Scryfall");
 
-  await suggestionsPanel(page).getByRole('button', { name: 'Find suggestions' }).click();
+  await suggestionsPanel(page).getByRole('button', { name: 'Refresh suggestions' }).click(); // relabelled once a search has run
   await showPane(page, 'Cards');
   await expect(badge(page)).toHaveText('Searching');
 });

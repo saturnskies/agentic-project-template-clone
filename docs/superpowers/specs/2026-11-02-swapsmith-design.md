@@ -143,6 +143,8 @@ A panel beside the editor on wide screens, or a tab on phones, with three sectio
 
 ## Suggestion rules
 
+> **Replaced 2026-11-04** by the [recommendations revamp spec](2026-11-03-recommendations-revamp.md). Upgrades, swaps and cheaper replacements now come from EDHREC's data for the commander. The rules below are the fallback when EDHREC has nothing, widened there with more roles and themes and shown in categories instead of price tiers. The revamp also brings in gap lines, which were out of scope here.
+
 All rules are pure functions over card data, so unit tests can cover them without the network. Every suggestion shows a short reason built from the rule that produced it.
 
 ### Deck profile, computed locally from deck cards

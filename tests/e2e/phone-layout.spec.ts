@@ -218,7 +218,7 @@ test.describe('touch targets', () => {
 async function findSuggestions(page: Page) {
   await showPane(page, 'Suggestions');
   await suggestionsPanel(page).getByRole('button', { name: 'Find suggestions' }).click();
-  await expect(suggestionsPanel(page).getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem').first()).toBeVisible();
+  await expect(suggestionsPanel(page).getByRole('list', { name: 'Creatures upgrades' }).getByRole('listitem').first()).toBeVisible();
 }
 
 test.describe('Cards | Suggestions switch', () => {
@@ -294,7 +294,7 @@ test.describe('Cards | Suggestions switch', () => {
     await showPane(page, 'Cards');
     await showPane(page, 'Suggestions');
     await expect(suggestionsPanel(page)).toContainText(/Searching Scryfall|Budget/);
-    await expect(suggestionsPanel(page).getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem').first()).toBeVisible();
+    await expect(suggestionsPanel(page).getByRole('list', { name: 'Creatures upgrades' }).getByRole('listitem').first()).toBeVisible();
   });
 
   test('switching panes does not touch the history, so Back still leaves the deck', async ({ page }) => {
@@ -378,7 +378,7 @@ test.describe('deck header', () => {
   test('empty status and alert slots stay in the accessibility tree, so filling them is announced', async ({ page }) => {
     await openEdgarDeck(page);
     const gone = await page.evaluate(() =>
-      [...document.querySelectorAll<HTMLElement>('[aria-live], [role="status"], [role="alert"]')]
+      [...document.querySelectorAll<HTMLElement>('[data-tab="decks"] [aria-live], [data-tab="decks"] [role="status"], [data-tab="decks"] [role="alert"]')]
         .filter((el) => !(el.textContent ?? '').trim() && !el.closest('dialog'))
         .filter((el) => getComputedStyle(el).display === 'none' || getComputedStyle(el).visibility === 'hidden')
         .map((el) => `${el.tagName.toLowerCase()}.${el.className || '(no class)'}`),

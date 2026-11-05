@@ -1,4 +1,5 @@
-import { h, segmented } from './dom';
+import { segmented } from './controls';
+import { h } from './dom';
 
 type Pane = 'cards' | 'suggestions';
 

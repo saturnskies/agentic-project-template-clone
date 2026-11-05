@@ -15,6 +15,10 @@ export interface CacheStore {
 }
 
 export interface ClientOptions {
+  /** Another host with the same queue, retry and cache (EDHREC). Defaults to Scryfall. */
+  base?: string;
+  /** The host's name in error messages. */
+  service?: string;
   fetch?: typeof fetch;
   cache?: CacheStore;
   spacingMs?: number;
@@ -45,6 +49,10 @@ export class ScryfallError extends Error {
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export function createClient(opts: ClientOptions = {}): ScryfallClient {
+  const base = opts.base ?? SCRYFALL_BASE;
+  const service = opts.service ?? 'Scryfall';
+  // Another host's replies are cached under its own base, so a shared cache can't mix them up.
+  const keyPrefix = base === SCRYFALL_BASE ? '' : `${base} `;
   const doFetch = opts.fetch ?? ((...args: Parameters<typeof fetch>) => fetch(...args));
   const cache = opts.cache ?? idbCache();
   const spacingMs = opts.spacingMs ?? 100;
@@ -104,7 +112,7 @@ export function createClient(opts: ClientOptions = {}): ScryfallClient {
           const abort = new AbortController();
           const timer = setTimeout(() => abort.abort(), timeoutMs);
           try {
-            return await doFetch(SCRYFALL_BASE + path, { ...init, signal: abort.signal });
+            return await doFetch(base + path, { ...init, signal: abort.signal });
           } finally {
             clearTimeout(timer);
           }
@@ -116,7 +124,7 @@ export function createClient(opts: ClientOptions = {}): ScryfallClient {
           await sleep(1000 * 2 ** attempt);
           continue;
         }
-        throw new ScryfallError(0, `Couldn't reach Scryfall: ${e instanceof Error ? e.message : String(e)}`);
+        throw new ScryfallError(0, `Couldn't reach ${service}: ${e instanceof Error ? e.message : String(e)}`);
       }
       if (res.status === 429 && attempt < maxRetries) {
         const retryAfter = Number(res.headers.get('retry-after'));
@@ -126,7 +134,7 @@ export function createClient(opts: ClientOptions = {}): ScryfallClient {
       const body = await res.json().catch(() => null);
       if (!res.ok) {
         const details = (body && typeof body === 'object' && 'details' in body && String(body.details)) || res.statusText;
-        throw new ScryfallError(res.status, `Scryfall ${res.status}: ${details}`);
+        throw new ScryfallError(res.status, `${service} ${res.status}: ${details}`);
       }
       await safe(() => cache.set(cacheKey, { t: now(), body }));
       return body as T;
@@ -134,10 +142,10 @@ export function createClient(opts: ClientOptions = {}): ScryfallClient {
   }
 
   return {
-    get: (path) => send(path, { headers: { Accept: 'application/json' } }, `GET ${path}`),
+    get: (path) => send(path, { headers: { Accept: 'application/json' } }, `${keyPrefix}GET ${path}`),
     post: (path, body) => {
       const text = JSON.stringify(body);
-      return send(path, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: text }, `POST ${path} ${text}`);
+      return send(path, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: text }, `${keyPrefix}POST ${path} ${text}`);
     },
   };
 }
