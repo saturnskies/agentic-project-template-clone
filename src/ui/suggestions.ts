@@ -29,6 +29,8 @@ export interface PanelActions {
   lastSwap(): string | null;
   /** The cards owned for this deck only: suggestions never look at what you own for another deck. */
   collection(): Collection;
+  /** Where the latest search is, for the badge on the Suggestions tab. Only the current run reports. */
+  onSearch(state: 'searching' | 'ready' | 'failed'): void;
 }
 
 /**
@@ -226,6 +228,7 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
       commander?.color_identity ?? [],
     );
     find.disabled = true;
+    actions.onSearch('searching');
     const status = h('p', { class: 'muted small', role: 'status' }, 'Searching Scryfall…');
     body.replaceChildren(status);
     try {
@@ -240,6 +243,7 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
       roles = new Map();
       rolesState = 'loading';
       draw();
+      actions.onSearch('ready');
       deckRoles(ctx.client, cards.filter((c) => !c.isCommander).map((c) => ({ oracleId: c.entry.card.oracleId, name: c.entry.card.name })))
         .then(({ roles: r, complete }) => {
           if (mine !== run) return;
@@ -253,7 +257,10 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
           draw();
         });
     } catch {
-      if (mine === run) status.textContent = "Couldn't reach Scryfall. Check your connection and try again.";
+      if (mine === run) {
+        status.textContent = "Couldn't reach Scryfall. Check your connection and try again.";
+        actions.onSearch('failed');
+      }
     } finally {
       if (mine === run) find.disabled = false;
     }
