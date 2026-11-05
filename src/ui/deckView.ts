@@ -122,8 +122,9 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   let lastSwap: { removed: PricedCard; index: number; addedOracleId: string; label: string } | null = null;
 
   // Undo for a removal lives here, on the Cards pane, not in the suggestions panel (a different pane on a phone).
-  // It keeps the whole deck as it was just before the removal and is dropped by the next change of any kind,
-  // so Undo can only ever bring back that one removal and never reverts something newer.
+  // It keeps the whole deck as it was just before the removal and is dropped by the next change to the cards
+  // (`commit`), so Undo can only ever bring back that one removal and never reverts something newer. Ticking
+  // Owned does not end it: ownership is stored apart from the cards, which Undo does not touch.
   const toastHost = h('div', { class: 'toast-host', role: 'status', 'aria-live': 'polite' });
   let lastRemoval: { before: PricedCard[] } | null = null;
   let removalTimer: ReturnType<typeof setTimeout> | undefined;
@@ -132,7 +133,7 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
     clearTimeout(removalTimer);
     toastHost.replaceChildren();
   };
-  const offerRemovalUndo = (before: PricedCard[], label: string) => {
+  const offerRemovalUndo = (before: PricedCard[], label: string, focusUndo: boolean) => {
     clearRemoval();
     lastRemoval = { before };
     const undoBtn = h('button', { type: 'button', class: 'button' }, 'Undo');
@@ -142,6 +143,7 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
       commit(cardsOf()); // also ends the offer
     });
     toastHost.replaceChildren(h('div', { class: 'toast' }, h('span', {}, `Removed ${label}.`), undoBtn));
+    if (focusUndo) undoBtn.focus();
     removalTimer = setTimeout(clearRemoval, 10_000);
   };
 
@@ -199,6 +201,9 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   const remove = (p: PricedCard) => {
     if (p.isCommander) return;
     const before = priced.map((x) => ({ ...x, entry: { ...x.entry } }));
+    // A keyboard user cannot reach a toast that is last in the page within 10 s, so hand it focus; touch and mouse
+    // users are not moved (a focus ring would only be noise).
+    const byKeyboard = !!document.activeElement?.matches(':focus-visible');
     const label = p.entry.qty > 1 ? `one copy of ${p.entry.card.name}` : p.entry.card.name;
     if (p.entry.qty > 1) {
       p.entry = { ...p.entry, qty: p.entry.qty - 1 };
@@ -206,7 +211,7 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
       priced = priced.filter((x) => x !== p);
     }
     commit(cardsOf());
-    offerRemovalUndo(before, label);
+    offerRemovalUndo(before, label, byKeyboard);
   };
 
   // ---- Printing picker ------------------------------------------------------------------------
@@ -260,11 +265,18 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   };
   const add = async (card: ScryCard) => {
     const oid = oracleIdOf(card);
-    const existing = priced.find((p) => !p.isCommander && p.entry.card.oracleId === oid);
+    const bump = (p: PricedCard) => (p.entry = { ...p.entry, qty: p.entry.qty + 1 });
+    const find = () => priced.find((p) => !p.isCommander && p.entry.card.oracleId === oid);
+    const existing = find();
     if (existing) {
-      existing.entry = { ...existing.entry, qty: existing.entry.qty + 1 };
+      bump(existing);
     } else {
-      priced = [...priced, await priceCard(card)];
+      const added = await priceCard(card);
+      // Re-find after the wait (ui-state rules): the deck may have changed while pricing, with a removal, an Undo or
+      // the same card added twice. Build on the deck as it is now, not as it was when the pick started.
+      const now = find();
+      if (now) bump(now);
+      else priced = [...priced, added];
     }
     commit(cardsOf());
   };
