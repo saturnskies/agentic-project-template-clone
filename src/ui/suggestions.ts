@@ -9,7 +9,7 @@ import { deckRoles } from '../scryfall/roles';
 import { candidatePool, deckCardFacts, rulesText } from '../scryfall/suggest';
 import type { ScryCard } from '../scryfall/types';
 import type { AppContext } from './app';
-import { h, usd } from './dom';
+import { h, segmented, usd } from './dom';
 
 const COLOR_NAMES: Record<string, string> = { W: 'white', U: 'blue', B: 'black', R: 'red', G: 'green' };
 
@@ -66,17 +66,6 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
   );
 
   const facts = () => deckCardFacts(priced(), roles, pool ?? [], actions.collection());
-
-  const segmented = <T extends string>(label: string, options: Array<{ id: T; label: string }>, current: T, onPick: (id: T) => void) =>
-    h(
-      'div',
-      { class: 'segmented', role: 'group', 'aria-label': label },
-      ...options.map((o) => {
-        const b = h('button', { type: 'button', class: 'segment', 'aria-pressed': String(o.id === current) }, o.label);
-        b.addEventListener('click', () => onPick(o.id));
-        return b;
-      }),
-    );
 
   const nameLink = (s: Suggestion) => h('a', { href: tcgplayerUrl(s.card, s.finish), target: '_blank', rel: 'noopener', class: 'sugg-name' }, s.card.name);
   const thumb = (s: Suggestion) => {
