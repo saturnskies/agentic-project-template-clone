@@ -131,10 +131,14 @@ test('Home shows no empty alert box until there is a message to show', async ({ 
   await seedEdgarDeck(page);
   await page.goto('./');
   await expect(page.getByRole('button', { name: 'Back up my decks' })).toBeVisible();
-  // Empty message elements must take no space: an empty bordered box reads as a broken control.
-  const empties = await page.locator('.notice').evaluateAll((els) => els.filter((e) => !e.textContent?.trim() && getComputedStyle(e).display !== 'none').length);
-  expect(empties).toBe(0);
-  await expect(page.getByRole('alert')).toHaveCount(0);
+  // An empty message slot must paint nothing and take no room: an empty bordered box reads as a broken control...
+  const painted = await page.locator('.notice').evaluateAll((els) =>
+    els.filter((e) => !e.textContent?.trim() && (e.getBoundingClientRect().width > 1 || e.getBoundingClientRect().height > 1)).length,
+  );
+  expect(painted).toBe(0);
+  // ...but it stays in the accessibility tree (not display:none), so a screen reader announces text added to it later.
+  await expect(page.getByRole('alert')).toBeAttached();
+  await expect(page.getByRole('alert')).toBeEmpty();
 });
 
 // ---- Touch targets (slice 3) ------------------------------------------------------------------
@@ -375,11 +379,23 @@ test.describe('deck header', () => {
         const parent = el.parentElement;
         if (!parent || !/grid|flex/.test(getComputedStyle(parent).display)) continue;
         if (getComputedStyle(el).display === 'none' || el.hidden) continue;
+        if (/absolute|fixed/.test(getComputedStyle(el).position)) continue; // out of flow: it gets no grid gap
         if (el.getBoundingClientRect().height === 0) out.push(`${el.tagName}.${el.className || '(no class)'}`);
       }
       return out;
     });
     expect(gaps).toEqual([]);
+  });
+
+  test('empty status and alert slots stay in the accessibility tree, so filling them is announced', async ({ page }) => {
+    await openDeck(page);
+    const gone = await page.evaluate(() =>
+      [...document.querySelectorAll<HTMLElement>('[aria-live], [role="status"], [role="alert"]')]
+        .filter((el) => !(el.textContent ?? '').trim() && !el.closest('dialog'))
+        .filter((el) => getComputedStyle(el).display === 'none' || getComputedStyle(el).visibility === 'hidden')
+        .map((el) => `${el.tagName.toLowerCase()}.${el.className || '(no class)'}`),
+    );
+    expect(gone).toEqual([]);
   });
 
   test('the first cards are on the first screen', async ({ page }) => {
@@ -391,7 +407,10 @@ test.describe('deck header', () => {
 
   test('copy, download and share are behind one button, and Escape closes it', async ({ page }) => {
     await openDeck(page);
-    await expect(page.getByRole('button', { name: 'Copy deck' })).toHaveCount(0);
+    // Counted in the DOM, not by role: a closed dialog's buttons are hidden from role queries, which would make
+    // this pass even if the header still had them.
+    const outside = await page.locator('button').evaluateAll((els) => els.filter((e) => /Copy deck|Download \.txt/.test(e.textContent ?? '') && !e.closest('dialog')).length);
+    expect(outside, 'Copy and Download buttons outside the dialog').toBe(0);
     await page.getByRole('button', { name: 'Share & export' }).click();
     const dialog = page.getByRole('dialog', { name: 'Share & export' });
     await expect(dialog.getByRole('button', { name: 'Copy deck' })).toBeVisible();
