@@ -307,6 +307,7 @@ dialog.picker::backdrop { background: rgb(0 0 0 / 0.45); }
   body:has(.pane-bar) { padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px)); } /* the last card and the footer stay reachable */
   .deck-columns[data-pane="cards"] > .suggestions { display: none; }
   .deck-columns[data-pane="suggestions"] > :not(.suggestions) { display: none; }
+  body:has(.deck-columns[data-pane="suggestions"]) .view-switch { display: none; } /* List/Grid controls the list, which is hidden here */
 }
 
 /* The Undo offer after removing a card: above the Cards | Suggestions bar below 70rem, near the bottom above it. */
