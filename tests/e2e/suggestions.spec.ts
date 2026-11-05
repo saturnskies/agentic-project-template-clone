@@ -208,3 +208,31 @@ test('the Undo offer goes away once the deck is changed another way', async ({ p
   await expect(panel.getByRole('button', { name: 'Undo' })).toHaveCount(0);
 });
 
+test('removing a card while an added one is still being priced keeps both changes', async ({ page }) => {
+  await mockScryfall(page, edgarFull);
+  const deck = await seedEdgarDeck(page);
+  await page.goto(`./#/deck/${deck.id}`);
+  await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
+  await showPane(page, 'Suggestions');
+  await page.getByRole('button', { name: 'Find suggestions' }).click();
+  await expect(page.getByRole('list', { name: 'Budget upgrades' }).getByRole('listitem').first()).toBeVisible();
+
+  // From here on every Scryfall answer is held, so pricing the added card takes a while.
+  let release!: () => void;
+  const gate = new Promise<void>((resolve) => (release = resolve));
+  await page.route('https://api.scryfall.com/**', async (route) => {
+    await gate;
+    await route.fallback();
+  });
+
+  await page.getByRole('button', { name: 'Add Indulgent Aristocrat' }).click();
+  await showPane(page, 'Cards');
+  await page.getByRole('button', { name: 'Remove Cordial Vampire' }).click(); // while the add is still pricing
+  await expect(page.getByTestId('deck-count')).toHaveText('99 / 100 cards');
+  release();
+
+  // Both changes stand: +1 for the added card, -1 for the removed one. (It used to rebuild the list from before the wait.)
+  await expect(page.getByRole('row').filter({ hasText: 'Indulgent Aristocrat' })).toBeVisible();
+  await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
+  await expect(page.getByRole('row').filter({ has: page.getByRole('link', { name: 'Cordial Vampire', exact: true }) })).toHaveCount(0);
+});
