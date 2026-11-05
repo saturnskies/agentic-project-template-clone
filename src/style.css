@@ -303,7 +303,7 @@ dialog.picker::backdrop { background: rgb(0 0 0 / 0.45); }
     background: var(--panel); border-top: 1px solid var(--line);
   }
   .pane-bar .segmented { width: min(100%, 24rem); }
-  .pane-bar .segment { flex: 1; }
+  .pane-bar .segment { flex: 1 1 auto; padding-inline: 0.5rem; white-space: nowrap; }
   body:has(.pane-bar) { padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px)); } /* the last card and the footer stay reachable */
   .deck-columns[data-pane="cards"] > .suggestions { display: none; }
   .deck-columns[data-pane="suggestions"] > :not(.suggestions) { display: none; }
@@ -314,3 +314,14 @@ dialog.picker::backdrop { background: rgb(0 0 0 / 0.45); }
 .toast-host:empty { display: none; }
 .toast { pointer-events: auto; display: flex; align-items: center; gap: 0.75rem; max-width: min(100%, 28rem); padding: 0.4rem 0.5rem 0.4rem 1rem; border-radius: var(--radius); background: var(--ink); color: var(--panel); box-shadow: 0 8px 24px rgb(0 0 0 / 0.25); }
 @media (max-width: 69.999rem) { .toast-host { bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px)); } }
+
+/* The search badge on the Suggestions tab (src/ui/panes.ts): shown only while you are on Cards. */
+.pane-badge { margin-left: 0.4rem; padding: 0.05rem 0.45rem; border-radius: 999px; background: var(--tag-bg); color: var(--muted); font-size: 0.7rem; font-weight: 600; white-space: nowrap; }
+.pane-badge:empty { display: none; }
+.pane-badge[data-state="ready"] { background: var(--accent); color: var(--accent-ink); }
+.pane-badge[data-state="failed"] { background: transparent; border: 1px solid var(--danger); color: var(--danger); }
+.pane-badge[data-state="searching"]::before { content: ''; display: inline-block; width: 0.45rem; height: 0.45rem; margin-right: 0.3rem; border-radius: 50%; background: currentColor; }
+@media (prefers-reduced-motion: no-preference) {
+  .pane-badge[data-state="searching"]::before { animation: pane-pulse 1.2s ease-in-out infinite; }
+}
+@keyframes pane-pulse { 50% { opacity: 0.25; } }
