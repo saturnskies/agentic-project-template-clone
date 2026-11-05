@@ -1,6 +1,6 @@
 ---
 description: Make "Owned" belong to each deck instead of one list shared by every deck, with a migration so no one loses the ticks they already made — two test-gated slices (storage and migration, then the screens)
-status: draft
+status: done
 updated: 2026-11-05
 ---
 
@@ -13,7 +13,7 @@ This changes saved data, so the rules in [ADR-004](../../decisions/ADR-004-apk-s
 ## Decisions (change them before building if wrong)
 
 - **Where it lives:** two optional fields on each deck, `owned` (Oracle IDs) and `unownedBasics`. A card is owned in a deck only if it is ticked in that deck. Basic lands still count as owned unless unticked, in each deck separately. Cards are still matched by Oracle ID, so owning any printing counts.
-- **Migration:** on load, a store that still has the old top-level `owned` / `unownedBasics` lists copies them into each deck, keeping only the cards that deck actually contains. So every deck looks exactly as it did before the update. Nothing is lost, and a card that was ticked everywhere can now be unticked in one deck. The old top-level lists are then dropped and the store's `version` becomes 2 (the key stays `swapsmith:v1`).
+- **Migration:** on load, a store that still has the old top-level `owned` / `unownedBasics` lists copies them into each deck, keeping only the cards that deck actually contains. So every deck looks exactly as it did before the update. Nothing is lost, and a card that was ticked everywhere can now be unticked in one deck. The old top-level lists are then dropped from the in-memory store and its `version` becomes 2 (the key stays `swapsmith:v1`; storage itself is rewritten on the next save).
 - **A deck that already has its own fields is never overwritten**, so an old cached copy of the app that saves the old shape cannot undo the migration.
 - **Old backup files** (made before this change) still restore: they go through the same migration. New backups carry the per-deck fields inside each deck.
 - **Restore merge:** when a deck is in both the app and a backup, the one edited last wins, with its ticks (they are part of the deck now). The old "combine all owned cards" step is removed.
@@ -27,7 +27,7 @@ This changes saved data, so the rules in [ADR-004](../../decisions/ADR-004-apk-s
 - [x] `src/lib/deck.ts`: the two optional fields. `src/lib/owned.ts`: `deckCollection(deck)`. `src/lib/storage.ts`: `Store` loses the top-level lists, `sanitizeStore` migrates. `src/lib/backup.ts`: merge by deck.
 - Failure paths: a store that fails to parse is still backed up under `swapsmith:v1:backup` exactly as now; a deck with a missing commander is dropped by the existing check before migration looks at it.
 - Also added, beyond the plan: the first time old shared data is migrated, `loadStore` keeps one untouched copy of it under `swapsmith:v1:before-owned-per-deck` and never overwrites that copy, so a mistake in the migration can never cost anyone their decks. Nothing reads it.
-- Built as planned. 12 new unit tests (storage migration cases, old-format backup restore, the per-deck merge, `deckCollection`); unit total 170.
+- Built as planned. 12 new unit tests (storage migration cases, old-format backup restore, the per-deck merge, `deckCollection`); unit total 170 when this slice was built.
 
 ### 2. The screens
 - [x] Failing e2e first: ticking a card in one deck leaves it unticked in another deck that contains it, and each deck's "Still to buy" and the home screen's "to buy" figure use only its own ticks; ticks survive a reload; suggestions in deck B ignore deck A's ticks (cheaper replacements still appear for a card owned only in A); a store saved in the old shape (global ticks, two decks) opens with each deck's ticks intact; a deck saved from a share link starts with only basics owned. The existing test "owned cards are remembered across reloads and shared by every deck" is replaced by these, since it asserts the rule being removed.
