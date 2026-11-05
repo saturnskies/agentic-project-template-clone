@@ -29,10 +29,10 @@ Status: **current** = in force or in progress; **draft** = proposed, not approve
 
 - [2026-11-02-swapsmith-v1.md](superpowers/plans/2026-11-02-swapsmith-v1.md) — current, 2026-11-02 — Swapsmith v1 build plan — eight test-gated vertical slices from skeleton and deploy to swap suggestions
 - [2026-11-04-phone-layout.md](superpowers/plans/2026-11-04-phone-layout.md) — done, 2026-11-05 — Phone layout fixes from the 2026-11-04 UI critique, dark mode first — five test-gated slices (dark contrast, empty alert bug, touch targets, Cards|Suggestions switch, deck header)
-- [2026-11-05-keep-owned-help.md](superpowers/plans/2026-11-05-keep-owned-help.md) — draft, 2026-11-05 — A short first-use note explaining Owned and Keep above the card list, dismissed for good with "Got it" — one test-gated slice
-- [2026-11-05-owned-per-deck.md](superpowers/plans/2026-11-05-owned-per-deck.md) — draft, 2026-11-05 — Make "Owned" belong to each deck instead of one list shared by every deck, with a migration so no one loses the ticks they already made — two test-gated slices (storage and migration, then the screens)
-- [2026-11-05-suggestions-tab-status.md](superpowers/plans/2026-11-05-suggestions-tab-status.md) — draft, 2026-11-05 — A small status badge on the Suggestions tab (Searching, Ready, Failed) so a search started in the Suggestions pane is visible from the Cards pane on a phone — one test-gated slice
-- [2026-11-05-undo-remove-and-short-rows.md](superpowers/plans/2026-11-05-undo-remove-and-short-rows.md) — draft, 2026-11-05 — Two follow-ups from the 2026-11-05 UI critique (29/40) — Undo for removing a card, and shorter phone list rows by showing a quantity only above 1
+- [2026-11-05-keep-owned-help.md](superpowers/plans/2026-11-05-keep-owned-help.md) — done, 2026-11-05 — A short first-use note explaining Owned and Keep above the card list, dismissed for good with "Got it" — one test-gated slice
+- [2026-11-05-owned-per-deck.md](superpowers/plans/2026-11-05-owned-per-deck.md) — done, 2026-11-05 — Make "Owned" belong to each deck instead of one list shared by every deck, with a migration so no one loses the ticks they already made — two test-gated slices (storage and migration, then the screens)
+- [2026-11-05-suggestions-tab-status.md](superpowers/plans/2026-11-05-suggestions-tab-status.md) — done, 2026-11-05 — A small status badge on the Suggestions tab (Searching, Ready, Failed) so a search started in the Suggestions pane is visible from the Cards pane on a phone — one test-gated slice
+- [2026-11-05-undo-remove-and-short-rows.md](superpowers/plans/2026-11-05-undo-remove-and-short-rows.md) — done, 2026-11-05 — Two follow-ups from the 2026-11-05 UI critique (29/40) — Undo for removing a card, and shorter phone list rows by showing a quantity only above 1
 
 ## docs/superpowers/specs/
 
