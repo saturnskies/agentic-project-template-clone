@@ -8,7 +8,8 @@ import { isDeck, type Deck } from './deck';
 export interface Store {
   version: 2;
   decks: Deck[];
-  prefs: { view: 'grid' | 'list' };
+  /** `helpDismissed` is set once the first-use note about Owned and Keep has been dismissed on this device. */
+  prefs: { view: 'grid' | 'list'; helpDismissed?: true };
 }
 
 export const STORE_KEY = 'swapsmith:v1';
@@ -68,7 +69,7 @@ export function sanitizeStore(data: Record<string, unknown>): Store {
   return {
     version: 2,
     decks: (Array.isArray(data.decks) ? data.decks.filter(isDeck) : []).map((d) => withOwnership(d, legacy)),
-    prefs: { view: prefs.view === 'grid' ? 'grid' : 'list' },
+    prefs: { view: prefs.view === 'grid' ? 'grid' : 'list', ...(prefs.helpDismissed === true ? { helpDismissed: true as const } : {}) },
   };
 }
 
