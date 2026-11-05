@@ -1,12 +1,19 @@
+import type { Deck } from './deck';
 import { isBasicLand } from './format';
 
 /**
- * The owned-card collection, shared by every deck. Cards are matched by Oracle ID, so owning any
- * printing counts. Basic lands count as owned unless unticked (v1 spec, "Decisions after review").
+ * The cards owned for one deck. Cards are matched by Oracle ID, so owning any printing counts. Basic
+ * lands count as owned unless unticked. Ownership belongs to a deck, never to all decks: a physical card
+ * is in one deck at a time (v1 spec, "Decisions after review"; plan 2026-11-05-owned-per-deck).
  */
 export interface Collection {
   owned: string[];
   unownedBasics: string[];
+}
+
+/** The ticks stored on a deck; a deck with none owns only its basic lands. */
+export function deckCollection(deck: Pick<Deck, 'owned' | 'unownedBasics'>): Collection {
+  return { owned: deck.owned ?? [], unownedBasics: deck.unownedBasics ?? [] };
 }
 
 export function isOwned(c: Collection, oracleId: string, typeLine: string): boolean {
