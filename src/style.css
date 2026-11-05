@@ -17,6 +17,7 @@
   --font-display: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
   --font-body: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --radius: 10px;
+  --tap: 44px;           /* the smallest touch target (Material asks for 48dp) */
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -265,24 +266,23 @@ dialog.picker::backdrop { background: rgb(0 0 0 / 0.45); }
 .backup .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 .backup p { margin: 0; }
 
-/* Touch targets: 44px on touch screens (pointer: coarse), so a thumb can hit them (Material asks for 48dp).
+/* Touch targets: --tap (44px) on touch screens (pointer: coarse), so a thumb can hit them (Material asks for 48dp).
    Dense rows keep their height by growing the tap area with a ::after instead of the visible control. */
 .own-cell { cursor: pointer; }
 @media (pointer: coarse) {
-  .button, .segment, .sort, .link-button, input[type=text], select, .back { min-height: 44px; }
-  .segment { min-width: 44px; }
-  .sort { min-width: 44px; padding-inline: 0.25rem; display: inline-flex; align-items: center; }
+  .button, .segment, .sort, .link-button, input[type=text], select, .back { min-height: var(--tap); }
+  .segment { min-width: var(--tap); }
+  .sort { min-width: var(--tap); padding-inline: 0.25rem; display: inline-flex; align-items: center; }
   .back { display: inline-flex; align-items: center; }
   .link-button { display: inline-flex; align-items: center; }
-  .icon-button { width: 44px; height: 44px; }
-  .cards td.remove { width: 44px; padding: 0; }
+  .icon-button, .card-tools .icon-button { width: var(--tap); height: var(--tap); }
+  .cards td.remove { width: var(--tap); padding: 0; }
   .cards td.owned, .cards th.owned { width: 46px; padding-inline: 0; }
-  .own-cell, .own-label { display: grid; place-items: center; min-height: 44px; min-width: 44px; }
-  .own-label { display: inline-flex; gap: 0.3rem; }
-  .cards td.owned input, .own-label input { width: 1.4rem; height: 1.4rem; }
-  .card-tools { min-height: 44px; flex-wrap: wrap; gap: 0.4rem; }
-  .cards td.owned input, .own-label input { margin: 0; } /* the browser's own checkbox margin cost 7px a tile */
-  .card-tools .icon-button { width: 44px; height: 44px; }
+  .own-cell, .own-label { min-height: var(--tap); min-width: var(--tap); }
+  .own-cell { display: grid; place-items: center; }
+  .own-label { display: inline-flex; align-items: center; gap: 0.3rem; }
+  .cards td.owned input, .own-label input { width: 1.4rem; height: 1.4rem; margin: 0; } /* margin: the browser's own checkbox margin cost 7px a tile */
+  .card-tools { min-height: var(--tap); flex-wrap: wrap; gap: 0.4rem; }
   .keep-toggle { position: relative; }
   .keep-toggle::after { content: ''; position: absolute; inset: -13px -6px; }
 }
