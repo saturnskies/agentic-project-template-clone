@@ -74,10 +74,12 @@ Source: the impeccable critique of 2026-11-04, checked by rendering the app at P
 - [x] Existing specs updated, not weakened: `suggestions.spec.ts` now opens the pane it needs (a `showPane` helper that does nothing on wide screens) and looks at the list while the list is showing, so "this row is gone" checks are not vacuous against a hidden list.
 - The `Add a card` field and the List/Grid switch stay visible above the Suggestions panel; List/Grid controls a hidden list there. Left as is; see follow-ups.
 
-### 5. Deck header hierarchy (optional; see decisions)
-- [ ] Failing tests first: `deck-to-buy` is the largest text in the stats area; `deck-total` and `deck-count` stay (testids unchanged); no stray empty gap: `exportMsg`, `shareBox` and `note` take no height when empty (`:empty { display: none }`).
-- [ ] `src/ui/deckView.ts` and `src/style.css`: "Still to buy" as the one prominent figure, total as secondary text, count as "100 / 100" in the subtitle row.
-- [ ] If chosen: one "Share" button opening a `dialog` (reuse the picker pattern) containing Copy, Download and Share link. Update `export.spec.ts` and `share.spec.ts` to the new path in the same commit.
+### 5. Deck header hierarchy
+- [x] Failing tests first (phone): "Still to buy" has the largest font of the three figures, and the card count sits on the commander line (`deck-count` testid kept); empty message slots take no space (any zero-height, non-hidden child of a grid or flex container is a failure; the first version of this test only measured elements with a height, passed on the old code, and was fixed before the implementation); the first cards are on the first screen (list header 696px down before, 520px after); copy, download and share are behind one button and Escape closes it and returns focus to it.
+- [x] `src/ui/deckView.ts` and `src/style.css`: "Still to buy" is the one prominent figure (`.stat-hero`), the deck total is small text under it, and the count moved onto the commander line. The three stat cards and `.stat-value` are gone (migration finished, no second pattern). `.muted:empty, .stack:empty` hide empty message slots.
+- [x] One `Share & export` button (a shared, read-only deck gets `Export`) opens a dialog (the same `dialog` pattern as the printing picker, so the Android back button already closes it) with Copy deck, Download .txt and Copy share link. The link button is now labelled "Copy share link" (it makes the link and copies it); a read-only deck has no link button.
+- [x] `export.spec.ts` and `share.spec.ts` updated to open the dialog first; share.spec also checks that a friend's read-only deck can Copy and Download but has no link button, and that Close works.
+- On wide screens the Share & export button sits at the far right of the stat row, away from the stat block. Fine for now.
 
 ## Done when
 
