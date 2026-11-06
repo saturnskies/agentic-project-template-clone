@@ -284,3 +284,23 @@ test("a tapped card the page doesn't list says so, and every option with a score
   // Phyrexian Altar's 0.07 is under the margin even against a score of 0.
   await expect(option(dialog, 'Phyrexian Altar').getByText('Better fit')).toHaveCount(0);
 });
+
+test('the rules-based fallback never shows Better fit: it has no commander page to rank against', async ({ page }) => {
+  // EDHREC answers 403, so the options come from Scryfall's rules pool and carry no commander popularity. Sol Ring goes
+  // back into the pool, and the pool's one card that fits Arcane Signet is listed, unflagged.
+  await mockScryfall(page, withCosts(edgarFull));
+  const deck = await seedEdgarDeck(page);
+  await page.goto(`./#/deck/${deck.id}`);
+  await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
+  for (const name of ['Sol Ring', 'Skullclamp', 'Blasphemous Act']) await page.getByRole('button', { name: `Remove ${name}` }).click();
+  await showPane(page, 'Suggestions');
+  await page.getByRole('button', { name: 'Find suggestions' }).click();
+  await expect(suggestionsPanel(page).getByRole('list').first()).toBeVisible({ timeout: 15_000 });
+  await showPane(page, 'Cards');
+  await expect(page.getByTestId('edhrec-source')).toHaveCount(0);
+  await nameButton(page, 'Arcane Signet').click();
+  const dialog = page.getByRole('dialog', { name: 'Arcane Signet' });
+  await expect(dialog.getByRole('listitem').first()).toBeVisible();
+  await expect(dialog.getByText('Better fit')).toHaveCount(0);
+  await expect(dialog.getByText('More played than')).toHaveCount(0);
+});
