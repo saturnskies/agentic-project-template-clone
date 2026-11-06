@@ -366,8 +366,10 @@ test('with no EDHREC page, the options come from the rules pool with a note that
 
 test('with no EDHREC page and nothing in the rules pool for the card, the dialog says so', async ({ page }) => {
   await openEdgar(page);
-  await nameButton(page, 'Blasphemous Act').click();
-  const dialog = page.getByRole('dialog', { name: 'Blasphemous Act' });
+  // Cathars' Crusade has no role tag, and the fallback pool's cards carry no rules text in the recording, so nothing reads like it.
+  // (Blasphemous Act lists the other board wipes since a shared role and the same type are enough.)
+  await nameButton(page, "Cathars' Crusade").click();
+  const dialog = page.getByRole('dialog', { name: "Cathars' Crusade" });
   await expect(dialog.getByText('No similar cards found for this deck yet.')).toBeVisible({ timeout: 30_000 });
   await expect(dialog.getByRole('listitem')).toHaveCount(0);
   await expect(dialog.getByRole('button', { name: 'Show more' })).toHaveCount(0);
