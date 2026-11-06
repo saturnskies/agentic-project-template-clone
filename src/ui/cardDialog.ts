@@ -71,15 +71,25 @@ export function cardDialog(panel: SwapPanel, swap: PanelActions['swap']): { root
     );
   };
 
-  const optionsView = (state: ReturnType<SwapPanel['swapOptions']>): Array<HTMLElement | null> => {
-    if (state.status === 'idle' || state.status === 'loading') return [h('p', { class: 'muted small' }, 'Finding similar cards…')];
+  /**
+   * The one live region, kept in place across redraws so a change to its text is announced: it says only the
+   * loading, failed and empty lines, never the option list.
+   */
+  const live = h('p', { class: 'muted small', role: 'status' });
+  const cardBox = h('div', { class: 'stack' });
+  const listBox = h('div', { class: 'stack' });
+  content.append(cardBox, h('h4', {}, 'Similar cards that fit your deck'), live, listBox);
+
+  /** The line for `live` ('' when there is none), and what goes below it. */
+  const optionsView = (state: ReturnType<SwapPanel['swapOptions']>): { line: string; items: Array<HTMLElement | null> } => {
+    if (state.status === 'idle' || state.status === 'loading') return { line: 'Finding similar cards…', items: [] };
     if (state.status !== 'ready') {
       const retry = h('button', { type: 'button', class: 'button' }, 'Try again');
       retry.addEventListener('click', () => panel.find());
-      return [h('p', { class: 'notice small' }, "Couldn't load the cards to compare with. Check your connection and try again."), retry];
+      return { line: "Couldn't load the cards to compare with. Check your connection and try again.", items: [retry] };
     }
     const { options } = state;
-    if (!options.length) return [h('p', { class: 'muted small' }, 'No similar cards found for this deck yet.')];
+    if (!options.length) return { line: 'No similar cards found for this deck yet.', items: [] };
     const more = h('button', { type: 'button', class: 'button' }, 'Show more');
     more.addEventListener('click', () => {
       const from = shown;
@@ -87,10 +97,15 @@ export function cardDialog(panel: SwapPanel, swap: PanelActions['swap']): { root
       render();
       content.querySelectorAll<HTMLElement>('.swap-option')[from]?.querySelector('a')?.focus();
     });
-    return [
-      h('ul', { class: 'sugg-list', 'aria-label': 'Similar cards' }, ...options.slice(0, shown).map(optionItem)),
-      options.length > shown ? more : null,
-    ];
+    return {
+      line: '',
+      items: [
+        // Without EDHREC's page the options come from card rules, which is a looser match.
+        state.source === 'rules' ? h('p', { class: 'notice small' }, 'Matching is approximate: EDHREC has no page for this commander, so these come from card rules.') : null,
+        h('ul', { class: 'sugg-list', 'aria-label': 'Similar cards' }, ...options.slice(0, shown).map(optionItem)),
+        options.length > shown ? more : null,
+      ],
+    };
   };
 
   const render = () => {
@@ -100,7 +115,7 @@ export function cardDialog(panel: SwapPanel, swap: PanelActions['swap']): { root
     const state = panel.swapOptions(p.entry.card.oracleId);
     const cost = card ? costOf(card) : '';
     title.textContent = p.entry.card.name;
-    content.replaceChildren(
+    cardBox.replaceChildren(
       h(
         'section',
         { class: 'swap-card stack', 'aria-label': 'Your card' },
@@ -116,9 +131,10 @@ export function cardDialog(panel: SwapPanel, swap: PanelActions['swap']): { root
         h('p', { class: 'swap-text' }, rulesText(card)),
         p.url ? h('a', { href: p.url, target: '_blank', rel: 'noopener' }, 'Buy on TCGplayer') : null,
       ),
-      h('h4', {}, 'Similar cards that fit your deck'),
-      h('div', { class: 'stack', role: 'status' }, ...optionsView(state)),
     );
+    const view = optionsView(state);
+    if (live.textContent !== view.line) live.textContent = view.line;
+    listBox.replaceChildren(...view.items.filter((x): x is HTMLElement => !!x));
   };
 
   // The panel redraws as its lists load and as the deck changes; an open dialog follows.
