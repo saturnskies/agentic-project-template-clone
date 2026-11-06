@@ -37,6 +37,7 @@ Status: **current** = in force or in progress; **draft** = proposed, not approve
 - [2026-11-05-owned-per-deck.md](superpowers/plans/2026-11-05-owned-per-deck.md) — done, 2026-11-05 — Make "Owned" belong to each deck instead of one list shared by every deck, with a migration so no one loses the ticks they already made — two test-gated slices (storage and migration, then the screens)
 - [2026-11-05-suggestions-tab-status.md](superpowers/plans/2026-11-05-suggestions-tab-status.md) — done, 2026-11-05 — A small status badge on the Suggestions tab (Searching, Ready, Failed) so a search started in the Suggestions pane is visible from the Cards pane on a phone — one test-gated slice
 - [2026-11-05-undo-remove-and-short-rows.md](superpowers/plans/2026-11-05-undo-remove-and-short-rows.md) — done, 2026-11-05 — Two follow-ups from the 2026-11-05 UI critique (29/40) — Undo for removing a card, and shorter phone list rows by showing a quantity only above 1
+- [2026-11-06-swap-from-card.md](superpowers/plans/2026-11-06-swap-from-card.md) — draft, 2026-11-06 — Plan for swap from a card — tap a deck card, see similar cards from decks with the same commander, popularity and comparison side by side, swap in one tap; five test-gated slices
 
 ## docs/superpowers/specs/
 
