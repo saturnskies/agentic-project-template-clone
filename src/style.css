@@ -536,6 +536,17 @@ dialog.sheet[open] { display: grid; gap: 0.5rem; }
 .formats { columns: 2; margin: 0.5rem 0 0; padding-left: 1.1rem; font-size: 0.9rem; }
 .detail-price { font-size: 1.15rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 
+/* Card dialog (tap a deck card): the card on top, similar cards that fit below */
+.name-button { font: inherit; color: var(--ink); background: none; border: 0; padding: 0; text-align: left; cursor: pointer; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; overflow-wrap: anywhere; }
+.name-button:hover { text-decoration-color: var(--accent-text); }
+.swap-card { padding-bottom: 0.75rem; border-bottom: 1px solid var(--line); }
+.swap-card > *, .swap-option > * { margin: 0; }
+.swap-text { white-space: pre-line; }
+.swap-option { display: grid; gap: 0.3rem; padding: 0.5rem 0; border-bottom: 1px solid var(--line); }
+@media (pointer: coarse) {
+  .swap-card a, .swap-option a { display: inline-flex; align-items: center; min-height: var(--tap); }
+}
+
 /* Add to deck */
 .add-panel { border-top: 1px solid var(--line); padding-top: 0.75rem; }
 .add-notes p { margin: 0.25rem 0 0; color: var(--danger); font-weight: 600; }
