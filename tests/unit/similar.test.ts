@@ -134,7 +134,22 @@ describe('similarTo', () => {
   });
 
   it('leaves out a candidate below the minimum similarity', () => {
-    expect(similarTo(tapped(arcaneSignet, { roles: ['ramp'] }), [sugg(greaves, { roles: ['ramp'] })], noProfile)).toEqual([]);
+    // Same main type and a little text in common, but no shared role.
+    const sim = similarity(arcaneSignet, greaves, false);
+    expect(sim).toBeLessThan(MIN_SIMILARITY);
+    expect(similarTo(tapped(arcaneSignet, { roles: ['ramp'] }), [sugg(greaves)], noProfile)).toEqual([]);
+  });
+
+  it('lists a card that shares a role and the main type even when the texts read nothing alike', () => {
+    // Skullclamp and Vanquisher's Banner both draw cards, in different words: the role and the type carry the match.
+    expect(similarity(arcaneSignet, greaves, true)).toBeGreaterThanOrEqual(MIN_SIMILARITY);
+    expect(similarTo(tapped(arcaneSignet, { roles: ['ramp'] }), [sugg(greaves, { roles: ['ramp'] })], noProfile)).toHaveLength(1);
+  });
+
+  it('does not list a card on a shared role alone or on the main type alone', () => {
+    const rampSpell = card({ name: 'Rampant Growth', type_line: 'Sorcery', oracle_text: 'Search your library for a basic land card, put that card onto the battlefield tapped, then shuffle.' });
+    expect(similarity(arcaneSignet, rampSpell, true)).toBeLessThan(MIN_SIMILARITY);
+    expect(similarity(arcaneSignet, greaves, false)).toBeLessThan(MIN_SIMILARITY);
   });
 
   it('copes with cards that have no text', () => {
