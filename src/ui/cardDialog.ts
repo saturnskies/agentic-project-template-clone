@@ -83,6 +83,7 @@ export function cardDialog(panel: SwapPanel, swap: PanelActions['swap']): { root
   /** The line for `live` ('' when there is none), and what goes below it. */
   const optionsView = (state: ReturnType<SwapPanel['swapOptions']>): { line: string; items: Array<HTMLElement | null> } => {
     if (state.status === 'idle' || state.status === 'loading') return { line: 'Finding similar cards…', items: [] };
+    if (state.status === 'unavailable') return { line: 'No card details to compare for this card.', items: [] };
     if (state.status !== 'ready') {
       const retry = h('button', { type: 'button', class: 'button' }, 'Try again');
       retry.addEventListener('click', () => panel.find());
