@@ -120,6 +120,48 @@ describe('Breya, Etherium Shaper (mana rocks and dual lands)', () => {
   });
 });
 
+describe("Better fit counts the commander page's score, not the owned bonus", () => {
+  // Scores are inclusion plus positive synergy on Breya's page; owning a card adds 0.3 to its score for ordering only (src/lib/suggest.ts).
+  const pageScore = (s: Setup, name: string) => s.pool.find((x) => x.card.name === name)!.score;
+  /** Breya's pool scored again with these cards owned, over the roles the unowned lookup found (owning changes which 60 cards a lookup would ask about). */
+  const ownedPool = async (names: string[]) => {
+    const breya = await loadBreya();
+    const owned = new Set(breya.pool.filter((x) => names.includes(x.card.name)).map((x) => x.oracleId));
+    const { edhrec, scryfall } = clients(read('edhrec-breya.json'));
+    const { page, poolRoles } = await scoredPage(edhrec, scryfall, { ...BREYA, filter: { bracket: null, theme: null, budget: false } });
+    const scored = scoreEdhrec(page.candidates, { colorIdentity: BREYA.colorIdentity, oracleIds: new Set() }, owned, BREYA.commander, poolRoles);
+    return { breya, scored };
+  };
+  const flag = (s: Setup, pool: Suggestion[], from: string, to: string) => {
+    const card = s.cards.find((c) => c.name === from)!;
+    const out = similarTo({ ...tap(s, card), score: pageScore(s, from) }, pool, s.profile);
+    const option = out.find((o) => o.suggestion.card.name === to);
+    expect(option, `${to} as an option for ${from}`).toBeDefined();
+    return option!.betterFit;
+  };
+
+  it('does not flag an owned option that scores lower on the page than the tapped card', async () => {
+    const { breya, scored } = await ownedPool(['Arcane Signet']);
+    expect(pageScore(breya, 'Arcane Signet')).toBeLessThan(pageScore(breya, 'Sol Ring'));
+    // Owned, Arcane Signet scores 0.3 more than on the page and would clear the margin over Sol Ring.
+    expect(scored.find((x) => x.card.name === 'Arcane Signet')!.score).toBeGreaterThan(pageScore(breya, 'Sol Ring') + 0.1);
+    expect(flag(breya, scored, 'Sol Ring', 'Arcane Signet')).toBe(false);
+  });
+
+  it('does not flag an owned option that is only a little ahead on the page', async () => {
+    const { breya, scored } = await ownedPool(['Sol Ring']);
+    expect(pageScore(breya, 'Sol Ring') - pageScore(breya, 'Arcane Signet')).toBeLessThan(0.1);
+    expect(flag(breya, scored, 'Arcane Signet', 'Sol Ring')).toBe(false);
+  });
+
+  it('flags a higher option by its page score, owned or not', async () => {
+    const { breya, scored } = await ownedPool(['Sol Ring']);
+    expect(pageScore(breya, 'Sol Ring') - pageScore(breya, "Ashnod's Altar")).toBeGreaterThanOrEqual(0.1);
+    expect(flag(breya, breya.pool, "Ashnod's Altar", 'Sol Ring')).toBe(true);
+    expect(flag(breya, scored, "Ashnod's Altar", 'Sol Ring')).toBe(true);
+  });
+});
+
 describe('speed', () => {
   // Spec "Speed": options render in under 100 ms for a 100-card deck. One tap is similarTo (similarity and compare for every option)
   // over the pool; the pool is Breya's 295 page cards and the taps are each of Edgar's 78 different deck cards (100 with copies), with Edgar's profile (a tribe and five
