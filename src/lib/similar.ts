@@ -97,6 +97,12 @@ export function similarity(tapped: ScryCard, other: ScryCard, sharedRole: boolea
   return Math.min(1, overlap + (sharedRole ? ROLE_BONUS : 0) + (sameType ? TYPE_BONUS : 0));
 }
 
+/**
+ * The keywords worth a "Gains"/"Loses" phrase: abilities a card has. Scryfall's `keywords` also lists Treasure, Equip, Scry,
+ * Cycling, Transform, Investigate and the like, which read as nonsense there ("Gains treasure").
+ */
+const ABILITY_KEYWORDS = new Set(['Flying', 'Deathtouch', 'Lifelink', 'Haste', 'Trample', 'Vigilance', 'Indestructible', 'Ward', 'Flash', 'First strike', 'Double strike', 'Menace', 'Hexproof', 'Reach', 'Defender']);
+
 const multiFace = (c: ScryCard) => (c.card_faces?.length ?? 0) > 1;
 const frontStat = (c: ScryCard, k: 'power' | 'toughness') => c.card_faces?.[0]?.[k] ?? c[k];
 const symbols = (colors: string[]) => colors.map((x) => `{${x}}`).join('');
@@ -151,8 +157,8 @@ export function compare(tapped: ScryCard, option: ScryCard, colorIdentity?: stri
   }
 
   if (faces && tapped.keywords && option.keywords) {
-    for (const k of option.keywords) if (!tapped.keywords.includes(k)) out.push(`Gains ${k.toLowerCase()}`);
-    for (const k of tapped.keywords) if (!option.keywords.includes(k)) out.push(`Loses ${k.toLowerCase()}`);
+    for (const k of option.keywords) if (ABILITY_KEYWORDS.has(k) && !tapped.keywords.includes(k)) out.push(`Gains ${k.toLowerCase()}`);
+    for (const k of tapped.keywords) if (ABILITY_KEYWORDS.has(k) && !option.keywords.includes(k)) out.push(`Loses ${k.toLowerCase()}`);
   }
 
   return out.slice(0, MAX_DIFFERENCES);
