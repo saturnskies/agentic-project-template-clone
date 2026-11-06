@@ -82,6 +82,12 @@ describe('similarTo', () => {
     expect(similarTo(tapped(arcaneSignet, { roles: ['ramp'] }), pool, noProfile).map((o) => o.suggestion.card.name)).toEqual(['Sol Ring']);
   });
 
+  it("never offers the tapped card itself, even when the pool holds it", () => {
+    const pool = [sugg(arcaneSignet, { roles: ['ramp'] }), sugg(fellwarStone, { roles: ['ramp'] })];
+    const out = similarTo(tapped(arcaneSignet, { roles: ['ramp'] }), pool, noProfile);
+    expect(out.map((o) => o.suggestion.card.name)).toEqual(['Fellwar Stone']);
+  });
+
   it('treats a double-faced card as a land only when its front face is a land', () => {
     const spellLand = card({ name: 'Bala Ged Recovery // Bala Ged Sanctuary', type_line: 'Sorcery // Land', oracle_text: 'Return target card from your graveyard to your hand.' });
     const out = similarTo(tapped(untappedPlainDual), [sugg(spellLand)], noProfile);
