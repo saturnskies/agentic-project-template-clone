@@ -12,9 +12,10 @@ const costOf = (c: ScryCard) => c.mana_cost ?? c.card_faces?.[0]?.mana_cost ?? '
  * The dialog behind a deck card's name (swap-from-card spec): the card pinned on top with its cost,
  * price, text and popularity, and below it the cards that do a similar job and fit the deck, read from
  * what the suggestions panel has loaded. It never fetches; if the panel hasn't searched yet it starts the
- * panel's own Find and fills in when the panel redraws.
+ * panel's own Find and fills in when the panel redraws. Swap on an option is the Suggestions tab's swap: the
+ * deck redraws, which closes the dialog, and the same Undo offer follows.
  */
-export function cardDialog(panel: SwapPanel, _swap: PanelActions['swap']): { root: HTMLDialogElement; open(card: PricedCard): void } {
+export function cardDialog(panel: SwapPanel, swap: PanelActions['swap']): { root: HTMLDialogElement; open(card: PricedCard): void } {
   const dialog = h('dialog', { class: 'picker card-dialog swap-dialog', 'aria-labelledby': 'swap-h' });
   const title = h('h3', { id: 'swap-h' });
   const close = h('button', { type: 'button', class: 'button' }, 'Close');
@@ -29,6 +30,23 @@ export function cardDialog(panel: SwapPanel, _swap: PanelActions['swap']): { roo
   const optionItem = (o: SwapOption) => {
     const c = o.suggestion.card;
     const cost = costOf(c);
+    const cutId = current!.entry.card.oracleId;
+    const swapBtn = h('button', { type: 'button', class: 'button', 'aria-label': `Swap ${current!.entry.card.name} for ${c.name}` }, 'Swap');
+    const err = h('span', { class: 'muted small', role: 'status' });
+    swapBtn.addEventListener('click', async () => {
+      swapBtn.disabled = true;
+      swapBtn.textContent = 'Working…';
+      err.textContent = '';
+      try {
+        await swap(cutId, c);
+      } catch {
+        err.textContent = "Couldn't reach Scryfall. Try again.";
+      } finally {
+        // A swap that went through has redrawn the deck and closed the dialog; otherwise the button is usable again.
+        swapBtn.disabled = false;
+        swapBtn.textContent = 'Swap';
+      }
+    });
     return h(
       'li',
       { class: 'swap-option' },
@@ -37,6 +55,7 @@ export function cardDialog(panel: SwapPanel, _swap: PanelActions['swap']): { roo
       cost ? h('p', { class: 'mana-cost small' }, cost) : null,
       h('p', { class: 'muted small sugg-reason' }, o.suggestion.reason),
       h('p', { class: 'swap-text small' }, rulesText(c)),
+      h('span', { class: 'actions' }, swapBtn, err),
     );
   };
 
