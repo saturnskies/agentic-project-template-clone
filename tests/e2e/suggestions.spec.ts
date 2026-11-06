@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { edgarFull, mockScryfall, seedEdgarDeck, showPane, suggestionsPanel } from './helpers';
+import { edgarFull, mockScryfall, row, seedEdgarDeck, showPane, suggestionsPanel } from './helpers';
 
 // The full Edgar Markov deck with Scryfall replies recorded 2026-11-02 (tests/fixtures/scryfall-edgar-full.json),
 // plus the fallback's wider searches recorded 2026-11-04 (scryfall-edgar-fallback.json). Prices are those
@@ -36,7 +36,7 @@ test('rules-based upgrades fit the deck, by category, with a price filter', asyn
   await showPane(page, 'Cards');
   await expect(page.getByRole('row').first()).toBeVisible();
   for (const name of suggested) {
-    await expect(page.getByRole('row').filter({ has: page.getByRole('link', { name, exact: true }) })).toHaveCount(0);
+    await expect(row(page, name)).toHaveCount(0);
   }
   await showPane(page, 'Suggestions');
 
@@ -257,5 +257,5 @@ test('removing a card while an added one is still being priced keeps both change
   // Both changes stand: +1 for the added card, -1 for the removed one. (It used to rebuild the list from before the wait.)
   await expect(page.getByRole('row').filter({ hasText: 'Indulgent Aristocrat' })).toBeVisible();
   await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
-  await expect(page.getByRole('row').filter({ has: page.getByRole('link', { name: 'Cordial Vampire', exact: true }) })).toHaveCount(0);
+  await expect(row(page, 'Cordial Vampire')).toHaveCount(0);
 });
