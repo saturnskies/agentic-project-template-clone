@@ -122,6 +122,7 @@ test('on a phone the dialog buttons and links are at least 44px tall', async ({ 
 // Swap from the dialog: the same swap as the Suggestions tab, so it ends in the same Undo offer. Arcane Signet's options
 // are Commander's Sphere, Phyrexian Altar and Orzhov Signet; Orzhov Signet is also an option for Sol Ring.
 const swapButton = (dialog: Locator, from: string, to: string) => dialog.getByRole('button', { name: `Swap ${from} for ${to}`, exact: true });
+const toast = (page: Page) => page.getByRole('status').filter({ hasText: /^Swapped / });
 const rowCount = (page: Page, name: string) => page.locator('table.cards tbody tr').filter({ has: page.getByRole('button', { name, exact: true }) });
 
 test('Swap replaces the tapped card, closes the dialog and offers Undo', async ({ page }) => {
@@ -137,18 +138,47 @@ test('Swap replaces the tapped card, closes the dialog and offers Undo', async (
   await expect(rowCount(page, 'Arcane Signet')).toHaveCount(0);
   await expect(page.getByTestId('deck-total')).not.toHaveText(total!);
 
-  await showPane(page, 'Suggestions');
-  const panel = suggestionsPanel(page);
-  await expect(panel).toContainText("Swapped Arcane Signet → Commander's Sphere.");
-  await panel.getByRole('button', { name: 'Undo' }).click();
-  await showPane(page, 'Cards');
+  // Undo is on the Cards pane itself, so a phone (where the Suggestions pane is hidden) can reach it without switching.
+  const offer = toast(page);
+  await expect(offer).toContainText("Swapped Arcane Signet → Commander's Sphere.");
+  await offer.getByRole('button', { name: 'Undo' }).click();
   await expect(rowCount(page, 'Arcane Signet')).toHaveCount(1);
   await expect(rowCount(page, "Commander's Sphere")).toHaveCount(0);
   await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
   await expect(page.getByTestId('deck-total')).toHaveText(total!);
+  await expect(offer).toHaveCount(0);
+  // The panel's own offer is gone too.
+  await showPane(page, 'Suggestions');
+  await expect(suggestionsPanel(page)).not.toContainText('Swapped ');
   // Pricing the swapped-in card asks for its printings, which the Edgar recordings hold only for cards in the deck; the
   // app prices the card it already has when that fails. Nothing else may go unrecorded.
   expect(misses.filter((m) => !m.includes('unique=prints'))).toEqual([]);
+});
+
+test("Undo in the Suggestions panel also ends the Cards pane's offer", async ({ page }) => {
+  await foundEdgar(page);
+  const total = await page.getByTestId('deck-total').textContent();
+  await nameButton(page, 'Arcane Signet').click();
+  await swapButton(page.getByRole('dialog', { name: 'Arcane Signet' }), 'Arcane Signet', "Commander's Sphere").click();
+  await expect(toast(page)).toBeVisible();
+  await showPane(page, 'Suggestions');
+  const panel = suggestionsPanel(page);
+  await expect(panel).toContainText("Swapped Arcane Signet → Commander's Sphere.");
+  await panel.getByRole('button', { name: 'Undo' }).click();
+  await expect(toast(page)).toHaveCount(0);
+  await showPane(page, 'Cards');
+  await expect(rowCount(page, 'Arcane Signet')).toHaveCount(1);
+  await expect(page.getByTestId('deck-total')).toHaveText(total!);
+});
+
+test('a swap from the Suggestions tab leaves the Cards pane without an offer', async ({ page }) => {
+  await foundEdgar(page);
+  await showPane(page, 'Suggestions');
+  const panel = suggestionsPanel(page);
+  await panel.getByRole('button', { name: 'Swaps' }).click();
+  await panel.getByRole('list', { name: 'Swap pairs' }).getByRole('button', { name: /^Swap .* for / }).first().click();
+  await expect(panel).toContainText('Swapped ');
+  await expect(toast(page)).toHaveCount(0);
 });
 
 test('a card marked Keep still opens the dialog, lists options and swaps', async ({ page }) => {
