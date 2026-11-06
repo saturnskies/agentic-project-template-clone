@@ -10,14 +10,20 @@ import type { Suggestion } from './suggest';
  * functions over cards already loaded, so no requests and fast enough to run on every dialog redraw.
  */
 
+/*
+ * The four numbers below were tuned on 2026-11-06 against real cards (tests/unit/similar-fixtures.test.ts: Edgar Markov's and
+ * Breya's EDHREC pages) from the starting guesses MIN_SIMILARITY 0.35, FIT_BAR 0.6, ROLE_BONUS 0.15, TYPE_BONUS 0.1, which gave
+ * Skullclamp no options at all (draw artifacts read nothing alike, so only role and type tie them together), left Mana Vault and
+ * Liquimetal Torque without one, and offered Dark Ritual for Thran Dynamo (text 0.60, over the old fit bar). Plan: "Tuning results".
+ */
 /** Below this similarity a card isn't shown. */
-export const MIN_SIMILARITY = 0.35;
+export const MIN_SIMILARITY = 0.4;
 /** A card with no role, tribe or theme tie to the deck still fits when its text is this close. */
-export const FIT_BAR = 0.6;
-/** Added for a role (ramp, card draw, removal, board wipe) both cards fill. */
-export const ROLE_BONUS = 0.15;
-/** Added when both cards have the same main type. */
-export const TYPE_BONUS = 0.1;
+export const FIT_BAR = 0.7;
+/** Added for a role (ramp, card draw, removal, board wipe) both cards fill. Alone it is under MIN_SIMILARITY. */
+export const ROLE_BONUS = 0.25;
+/** Added when both cards have the same main type; smaller than ROLE_BONUS, and alone under MIN_SIMILARITY. A shared role and type together reach it. */
+export const TYPE_BONUS = 0.2;
 /** An option is a better fit when its commander score beats the tapped card's by at least this much. */
 export const BETTER_MARGIN = 0.1;
 /** Floating-point slack for the margin: 0.6 - 0.5 is 0.09999999999999998, which still is a gap of 0.1. */
@@ -75,7 +81,8 @@ function shingles(text: string): Set<string> {
 /**
  * How alike two cards are, 0 to 1: the overlap (Jaccard) of the words and word pairs of their
  * normalised text, plus ROLE_BONUS for a role they share and TYPE_BONUS for the same main type.
- * Two cards with no text overlap score 0 from text (never NaN); the bonuses alone stay under MIN_SIMILARITY.
+ * Two cards with no text overlap score 0 from text (never NaN). A role or a type alone stays under MIN_SIMILARITY; both together reach it, because
+ * cards that do one job can read nothing alike (two draw artifacts).
  */
 export function similarity(tapped: ScryCard, other: ScryCard, sharedRole: boolean): number {
   const a = shingles(normalizeText(tapped));
