@@ -536,7 +536,7 @@ export function suggestionsPanel(
       };
     }
     if (pool) {
-      // The rules scores aren't commander popularity, so nothing here can be "more played for this commander".
+      // The rules scores aren't commander popularity, so nothing here can be a higher score on this commander's page.
       const options = similarTo(tapped, scoreSuggestions(pool, { colorIdentity: profile.colorIdentity, oracleIds }, ownedIds()), profile).map((o) => ({ ...o, betterFit: false }));
       return { status: 'ready', source: 'rules', options, listed: true };
     }
