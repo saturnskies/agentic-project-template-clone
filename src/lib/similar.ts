@@ -3,7 +3,7 @@ import { frontFace } from '../scryfall/cards';
 import { mainType } from './gaps';
 import { creatureTypes, type DeckProfile } from './profile';
 import { isLand } from './swaps';
-import type { Suggestion } from './suggest';
+import { OWNED_BONUS, type Suggestion } from './suggest';
 
 /**
  * Cards that do a similar job to one in the deck (swap-from-card spec, "Choosing options"). Pure
@@ -44,7 +44,7 @@ export interface Tapped {
 export interface SwapOption {
   suggestion: Suggestion;
   similarity: number;
-  /** More played than the tapped card for this commander. */
+  /** A higher inclusion-plus-synergy score on this commander's page than the tapped card (without the owned bonus). */
   betterFit: boolean;
   /** Short phrases for what differs from the tapped card; empty when none can be stated. */
   differences: string[];
@@ -178,7 +178,8 @@ export function similarTo(tapped: Tapped, pool: Suggestion[], profile: DeckProfi
     out.push({
       suggestion: s,
       similarity: sim,
-      betterFit: s.score - tapped.score >= BETTER_MARGIN - MARGIN_SLACK,
+      // The page score alone: owning a card moves it up the list (the sort below) but doesn't make more decks play it.
+      betterFit: s.score - (s.owned ? OWNED_BONUS : 0) - tapped.score >= BETTER_MARGIN - MARGIN_SLACK,
       differences: compare(tapped.card, s.card, profile.colorIdentity),
     });
   }
