@@ -6,6 +6,12 @@ import type { ScryCard } from '../scryfall/types';
 import { h, usd } from './dom';
 import type { PanelActions, SwapPanel } from './suggestions';
 
+/** "Better fit" only means more played for this commander, never faster or more efficient, and the label says so. */
+const betterFitTag = (tappedName: string) => {
+  const meaning = `More played than ${tappedName} for this commander`;
+  return h('span', { class: 'tag', title: meaning }, 'Better fit', h('span', { class: 'visually-hidden' }, `: ${meaning}`));
+};
+
 const costOf = (c: ScryCard) => c.mana_cost ?? c.card_faces?.[0]?.mana_cost ?? '';
 
 /**
@@ -50,9 +56,15 @@ export function cardDialog(panel: SwapPanel, swap: PanelActions['swap']): { root
     return h(
       'li',
       { class: 'swap-option' },
-      h('div', { class: 'sugg-head' }, h('a', { href: tcgplayerUrl(c, o.suggestion.finish), target: '_blank', rel: 'noopener', class: 'sugg-name' }, c.name), h('span', { class: 'sugg-price' }, usd(o.suggestion.price))),
+      h(
+        'div',
+        { class: 'sugg-head' },
+        h('span', {}, h('a', { href: tcgplayerUrl(c, o.suggestion.finish), target: '_blank', rel: 'noopener', class: 'sugg-name' }, c.name), o.betterFit ? betterFitTag(current!.entry.card.name) : null),
+        h('span', { class: 'sugg-price' }, usd(o.suggestion.price)),
+      ),
       h('p', { class: 'muted small swap-type' }, c.type_line ?? c.card_faces?.[0]?.type_line ?? ''),
       cost ? h('p', { class: 'mana-cost small' }, cost) : null,
+      o.differences.length ? h('p', { class: 'small swap-diff' }, o.differences.join(' · ')) : null,
       h('p', { class: 'muted small sugg-reason' }, o.suggestion.reason),
       h('p', { class: 'swap-text small' }, rulesText(c)),
       h('span', { class: 'actions' }, swapBtn, err),
@@ -100,6 +112,7 @@ export function cardDialog(panel: SwapPanel, swap: PanelActions['swap']): { root
         ),
         cost ? h('p', { class: 'mana-cost' }, cost) : null,
         state.status === 'ready' && state.popularity ? h('p', { class: 'small', 'data-testid': 'tapped-popularity' }, state.popularity) : null,
+        state.status === 'ready' && !state.listed ? h('p', { class: 'muted small' }, "Not on this commander's page") : null,
         h('p', { class: 'swap-text' }, rulesText(card)),
         p.url ? h('a', { href: p.url, target: '_blank', rel: 'noopener' }, 'Buy on TCGplayer') : null,
       ),
