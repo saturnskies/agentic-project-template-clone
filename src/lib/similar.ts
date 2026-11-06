@@ -109,9 +109,10 @@ function tappedState(card: ScryCard): 'always' | 'sometimes' | 'never' {
  * enters tapped or untapped, mana colors made, power and toughness (creatures), keywords, in that order. Only
  * what the card data states outright is claimed, so a missing field says nothing, and an empty list means no
  * difference can be stated. A card with more than one face is compared by its front face's text and stats only:
- * its mana value, produced mana and keywords cover every face.
+ * its mana value, produced mana and keywords cover every face. Given the deck's `colorIdentity`, only colors
+ * inside it count as made or not made (Arcane Signet lists all five, but a W/B deck never makes {U}); colorless always does.
  */
-export function compare(tapped: ScryCard, option: ScryCard): string[] {
+export function compare(tapped: ScryCard, option: ScryCard, colorIdentity?: string[]): string[] {
   const out: string[] = [];
   const faces = !multiFace(tapped) && !multiFace(option);
 
@@ -126,8 +127,11 @@ export function compare(tapped: ScryCard, option: ScryCard): string[] {
   if (was === 'never' && is === 'always') out.push('Enters tapped instead of untapped');
 
   if (faces && tapped.produced_mana && option.produced_mana) {
-    const gained = option.produced_mana.filter((c) => !tapped.produced_mana!.includes(c));
-    const lost = tapped.produced_mana.filter((c) => !option.produced_mana!.includes(c));
+    const usable = (colors: string[]) => (colorIdentity ? colors.filter((c) => c === 'C' || colorIdentity.includes(c)) : colors);
+    const before = usable(tapped.produced_mana);
+    const after = usable(option.produced_mana);
+    const gained = after.filter((c) => !before.includes(c));
+    const lost = before.filter((c) => !after.includes(c));
     if (gained.length) out.push(`Also makes ${symbols(gained)}`);
     if (lost.length) out.push(`No longer makes ${symbols(lost)}`);
   }
@@ -168,7 +172,7 @@ export function similarTo(tapped: Tapped, pool: Suggestion[], profile: DeckProfi
       suggestion: s,
       similarity: sim,
       betterFit: s.score - tapped.score >= BETTER_MARGIN - MARGIN_SLACK,
-      differences: compare(tapped.card, s.card),
+      differences: compare(tapped.card, s.card, profile.colorIdentity),
     });
   }
   return out.sort((a, b) => b.similarity - a.similarity || b.suggestion.score - a.suggestion.score);
