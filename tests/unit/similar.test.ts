@@ -256,6 +256,47 @@ describe('compare', () => {
     for (const phrase of compare(sphere, signet)) expect(phrase).not.toMatch(/NaN|undefined/);
   });
 
+  // Real Scryfall produced_mana: Arcane Signet, Command Tower, Commander's Sphere and Fellwar Stone list all five colors,
+  // though in a given deck only the commander's colors are ever made.
+  describe('colors, within the deck colour identity', () => {
+    const realSignet = card({ name: 'Arcane Signet', type_line: 'Artifact', produced_mana: ['W', 'U', 'B', 'R', 'G'] });
+    const orzhovSignet = card({ name: 'Orzhov Signet', type_line: 'Artifact', produced_mana: ['W', 'B'] });
+    const wbr = ['W', 'B', 'R'];
+
+    it("ignores colors the deck's identity can't make", () => {
+      expect(compare(realSignet, orzhovSignet, wbr)).toEqual(['No longer makes {R}']);
+      expect(compare(realSignet, orzhovSignet, ['W', 'B'])).toEqual([]);
+      expect(compare(orzhovSignet, realSignet, wbr)).toEqual(['Also makes {R}']);
+      expect(compare(orzhovSignet, realSignet, ['W', 'B'])).toEqual([]);
+    });
+
+    it('still says a color inside the identity that is gained or lost', () => {
+      const bg = card({ name: 'Golgari Signet', type_line: 'Artifact', produced_mana: ['B', 'G'] });
+      expect(compare(orzhovSignet, bg, ['W', 'B', 'G'])).toEqual(['Also makes {G}', 'No longer makes {W}']);
+    });
+
+    it('keeps colorless in any identity, and says nothing for a colorless commander beyond it', () => {
+      const rock = card({ name: 'Rock', type_line: 'Artifact', produced_mana: ['C'] });
+      expect(compare(realSignet, rock, wbr)).toEqual(['Also makes {C}', 'No longer makes {W}{B}{R}']);
+      expect(compare(realSignet, rock, [])).toEqual(['Also makes {C}']);
+    });
+
+    it('does not let out-of-identity colors use up the 3 phrases that stats and keywords need', () => {
+      const a = card({ name: 'A', type_line: 'Creature — Elf', cmc: 4, produced_mana: ['W', 'U', 'B', 'R', 'G'], power: '2', toughness: '2', keywords: ['Lifelink'] });
+      const b = card({ name: 'B', type_line: 'Creature — Elf', cmc: 4, produced_mana: ['W', 'B'], power: '3', toughness: '3', keywords: ['Flying'] });
+      expect(compare(a, b, ['W', 'B'])).toEqual(['3/3 instead of 2/2', 'Gains flying', 'Loses lifelink']);
+      expect(compare(a, b)).toEqual(['No longer makes {U}{R}{G}', '3/3 instead of 2/2', 'Gains flying']);
+    });
+
+    it('is passed by similarTo from the deck profile', () => {
+      const profile: DeckProfile = { colorIdentity: ['W', 'B'], tribe: null, themes: [] };
+      const rock1 = card({ name: 'Rock One', type_line: 'Artifact', oracle_text: '{T}: Add one mana of any color.', produced_mana: ['W', 'U', 'B', 'R', 'G'] });
+      const rock2 = card({ name: 'Rock Two', type_line: 'Artifact', oracle_text: '{T}: Add one mana of any color.', produced_mana: ['W', 'B'] });
+      const [option] = similarTo(tapped(rock1, { roles: ['ramp'] }), [sugg(rock2, { roles: ['ramp'] })], profile);
+      expect(option.differences).toEqual([]);
+    });
+  });
+
   it('compares the front face of a double-faced card and claims no cost, colors or keywords from the whole card', () => {
     const pathway = card({ name: 'Blightstep Pathway // Searstep Pathway', type_line: 'Land // Land', cmc: 0, produced_mana: ['B', 'R'], keywords: [], card_faces: [{ name: 'Blightstep Pathway', type_line: 'Land', oracle_text: '{T}: Add {B}.' }, { name: 'Searstep Pathway', type_line: 'Land', oracle_text: '{T}: Add {R}.' }] });
     expect(compare(untappedPlainDual, pathway)).toEqual([]);
