@@ -127,6 +127,7 @@ Before and after, top 10 (similarity in brackets):
 
 - **Skullclamp (Edgar)**: before: none. After: Vanquisher's Banner (0.50), Herald's Horn (0.47). Sol Ring is never listed.
 - **Thran Dynamo (Breya)**: before: Sol Ring (0.68), Dark Ritual (0.60), Arcane Signet (0.38). After: Sol Ring (0.88), Arcane Signet (0.57), Ashnod's Altar (0.53), Krark-Clan Ironworks (0.53), Ornithopter of Paradise (0.43).
+- **Blasphemous Act (Edgar, rules fallback)**: before: none; after: the other board-wipe sorceries (Dusk // Dawn, Fumigate, Martial Coup, Decree of Pain, White Sun's Twilight, Blood Money). The e2e that expected an empty list now taps Cathars' Crusade, which has no role.
 - **Haunted Ridge (Edgar)**: before and after the same 12 lands, same order: Shattered Sanctum, Sundown Pass, Vault of Champions, Luxury Suite, Spectator Seating, Smoldering Marsh, Isolated Chapel, Dragonskull Summit, Clifftop Retreat, Bloodfell Caves (scores 0.07 to 0.10 higher; the land rule keeps every option a land).
 
 Other lists after tuning (top 10):
