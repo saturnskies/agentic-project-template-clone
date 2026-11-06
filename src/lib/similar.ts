@@ -107,7 +107,8 @@ const symbols = (colors: string[]) => colors.map((x) => `{${x}}`).join('');
  */
 function tappedState(card: ScryCard): 'always' | 'sometimes' | 'never' {
   const text = normalizeText(card);
-  if (/(^|\. )~ enters (the battlefield )?tapped(\.|$)/.test(text)) return 'always';
+  // "~ enters tapped." when the card names itself, "This land enters tapped." when Scryfall's text says "this land" (most lands).
+  if (/(^|\. )(~|this (land|artifact|creature|permanent|enchantment)) enters (the battlefield )?tapped(\.|$)/.test(text)) return 'always';
   return /\benters? (the battlefield )?tapped\b/.test(text) ? 'sometimes' : 'never';
 }
 
