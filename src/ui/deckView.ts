@@ -14,7 +14,8 @@ import { undoToast } from './undoToast';
 import { helpTip } from './helpTip';
 import { paneSwitch } from './panes';
 import { saveFile } from './saveFile';
-import { suggestionsPanel } from './suggestions';
+import { cardDialog } from './cardDialog';
+import { suggestionsPanel, type SwapPanel } from './suggestions';
 import { segmented } from './controls';
 import { h, usd } from './dom';
 
@@ -131,7 +132,8 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
     toBuy: stillToBuy(priced.map((p) => ({ qty: p.entry.qty, price: p.price, owned: owned(p) }))),
   });
 
-  let panel: { root: HTMLElement; refresh(): void } | null = null;
+  let panel: SwapPanel | null = null;
+  let swapDialog: ReturnType<typeof cardDialog> | null = null;
   let lastSwap: { removed: PricedCard; index: number; addedOracleId: string; label: string } | null = null;
 
   // Undo for a removal lives here, on the Cards pane, not in the suggestions panel (a different pane on a phone). The
@@ -144,6 +146,7 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
   const commit = (cards: DeckEntry[], extra: Partial<Deck> = {}, opts: { keepUndo?: boolean } = {}) => {
     if (!opts.keepUndo) lastSwap = null;
     removalUndo.clear(); // any change ends the removal Undo offer; remove() makes a new one after this
+    swapDialog?.root.close(); // its options were worked out for the deck as it was
     deck = { ...deck, ...extra, cards, updatedAt: new Date().toISOString(), summary: summary() };
     persist(deck);
     redraw();
@@ -177,6 +180,7 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
           panel?.refresh(); // cheaper replacements skip owned cards
         },
         onPrinting: openPicker,
+        onOpen: swapDialog ? (p) => swapDialog!.open(p) : undefined,
         onKeep: (p, value) => {
           const entry = { ...p.entry };
           if (value) entry.keep = true;
@@ -504,6 +508,8 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
           },
         });
         columns.append(panel.root);
+        swapDialog = cardDialog(panel, swap);
+        picker.after(swapDialog.root);
         const panes = paneSwitch(columns, panel.root);
         columns.after(panes.root);
         if (!ctx.store.prefs.helpDismissed) cardsPane.prepend(helpTip(() => ctx.dismissHelp()));
@@ -523,17 +529,29 @@ interface TableHandlers {
   onOwned: (p: PricedCard, owned: boolean) => void;
   onPrinting: (p: PricedCard) => void;
   onKeep: (p: PricedCard, keep: boolean) => void;
+  /** Opens the card dialog (similar cards that fit); absent for a shared deck, which has no suggestions. */
+  onOpen?: (p: PricedCard) => void;
   /** A shared deck: no owned ticks, removing or changing printings. */
   readOnly?: boolean;
 }
 
 /** The controls every card gets in both views: link, owned tick, printing button, remove button. */
-function cardControls(p: PricedCard, { onRemove, owned, onOwned, onPrinting, onKeep, readOnly }: TableHandlers) {
+function cardControls(p: PricedCard, { onRemove, owned, onOwned, onPrinting, onKeep, onOpen, readOnly }: TableHandlers) {
   const name = p.entry.card.name;
   const printing = p.card ? `${p.card.set.toUpperCase()} #${p.card.collector_number}` : '—';
   const finish = p.finish ? FINISH_LABEL[p.finish] : '';
   const link = (...children: Array<Node | string>) =>
     p.url ? h('a', { href: p.url, target: '_blank', rel: 'noopener' }, ...children) : h('span', {}, ...children);
+  /**
+   * The card's name: a button that opens the card dialog (where the TCGplayer link now lives) for cards that can be
+   * swapped; the commander, basic lands, cards without Scryfall data and shared decks keep the plain TCGplayer link.
+   */
+  const nameControl = () => {
+    if (readOnly || !onOpen || p.isCommander || isBasicLand(p.typeLine) || !p.card) return link(name);
+    const btn = h('button', { type: 'button', class: 'name-button', title: 'Similar cards that fit this deck' }, name);
+    btn.addEventListener('click', () => onOpen(p));
+    return btn;
+  };
   const own = () => {
     if (readOnly) return null;
     const box = h('input', { type: 'checkbox', 'aria-label': `Own ${name}`, checked: owned(p) });
@@ -562,8 +580,11 @@ function cardControls(p: PricedCard, { onRemove, owned, onOwned, onPrinting, onK
     return btn;
   };
   const priceText = p.price != null ? usd(p.price) : p.failed ? "couldn't load" : 'no price';
-  return { name, link, own, printingControl, finishTag, remove, keepToggle, priceText };
+  return { name, link, nameControl, own, printingControl, finishTag, remove, keepToggle, priceText };
 }
+
+/** What a card name does: a shared deck's names are TCGplayer links; otherwise they open the card dialog, which has the link. */
+const nameNote = (handlers: TableHandlers) => (handlers.onOpen && !handlers.readOnly ? 'Tap a card name for similar cards and its TCGplayer link.' : 'Card names open TCGplayer in a new tab.');
 
 const asLine = (p: PricedCard) => ({ name: p.entry.card.name, typeLine: p.typeLine, qty: p.entry.qty, price: p.price, isCommander: p.isCommander, p });
 
@@ -591,7 +612,7 @@ function grid(priced: PricedCard[], sort: SortKey, handlers: TableHandlers): HTM
               'li',
               { class: 'card-tile' },
               h('div', { class: 'card-art' }, c.link(art), p.entry.qty > 1 ? h('span', { class: 'qty-badge' }, `×${p.entry.qty}`) : null),
-              h('div', { class: 'card-meta' }, h('span', { class: 'card-tile-name' }, c.link(c.name)), h('span', { class: 'card-tile-price' }, c.priceText)),
+              h('div', { class: 'card-meta' }, h('span', { class: 'card-tile-name' }, c.nameControl()), h('span', { class: 'card-tile-price' }, c.priceText)),
               h('div', { class: 'card-printing' }, c.printingControl(), c.finishTag()),
               handlers.readOnly ? null : h('div', { class: 'card-tools' }, h('label', { class: 'own-label' }, c.own(), 'Owned'), c.keepToggle(), c.remove()),
             );
@@ -599,7 +620,7 @@ function grid(priced: PricedCard[], sort: SortKey, handlers: TableHandlers): HTM
         ),
       ),
     ),
-    h('p', { class: 'muted small' }, 'Card images from Scryfall. Prices are TCGplayer market prices for the cheapest printing. Card names open TCGplayer in a new tab.'),
+    h('p', { class: 'muted small' }, `Card images from Scryfall. Prices are TCGplayer market prices for the cheapest printing. ${nameNote(handlers)}`),
   );
 }
 
@@ -624,7 +645,7 @@ function table(priced: PricedCard[], sort: SortKey, handlers: TableHandlers): HT
 
   const rows = sorted.map((p) => {
     const c = cardControls(p, handlers);
-    const nameEl = c.link(c.name);
+    const nameEl = c.nameControl();
     nameEl.setAttribute('data-testid', 'card-name');
     return h(
       'tr',
@@ -668,7 +689,7 @@ function table(priced: PricedCard[], sort: SortKey, handlers: TableHandlers): HT
         h('tbody', {}, ...rows),
       ),
     ),
-    h('p', { class: 'muted small' }, 'Prices are TCGplayer market prices for the cheapest printing, via Scryfall. Card names open TCGplayer in a new tab.'),
+    h('p', { class: 'muted small' }, `Prices are TCGplayer market prices for the cheapest printing, via Scryfall. ${nameNote(handlers)}`),
   );
 }
 
