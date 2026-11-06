@@ -36,10 +36,10 @@ updated: 2026-11-06
 
 ## Execution routing
 
-| Slice | Who | Model | Effort |
+| Task | Who | Model | Effort |
 |---|---|---|---|
-| 1 to 4 (code and tests) | worker agent, one at a time, test gate (`npm run check`) rerun by script after each | sonnet | high |
-| 5 (tuning, fixtures, docs) | worker agent | sonnet | medium |
+| Tasks 1 to 4 (code and tests) | worker agent, one at a time, test gate (`npm run check`) rerun by script after each | sonnet | high |
+| Task 5 (tuning, fixtures, docs) | worker agent | sonnet | medium |
 | Final review | reviewer on the whole branch | sonnet | high |
 
 ## File Structure
@@ -51,7 +51,7 @@ updated: 2026-11-06
 - Modify `src/ui/deckView.ts` — the card name opens the dialog; the TCGplayer link moves into the dialog (my call: the name was the link; a tap now means the dialog). Shared read-only decks keep the link, since they have no panel.
 - Tests: `tests/unit/similar.test.ts`, `tests/e2e/card-swap.spec.ts`, fixture additions in Slice 5.
 
-## Slice 1: Tap a card, see similar cards that fit
+## Task 1: Tap a card, see similar cards that fit
 
 **Interfaces — Produces** (in `src/lib/similar.ts`):
 ```ts
@@ -77,7 +77,7 @@ In `src/ui/cardDialog.ts`: `cardDialog(panel: SwapPanel, swap: PanelActions['swa
 - [ ] **Step 6: Implement** `swapOptions`, `find`, `onUpdate` in the panel (build `Tapped` from the deck card's `ScryCard`, `roles` map and `edhrecKeepScores`), `cardDialog.ts`, and the trigger in `cardControls` (`deckView.ts`). Dialog: labelled, Escape closes, 44 px targets.
 - [ ] **Step 7: Run** `npm run check`. Expected: PASS. **Commit** each file separately (project rule), message specific to its change.
 
-## Slice 2: Swap, undo, Keep
+## Task 2: Swap, undo, Keep
 
 **Consumes:** Slice 1's dialog and `PanelActions['swap']`.
 
@@ -86,7 +86,7 @@ In `src/ui/cardDialog.ts`: `cardDialog(panel: SwapPanel, swap: PanelActions['swa
 - [ ] **Step 3: Implement** the Swap button in the dialog calling `swap(tapped.oracleId, option.suggestion.card)`; `swapOptions` rescored against the current deck on each call (use `edhrecScored(edh, ids)`); trigger hidden for the commander and basic lands.
 - [ ] **Step 4: Run** `npm run check`; **commit** per file.
 
-## Slice 3: Better fit and the comparison line
+## Task 3: Better fit and the comparison line
 
 **Interfaces — Produces:** `compare(a: ScryCard, b: ScryCard): string[]` in `similar.ts`, at most 3 short phrases, in this order: cost ("Costs 1 less" / "Costs 2 more", from `cmc`), tapped state ("Enters untapped instead of tapped", only for an unconditional "enters tapped" on one side and none on the other), colors made ("Also makes {U}", "No longer makes {R}", from `produced_mana`), stats ("3/3 instead of 2/2", creatures only), keywords ("Gains flying", "Loses lifelink", from `keywords`). Anything not in this list is never claimed. `BETTER_MARGIN = 0.1` exported beside the other constants.
 
@@ -95,13 +95,13 @@ In `src/ui/cardDialog.ts`: `cardDialog(panel: SwapPanel, swap: PanelActions['swa
 - [ ] **Step 3: Failing e2e**: an option shows "Better fit" only when more played than the tapped card, shows its comparison line when `differences` is non-empty and none when empty, and a tapped card the page doesn't list shows "Not on this commander's page".
 - [ ] **Step 4: Implement** the flag, the line and the note in `cardDialog.ts`; `listed` comes from the panel. **Run** `npm run check`; **commit** per file.
 
-## Slice 4: Loading, failure and the rules fallback
+## Task 4: Loading, failure and the rules fallback
 
 - [ ] **Step 1: Failing e2e**: tapping a card before Find suggestions shows a loading line, starts the same load (no second EDHREC request when Find is pressed afterwards, checked on the mock's request log), then fills in; an EDHREC 403 (the `edgarFull` flow) shows options from the rules pool with the note "Matching is approximate" or, when none match, "No similar cards found for this deck yet."; a failed load shows a retry button and leaves the dialog usable; tapping a second card while the first is loading shows the second card's options only.
 - [ ] **Step 2: Implement** `find()` reuse (a click on the existing Find button, guarded so a run in progress isn't restarted), `status` and `source` states, `onUpdate` redraw of an open dialog, and a run token so a late reply for a closed or changed dialog is ignored.
 - [ ] **Step 3: Run** `npm run check`; **commit** per file.
 
-## Slice 5: Tune, time and document
+## Task 5: Tune, time and document
 
 - [ ] **Step 1: Record** one artifact-heavy commander with many mana rocks and dual lands into its own flow's fixture map (`RECORD=1 npx vitest run tests/unit/record-fixtures.test.ts`, extended for it); other flows' totals must not move.
 - [ ] **Step 2: Failing fixture tests** in `similar.test.ts`: on the Edgar page, Skullclamp's options are draw or artifact cards and exclude Sol Ring; on the new commander, a mana rock's options are all mana rocks and a dual land's all lands. Tune the starting constants until these pass, and write the final values and the three commanders checked into this plan under "Tuning results".
