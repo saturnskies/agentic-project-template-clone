@@ -37,7 +37,7 @@ export function cardDialog(panel: SwapPanel, swap: PanelActions['swap']): { root
     const c = o.suggestion.card;
     const cost = costOf(c);
     const cutId = current!.entry.card.oracleId;
-    const swapBtn = h('button', { type: 'button', class: 'button', 'aria-label': `Swap ${current!.entry.card.name} for ${c.name}` }, 'Swap');
+    const swapBtn = h('button', { type: 'button', class: 'button', 'data-control': 'swap', 'aria-label': `Swap ${current!.entry.card.name} for ${c.name}` }, 'Swap');
     const err = h('span', { class: 'muted small', role: 'status' });
     swapBtn.addEventListener('click', async () => {
       swapBtn.disabled = true;
@@ -55,11 +55,11 @@ export function cardDialog(panel: SwapPanel, swap: PanelActions['swap']): { root
     });
     return h(
       'li',
-      { class: 'swap-option' },
+      { class: 'swap-option', 'data-oracle': o.suggestion.oracleId },
       h(
         'div',
         { class: 'sugg-head' },
-        h('span', {}, h('a', { href: tcgplayerUrl(c, o.suggestion.finish), target: '_blank', rel: 'noopener', class: 'sugg-name' }, c.name), o.betterFit ? betterFitTag(current!.entry.card.name) : null),
+        h('span', {}, h('a', { href: tcgplayerUrl(c, o.suggestion.finish), target: '_blank', rel: 'noopener', class: 'sugg-name', 'data-control': 'name' }, c.name), o.betterFit ? betterFitTag(current!.entry.card.name) : null),
         h('span', { class: 'sugg-price' }, usd(o.suggestion.price)),
       ),
       h('p', { class: 'muted small swap-type' }, c.type_line ?? c.card_faces?.[0]?.type_line ?? ''),
@@ -85,13 +85,14 @@ export function cardDialog(panel: SwapPanel, swap: PanelActions['swap']): { root
     if (state.status === 'idle' || state.status === 'loading') return { line: 'Finding similar cards…', items: [] };
     if (state.status === 'unavailable') return { line: 'No card details to compare for this card.', items: [] };
     if (state.status !== 'ready') {
-      const retry = h('button', { type: 'button', class: 'button' }, 'Try again');
+      const retry = h('button', { type: 'button', class: 'button', 'data-control': 'retry' }, 'Try again');
       retry.addEventListener('click', () => panel.find());
       return { line: "Couldn't load the cards to compare with. Check your connection and try again.", items: [retry] };
     }
     const { options } = state;
-    if (!options.length) return { line: 'No similar cards found for this deck yet.', items: [] };
-    const more = h('button', { type: 'button', class: 'button' }, 'Show more');
+    // Matching by job isn't final while roles load, and the list can fill in; an empty list is an answer only once they are in.
+    if (!options.length) return { line: state.checking ? 'Still checking what cards do…' : 'No similar cards found for this deck yet.', items: [] };
+    const more = h('button', { type: 'button', class: 'button', 'data-control': 'more' }, 'Show more');
     more.addEventListener('click', () => {
       const from = shown;
       shown += PAGE_SIZE;
@@ -107,6 +108,13 @@ export function cardDialog(panel: SwapPanel, swap: PanelActions['swap']): { root
         options.length > shown ? more : null,
       ],
     };
+  };
+
+  /** The control in the list that has focus: which kind, and the option's Oracle ID ('' for the list's own Try again and Show more). */
+  const focusedControl = (): { control: string; oracle: string } | null => {
+    const el = document.activeElement;
+    if (!(el instanceof HTMLElement) || !listBox.contains(el) || !el.dataset.control) return null;
+    return { control: el.dataset.control, oracle: el.closest<HTMLElement>('.swap-option')?.dataset.oracle ?? '' };
   };
 
   const render = () => {
@@ -135,7 +143,13 @@ export function cardDialog(panel: SwapPanel, swap: PanelActions['swap']): { root
     );
     const view = optionsView(state);
     if (live.textContent !== view.line) live.textContent = view.line;
+    // Redrawing replaces every control; focus goes back to the same one (the same option's, by Oracle ID) so a keyboard user isn't dropped.
+    const focused = focusedControl();
     listBox.replaceChildren(...view.items.filter((x): x is HTMLElement => !!x));
+    if (focused) {
+      const same = [...listBox.querySelectorAll<HTMLElement>('[data-control]')].find((el) => el.dataset.control === focused.control && (el.closest<HTMLElement>('.swap-option')?.dataset.oracle ?? '') === focused.oracle);
+      same?.focus();
+    }
   };
 
   // The panel redraws as its lists load and as the deck changes; an open dialog follows.
