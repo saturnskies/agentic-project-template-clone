@@ -1,6 +1,6 @@
 ---
 description: Swap from a card design — tap a deck card, see similar cards from decks with the same commander that fit the deck's mechanics, with popularity and a plain comparison side by side, and swap in one tap
-status: draft
+status: current
 updated: 2026-11-06
 ---
 
