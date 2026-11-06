@@ -143,6 +143,28 @@ describe('Breya, comparison lines from real card text', () => {
   });
 });
 
+describe('Breya, keyword phrases from real keywords arrays', () => {
+  const real = async (name: string) => (await loadBreya()).cards.find((c) => c.name === name)!;
+  const keywordPhrases = (phrases: string[]) => phrases.filter((p) => /^(Gains|Loses) /.test(p));
+
+  it('says nothing for keywords that are not abilities a creature has: Equip, Treasure, Scry, Investigate', async () => {
+    const [clamp, satchel, manufactor, signet, alibou] = [await real('Skullclamp'), await real("Detective's Satchel"), await real('Academy Manufactor'), await real('Arcane Signet'), await real('Alibou, Ancient Witness')];
+    expect([clamp, satchel, manufactor, alibou].map((c) => c.keywords)).toEqual([['Equip'], ['Investigate'], ['Treasure', 'Food'], ['Scry']]);
+    expect(keywordPhrases(compare(clamp, satchel))).toEqual([]);
+    expect(keywordPhrases(compare(satchel, manufactor))).toEqual([]);
+    expect(keywordPhrases(compare(manufactor, clamp))).toEqual([]);
+    expect(keywordPhrases(compare(alibou, clamp))).toEqual([]);
+  });
+
+  it('still says a difference in a listed ability, such as Deathtouch', async () => {
+    const [strix, monitor] = [await real('Baleful Strix'), await real('Thought Monitor')];
+    expect([strix, monitor].map((c) => c.keywords)).toEqual([['Deathtouch', 'Flying'], ['Flying', 'Affinity']]);
+    // Affinity is not on the list of abilities: only Deathtouch is stated.
+    expect(keywordPhrases(compare(strix, monitor))).toEqual(['Loses deathtouch']);
+    expect(keywordPhrases(compare(monitor, strix))).toEqual(['Gains deathtouch']);
+  });
+});
+
 describe("Better fit counts the commander page's score, not the owned bonus", () => {
   // Scores are inclusion plus positive synergy on Breya's page; owning a card adds 0.3 to its score for ordering only (src/lib/suggest.ts).
   const pageScore = (s: Setup, name: string) => s.pool.find((x) => x.card.name === name)!.score;
