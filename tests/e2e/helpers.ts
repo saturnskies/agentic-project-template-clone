@@ -148,8 +148,12 @@ export async function openEdgarDeck(page: Page, opts: { firstVisit?: boolean } =
   return deck;
 }
 
-/** The deck-list row for a card, found by its name link (counts hidden rows too, unlike a role query on the row). */
-export const row = (page: Page, name: string) => page.getByRole('row').filter({ has: page.getByRole('link', { name, exact: true }) });
+/**
+ * The deck-list row for a card, found by its name (counts hidden rows too, unlike a role query on the row). The name
+ * is a button that opens the card dialog, except for the commander and basic lands, where it is a TCGplayer link.
+ */
+export const cardName = (page: Page, name: string) => page.getByRole('button', { name, exact: true }).or(page.getByRole('link', { name, exact: true }));
+export const row = (page: Page, name: string) => page.getByRole('row').filter({ has: cardName(page, name) });
 export const suggestionsPanel = (page: Page) => page.getByRole('complementary', { name: 'Suggestions' });
 export const paneBar = (page: Page) => page.getByRole('group', { name: 'Show' });
 
