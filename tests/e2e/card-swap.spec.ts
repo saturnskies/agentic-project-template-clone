@@ -7,19 +7,31 @@ import { edgarEdhrec, edgarFull, mockScryfall, seedEdgarDeck, showPane, suggesti
 // Changers, so the page is bracket 2 (Core).
 
 /**
- * The Edgar recordings predate the recorder keeping `mana_cost`, so the costs the tests look for are added to the
- * recorded replies here (Scryfall's real costs for those cards).
+ * The Edgar recordings predate the recorder keeping `mana_cost` and `cmc`, so the costs the tests look for are added to
+ * the recorded replies here (Scryfall's real costs for those cards).
  */
-const COSTS: Record<string, string> = { 'Arcane Signet': '{2}', "Commander's Sphere": '{3}' };
+const COSTS: Record<string, [cost: string, cmc: number]> = { 'Arcane Signet': ['{2}', 2], "Commander's Sphere": ['{3}', 3], 'Orzhov Signet': ['{1}', 2], 'Phyrexian Altar': ['{3}', 3] };
 const withCosts = (map: FixtureMap): FixtureMap =>
-  JSON.parse(JSON.stringify(map), (_key, v) => (v && typeof v === 'object' && 'oracle_id' in v && v.name in COSTS ? { ...v, mana_cost: COSTS[v.name] } : v));
+  JSON.parse(JSON.stringify(map), (_key, v) => (v && typeof v === 'object' && 'oracle_id' in v && v.name in COSTS ? { ...v, mana_cost: COSTS[v.name][0], cmc: COSTS[v.name][1] } : v));
+
+/**
+ * A copy of EDHREC's Edgar pages with the page cards changed: `decks` sets a card's deck count (of the page's 3409), and
+ * `without` takes a card off the page. Inclusion is decks over 3409, so Arcane Signet is at 78%, Orzhov Signet 40%,
+ * Commander's Sphere 20% and Phyrexian Altar 7%.
+ */
+const withPage = (map: FixtureMap, edit: { decks?: Record<string, number>; without?: string[] }): FixtureMap =>
+  JSON.parse(JSON.stringify(map), (key, v) => {
+    if (key === 'cardviews' && Array.isArray(v)) return v.filter((c) => !edit.without?.includes(c.name));
+    if (v && typeof v === 'object' && 'num_decks' in v && v.name in (edit.decks ?? {})) return { ...v, num_decks: edit.decks![v.name] };
+    return v;
+  });
 
 /**
  * Opens the Edgar deck (without `removed` cards, which then count as candidates), runs Find suggestions, waits for
  * EDHREC's page and the role lookups, and leaves the Cards pane showing.
  */
-async function foundEdgar(page: Page, removed: string[] = []) {
-  const misses = await mockScryfall(page, withCosts(edgarFull), withCosts(edgarEdhrec));
+async function foundEdgar(page: Page, removed: string[] = [], edhrec: FixtureMap = edgarEdhrec) {
+  const misses = await mockScryfall(page, withCosts(edgarFull), withCosts(edhrec));
   const deck = await seedEdgarDeck(page);
   await page.goto(`./#/deck/${deck.id}`);
   await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
@@ -226,4 +238,49 @@ test('pressing Swap on two options at once swaps once, and never adds a card twi
   await expect(rowCount(page, 'Phyrexian Altar')).toHaveCount(0);
   await expect(rowCount(page, 'Arcane Signet')).toHaveCount(0);
   await expect(rowCount(page, "Commander's Sphere")).toHaveCount(1);
+});
+
+// Better fit and the comparison line. Scores are EDHREC's inclusion plus positive synergy: Arcane Signet 0.78, Orzhov
+// Signet 0.51, Commander's Sphere 0.28, Phyrexian Altar 0.07. The options for Arcane Signet cost {2}, {1}, {3} and {3}
+// (cmc 2, 2, 3 and 3).
+const option = (dialog: Locator, name: string) => dialog.getByRole('listitem').filter({ has: dialog.page().getByRole('link', { name, exact: true }) });
+
+test('no option is flagged Better fit when the tapped card is the most played, and the comparison line follows the cost', async ({ page }) => {
+  await foundEdgar(page);
+  await nameButton(page, 'Arcane Signet').click();
+  const dialog = page.getByRole('dialog', { name: 'Arcane Signet' });
+  await expect(option(dialog, "Commander's Sphere")).toBeVisible();
+  await expect(dialog.getByText('Better fit')).toHaveCount(0);
+  await expect(option(dialog, "Commander's Sphere").locator('.swap-diff')).toHaveText('Costs 1 more');
+  // Same mana value and nothing else the data states: no line at all, and the option stays in the list.
+  await expect(option(dialog, 'Orzhov Signet')).toBeVisible();
+  await expect(option(dialog, 'Orzhov Signet').locator('.swap-diff')).toHaveCount(0);
+});
+
+test('an option more played than the tapped card by at least 0.1 is flagged Better fit, with a label that says what it means', async ({ page }) => {
+  // Commander's Sphere at 97% of decks (score 1.05) against Arcane Signet's 0.78; Orzhov Signet (0.51) is not more played.
+  await foundEdgar(page, [], withPage(edgarEdhrec, { decks: { "Commander's Sphere": 3300 } }));
+  await nameButton(page, 'Arcane Signet').click();
+  const dialog = page.getByRole('dialog', { name: 'Arcane Signet' });
+  const sphere = option(dialog, "Commander's Sphere");
+  await expect(sphere.getByText('Better fit')).toBeVisible();
+  await expect(sphere.locator('.tag')).toHaveAttribute('title', 'More played than Arcane Signet for this commander');
+  await expect(sphere.locator('.tag')).toContainText('More played than Arcane Signet for this commander');
+  await expect(sphere.locator('.swap-diff')).toHaveText('Costs 1 more');
+  await expect(option(dialog, 'Orzhov Signet').getByText('Better fit')).toHaveCount(0);
+  await expect(dialog.getByText('Better fit')).toHaveCount(1);
+  await expect(dialog.getByText("Not on this commander's page")).toHaveCount(0);
+});
+
+test("a tapped card the page doesn't list says so, and every option with a score is flagged", async ({ page }) => {
+  await foundEdgar(page, [], withPage(edgarEdhrec, { without: ['Arcane Signet'] }));
+  await nameButton(page, 'Arcane Signet').click();
+  const dialog = page.getByRole('dialog', { name: 'Arcane Signet' });
+  await expect(option(dialog, "Commander's Sphere")).toBeVisible();
+  await expect(dialog.getByRole('region', { name: 'Your card' })).toContainText("Not on this commander's page");
+  await expect(dialog.getByTestId('tapped-popularity')).toHaveCount(0);
+  await expect(option(dialog, "Commander's Sphere").getByText('Better fit')).toBeVisible();
+  await expect(option(dialog, 'Orzhov Signet').getByText('Better fit')).toBeVisible();
+  // Phyrexian Altar's 0.07 is under the margin even against a score of 0.
+  await expect(option(dialog, 'Phyrexian Altar').getByText('Better fit')).toHaveCount(0);
 });
