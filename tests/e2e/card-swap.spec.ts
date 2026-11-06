@@ -1,6 +1,6 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import type { FixtureMap } from '../support/fixtures';
-import { edgarEdhrec, edgarFull, mockScryfall, seedEdgarDeck, showPane } from './helpers';
+import { edgarEdhrec, edgarFull, mockScryfall, seedEdgarDeck, showPane, suggestionsPanel } from './helpers';
 
 // Tap a card in the deck list, see similar cards that fit (swap-from-card spec). The full Edgar Markov deck
 // with EDHREC's Edgar pages recorded 2026-11-03 (tests/fixtures/edhrec-edgar.json); the deck runs no Game
@@ -117,4 +117,83 @@ test('on a phone the dialog buttons and links are at least 44px tall', async ({ 
     const box = await target.boundingBox();
     expect(box!.height).toBeGreaterThanOrEqual(44);
   }
+});
+
+// Swap from the dialog: the same swap as the Suggestions tab, so it ends in the same Undo offer. Arcane Signet's options
+// are Commander's Sphere, Phyrexian Altar and Orzhov Signet; Orzhov Signet is also an option for Sol Ring.
+const swapButton = (dialog: Locator, from: string, to: string) => dialog.getByRole('button', { name: `Swap ${from} for ${to}`, exact: true });
+const rowCount = (page: Page, name: string) => page.locator('table.cards tbody tr').filter({ has: page.getByRole('button', { name, exact: true }) });
+
+test('Swap replaces the tapped card, closes the dialog and offers Undo', async ({ page }) => {
+  const misses = await foundEdgar(page);
+  const total = await page.getByTestId('deck-total').textContent();
+  await nameButton(page, 'Arcane Signet').click();
+  const dialog = page.getByRole('dialog', { name: 'Arcane Signet' });
+  await swapButton(dialog, 'Arcane Signet', "Commander's Sphere").click();
+
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
+  await expect(rowCount(page, "Commander's Sphere")).toHaveCount(1);
+  await expect(rowCount(page, 'Arcane Signet')).toHaveCount(0);
+  await expect(page.getByTestId('deck-total')).not.toHaveText(total!);
+
+  await showPane(page, 'Suggestions');
+  const panel = suggestionsPanel(page);
+  await expect(panel).toContainText("Swapped Arcane Signet → Commander's Sphere.");
+  await panel.getByRole('button', { name: 'Undo' }).click();
+  await showPane(page, 'Cards');
+  await expect(rowCount(page, 'Arcane Signet')).toHaveCount(1);
+  await expect(rowCount(page, "Commander's Sphere")).toHaveCount(0);
+  await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
+  await expect(page.getByTestId('deck-total')).toHaveText(total!);
+  // Pricing the swapped-in card asks for its printings, which the Edgar recordings hold only for cards in the deck; the
+  // app prices the card it already has when that fails. Nothing else may go unrecorded.
+  expect(misses.filter((m) => !m.includes('unique=prints'))).toEqual([]);
+});
+
+test('a card marked Keep still opens the dialog, lists options and swaps', async ({ page }) => {
+  await foundEdgar(page);
+  await page.getByRole('button', { name: 'Keep Arcane Signet' }).click();
+  await expect(page.getByRole('button', { name: 'Keep Arcane Signet' })).toHaveAttribute('aria-pressed', 'true');
+  await nameButton(page, 'Arcane Signet').click();
+  const dialog = page.getByRole('dialog', { name: 'Arcane Signet' });
+  await expect(dialog.getByRole('list', { name: 'Similar cards' }).getByRole('listitem').first()).toBeVisible();
+  await swapButton(dialog, 'Arcane Signet', "Commander's Sphere").click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(rowCount(page, "Commander's Sphere")).toHaveCount(1);
+  await expect(rowCount(page, 'Arcane Signet')).toHaveCount(0);
+});
+
+test('after a swap, another card no longer lists the card that went in', async ({ page }) => {
+  await foundEdgar(page);
+  await nameButton(page, 'Arcane Signet').click();
+  const first = page.getByRole('dialog', { name: 'Arcane Signet' });
+  await expect(first.locator('.sugg-name', { hasText: 'Orzhov Signet' })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await nameButton(page, 'Sol Ring').click();
+  const dialog = page.getByRole('dialog', { name: 'Sol Ring' });
+  await swapButton(dialog, 'Sol Ring', 'Orzhov Signet').click();
+  await expect(rowCount(page, 'Orzhov Signet')).toHaveCount(1);
+
+  await nameButton(page, 'Arcane Signet').click();
+  const again = page.getByRole('dialog', { name: 'Arcane Signet' });
+  const options = again.getByRole('list', { name: 'Similar cards' }).getByRole('listitem');
+  await expect(options.first()).toBeVisible();
+  expect(await options.locator('.sugg-name').allTextContents()).not.toContain('Orzhov Signet');
+});
+
+test('pressing Swap on two options at once swaps once, and never adds a card twice', async ({ page }) => {
+  await foundEdgar(page);
+  await nameButton(page, 'Arcane Signet').click();
+  const dialog = page.getByRole('dialog', { name: 'Arcane Signet' });
+  await expect(swapButton(dialog, 'Arcane Signet', "Commander's Sphere")).toBeVisible();
+  // Both clicks land before either swap finishes; the options are Commander's Sphere, then Phyrexian Altar.
+  await dialog.evaluate((el) => el.querySelectorAll<HTMLButtonElement>('.swap-option button').forEach((b, i) => i < 2 && b.click()));
+  await expect(rowCount(page, "Commander's Sphere")).toHaveCount(1);
+  // Let any second swap finish too, so the checks below see the settled deck, not a moment in between.
+  await page.waitForTimeout(3000);
+  await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
+  await expect(rowCount(page, 'Phyrexian Altar')).toHaveCount(0);
+  await expect(rowCount(page, 'Arcane Signet')).toHaveCount(0);
+  await expect(rowCount(page, "Commander's Sphere")).toHaveCount(1);
 });
