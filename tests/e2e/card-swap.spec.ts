@@ -263,15 +263,15 @@ test('no option is flagged Better fit when the tapped card is the most played, a
   await expect(option(dialog, 'Orzhov Signet').locator('.swap-diff')).toHaveCount(0);
 });
 
-test('an option more played than the tapped card by at least 0.1 is flagged Better fit, with a label that says what it means', async ({ page }) => {
-  // Commander's Sphere at 97% of decks (score 1.05) against Arcane Signet's 0.78; Orzhov Signet (0.51) is not more played.
+test('an option scoring at least 0.1 higher on inclusion plus synergy is flagged Better fit, with a label that says what it means', async ({ page }) => {
+  // Commander's Sphere at 97% of decks (score 1.05) against Arcane Signet's 0.78; Orzhov Signet (0.51) scores lower.
   await foundEdgar(page, [], withPage(edgarEdhrec, { decks: { "Commander's Sphere": 3300 } }));
   await nameButton(page, 'Arcane Signet').click();
   const dialog = page.getByRole('dialog', { name: 'Arcane Signet' });
   const sphere = option(dialog, "Commander's Sphere");
   await expect(sphere.getByText('Better fit')).toBeVisible();
-  await expect(sphere.locator('.tag')).toHaveAttribute('title', 'More played than Arcane Signet for this commander');
-  await expect(sphere.locator('.tag')).toContainText('More played than Arcane Signet for this commander');
+  await expect(sphere.locator('.tag')).toHaveAttribute('title', 'Higher inclusion and synergy score than Arcane Signet for this commander');
+  await expect(sphere.locator('.tag')).toContainText('Higher inclusion and synergy score than Arcane Signet for this commander');
   await expect(sphere.locator('.swap-diff')).toHaveText('Costs 1 more');
   await expect(option(dialog, 'Orzhov Signet').getByText('Better fit')).toHaveCount(0);
   await expect(dialog.getByText('Better fit')).toHaveCount(1);
@@ -308,7 +308,7 @@ test('the rules-based fallback never shows Better fit: it has no commander page 
   const dialog = page.getByRole('dialog', { name: 'Arcane Signet' });
   await expect(dialog.getByRole('listitem').first()).toBeVisible();
   await expect(dialog.getByText('Better fit')).toHaveCount(0);
-  await expect(dialog.getByText('More played than')).toHaveCount(0);
+  await expect(dialog.getByText('Higher inclusion and synergy score')).toHaveCount(0);
 });
 
 // Loading, failure and the fallback. Tapping a card before any search starts the panel's own Find; the dialog never loads anything itself.
