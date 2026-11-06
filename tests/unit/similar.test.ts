@@ -101,10 +101,15 @@ describe('similarTo', () => {
   });
 
   it('keeps a candidate that shares the deck tribe', () => {
-    const elder = card({ name: 'Elder Vampire', type_line: 'Creature — Vampire', oracle_text: 'Flying. Whenever Elder Vampire deals combat damage to a player, draw a card.' });
-    const mine = card({ name: 'Young Vampire', type_line: 'Creature — Vampire', oracle_text: 'Flying. Whenever Young Vampire deals combat damage to a player, draw a card.' });
-    expect(similarTo(tapped(mine), [sugg(elder)], tribal).map((o) => o.suggestion.card.name)).toEqual(['Elder Vampire']);
-    expect(similarTo(tapped(mine), [sugg(elder)], noProfile)).toHaveLength(1); // the text alone is above the fit bar
+    // Reads somewhat like the tapped card (between MIN_SIMILARITY and FIT_BAR), so only the tribe can keep it.
+    const reaper = card({ name: 'Midnight Reaper', type_line: 'Creature — Zombie Knight', oracle_text: 'Whenever a nontoken creature you control dies, Midnight Reaper deals 1 damage to you and you draw a card.' });
+    const vampire = card({ name: 'Vampire Scribe', type_line: 'Creature — Vampire', oracle_text: 'Whenever another nontoken creature you control dies, draw a card.' });
+    const sim = similarity(reaper, vampire, false);
+    expect(sim).toBeGreaterThanOrEqual(MIN_SIMILARITY);
+    expect(sim).toBeLessThan(FIT_BAR);
+    expect(similarTo(tapped(reaper), [sugg(vampire)], tribal).map((o) => o.suggestion.card.name)).toEqual(['Vampire Scribe']);
+    expect(similarTo(tapped(reaper), [sugg(vampire)], { ...noProfile, tribe: 'Elf' })).toEqual([]);
+    expect(similarTo(tapped(reaper), [sugg(vampire)], noProfile)).toEqual([]);
   });
 
   it('keeps a candidate that matches a deck theme', () => {
