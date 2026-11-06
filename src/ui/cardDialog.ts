@@ -6,9 +6,9 @@ import type { ScryCard } from '../scryfall/types';
 import { h, usd } from './dom';
 import type { PanelActions, SwapPanel } from './suggestions';
 
-/** "Better fit" only means more played for this commander, never faster or more efficient, and the label says so. */
+/** "Better fit" only means a higher inclusion-plus-synergy score on this commander's page, and the label says so. */
 const betterFitTag = (tappedName: string) => {
-  const meaning = `More played than ${tappedName} for this commander`;
+  const meaning = `Higher inclusion and synergy score than ${tappedName} for this commander`;
   return h('span', { class: 'tag', title: meaning }, 'Better fit', h('span', { class: 'visually-hidden' }, `: ${meaning}`));
 };
 
