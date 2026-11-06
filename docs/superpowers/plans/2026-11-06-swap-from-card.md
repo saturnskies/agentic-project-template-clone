@@ -22,7 +22,7 @@ updated: 2026-11-06
 - Never offer a card that is banned, off the deck's colors, already in the deck, unpriced or a basic land; nothing for the commander or basic lands. A land matches only lands, and a nonland never matches a land.
 - A card marked Keep still opens the dialog and its Swap works; Keep only excludes it from the Swaps and Cheaper tabs.
 - Options render in under 100 ms for a 100-card deck once the pool is loaded (timed in a unit test on the pure functions).
-- "Better fit" means the option's commander score beats the tapped card's by at least 0.1; popularity wording is "In N% of {commander} decks".
+- "Better fit" means the option's inclusion-plus-synergy score on the commander's page (owned bonus left out) beats the tapped card's by at least 0.1; popularity wording is "In N% of {commander} decks".
 - Do not change the `swapsmith:v1` storage key or the package id. Re-recording fixtures moves e2e totals: record any new commander into its own flow's map only.
 - Every doc under `docs/` starts with front matter; run `tools/doc-index.sh` after changing one.
 
@@ -66,48 +66,48 @@ In `src/ui/suggestions.ts`, the panel returns `{ root, refresh, find(): void, on
 `type SwapOptionsState = { status: 'idle' | 'loading' | 'failed' } | { status: 'ready'; source: 'edhrec' | 'rules'; options: SwapOption[]; listed: boolean }`.
 In `src/ui/cardDialog.ts`: `cardDialog(panel: SwapPanel, swap: PanelActions['swap']): { root: HTMLDialogElement; open(card: PricedCard): void }`, where `SwapPanel` is the panel's return type.
 
-- [ ] **Step 1: Failing unit tests** in `tests/unit/similar.test.ts`, with a `card({...})` builder for `ScryCard`:
+- [x] **Step 1: Failing unit tests** in `tests/unit/similar.test.ts`, with a `card({...})` builder for `ScryCard`:
   - `normalizeText` replaces the card's own name with `~`, drops parenthesised reminder text, turns digits into `#` and mana symbols like `{G}` into `{m}`, uses the front face only.
   - `similarity` of Arcane Signet vs Sol Ring text is at least 0.35 with a shared `ramp` role; vs Lightning Greaves is below 0.35 without one; a tapped dual land vs an untapped dual land is at least 0.6; empty text vs empty text is 0 (no NaN).
   - `similarTo` drops a nonland for a land tapped card and a land for a nonland tapped card; drops a candidate that matches no deck theme or tribe, shares no role and scores under `FIT_BAR`; keeps one that shares the tribe; orders by similarity then by `suggestion.score`.
-- [ ] **Step 2: Run** `npx vitest run tests/unit/similar.test.ts`. Expected: FAIL, module missing.
-- [ ] **Step 3: Implement** `normalizeText`, `similarity` (Jaccard overlap of word pairs of the normalised text, plus `ROLE_BONUS` for a shared role and `TYPE_BONUS` for the same main type via `mainType`, capped at 1) and `similarTo` (fit rule from the spec: tribe or theme match, or shared role, or similarity ≥ `FIT_BAR`; set `betterFit: false` and `differences: []` for now). Add the type fields to `ScryCard`.
-- [ ] **Step 4: Run** the unit tests. Expected: PASS.
-- [ ] **Step 5: Failing e2e** `tests/e2e/card-swap.spec.ts` using `edgarEdhrec` fixtures and `seedEdgarDeck` (as `edhrec.spec.ts` does): after Find suggestions, tapping a deck card's name opens a dialog titled with the card, showing its cost, price, text and "In N% of Edgar Markov decks"; the list has at least one option, each with name, price, popularity and text, and shows 10 at most with a "Show more" button when more exist. Existing list-row and grid specs that click the name as a TCGplayer link are updated to the dialog's link.
-- [ ] **Step 6: Implement** `swapOptions`, `find`, `onUpdate` in the panel (build `Tapped` from the deck card's `ScryCard`, `roles` map and `edhrecKeepScores`), `cardDialog.ts`, and the trigger in `cardControls` (`deckView.ts`). Dialog: labelled, Escape closes, 44 px targets.
-- [ ] **Step 7: Run** `npm run check`. Expected: PASS. **Commit** each file separately (project rule), message specific to its change.
+- [x] **Step 2: Run** `npx vitest run tests/unit/similar.test.ts`. Expected: FAIL, module missing.
+- [x] **Step 3: Implement** `normalizeText`, `similarity` (Jaccard overlap of word pairs of the normalised text, plus `ROLE_BONUS` for a shared role and `TYPE_BONUS` for the same main type via `mainType`, capped at 1) and `similarTo` (fit rule from the spec: tribe or theme match, or shared role, or similarity ≥ `FIT_BAR`; set `betterFit: false` and `differences: []` for now). Add the type fields to `ScryCard`.
+- [x] **Step 4: Run** the unit tests. Expected: PASS.
+- [x] **Step 5: Failing e2e** `tests/e2e/card-swap.spec.ts` using `edgarEdhrec` fixtures and `seedEdgarDeck` (as `edhrec.spec.ts` does): after Find suggestions, tapping a deck card's name opens a dialog titled with the card, showing its cost, price, text and "In N% of Edgar Markov decks"; the list has at least one option, each with name, price, popularity and text, and shows 10 at most with a "Show more" button when more exist. Existing list-row and grid specs that click the name as a TCGplayer link are updated to the dialog's link.
+- [x] **Step 6: Implement** `swapOptions`, `find`, `onUpdate` in the panel (build `Tapped` from the deck card's `ScryCard`, `roles` map and `edhrecKeepScores`), `cardDialog.ts`, and the trigger in `cardControls` (`deckView.ts`). Dialog: labelled, Escape closes, 44 px targets.
+- [x] **Step 7: Run** `npm run check`. Expected: PASS. **Commit** each file separately (project rule), message specific to its change.
 
 ## Task 2: Swap, undo, Keep
 
 **Consumes:** Slice 1's dialog and `PanelActions['swap']`.
 
-- [ ] **Step 1: Failing e2e** in `card-swap.spec.ts`: pressing Swap on an option replaces the tapped card with it (deck total and card list change), closes the dialog and shows the existing "Swapped X → Y" undo, which restores the deck; a Keep card opens the dialog, shows options and its Swap works; the commander and a basic land have no dialog trigger that offers options; after a swap, reopening another card no longer lists the swapped-in card.
-- [ ] **Step 2: Failing unit test** in `similar.test.ts`: `similarTo` never returns a pool entry whose `oracleId` equals the tapped card's.
-- [ ] **Step 3: Implement** the Swap button in the dialog calling `swap(tapped.oracleId, option.suggestion.card)`; `swapOptions` rescored against the current deck on each call (use `edhrecScored(edh, ids)`); trigger hidden for the commander and basic lands.
-- [ ] **Step 4: Run** `npm run check`; **commit** per file.
+- [x] **Step 1: Failing e2e** in `card-swap.spec.ts`: pressing Swap on an option replaces the tapped card with it (deck total and card list change), closes the dialog and shows the existing "Swapped X → Y" undo, which restores the deck; a Keep card opens the dialog, shows options and its Swap works; the commander and a basic land have no dialog trigger that offers options; after a swap, reopening another card no longer lists the swapped-in card.
+- [x] **Step 2: Failing unit test** in `similar.test.ts`: `similarTo` never returns a pool entry whose `oracleId` equals the tapped card's.
+- [x] **Step 3: Implement** the Swap button in the dialog calling `swap(tapped.oracleId, option.suggestion.card)`; `swapOptions` rescored against the current deck on each call (use `edhrecScored(edh, ids)`); trigger hidden for the commander and basic lands.
+- [x] **Step 4: Run** `npm run check`; **commit** per file.
 
 ## Task 3: Better fit and the comparison line
 
 **Interfaces — Produces:** `compare(a: ScryCard, b: ScryCard): string[]` in `similar.ts`, at most 3 short phrases, in this order: cost ("Costs 1 less" / "Costs 2 more", from `cmc`), tapped state ("Enters untapped instead of tapped", only for an unconditional "enters tapped" on one side and none on the other), colors made ("Also makes {U}", "No longer makes {R}", from `produced_mana`), stats ("3/3 instead of 2/2", creatures only), keywords ("Gains flying", "Loses lifelink", from `keywords`). Anything not in this list is never claimed. `BETTER_MARGIN = 0.1` exported beside the other constants.
 
-- [ ] **Step 1: Failing unit tests**: Arcane Signet vs Commander's Sphere gives `["Costs 1 less"]`; an untapped vs a tapped dual gives `["Enters untapped instead of tapped"]`; a conditional "enters tapped unless" is not claimed; two cards with no listed difference give `[]`; `betterFit` is true at a score gap of 0.1 and false at 0.09; a tapped card with score 0 flags every positive-score option.
-- [ ] **Step 2: Run, see FAIL; implement** `compare` and fill `betterFit` and `differences` in `similarTo`.
-- [ ] **Step 3: Failing e2e**: an option shows "Better fit" only when more played than the tapped card, shows its comparison line when `differences` is non-empty and none when empty, and a tapped card the page doesn't list shows "Not on this commander's page".
-- [ ] **Step 4: Implement** the flag, the line and the note in `cardDialog.ts`; `listed` comes from the panel. **Run** `npm run check`; **commit** per file.
+- [x] **Step 1: Failing unit tests**: Arcane Signet vs Commander's Sphere gives `["Costs 1 less"]`; an untapped vs a tapped dual gives `["Enters untapped instead of tapped"]`; a conditional "enters tapped unless" is not claimed; two cards with no listed difference give `[]`; `betterFit` is true at a score gap of 0.1 and false at 0.09; a tapped card with score 0 flags every positive-score option.
+- [x] **Step 2: Run, see FAIL; implement** `compare` and fill `betterFit` and `differences` in `similarTo`.
+- [x] **Step 3: Failing e2e**: an option shows "Better fit" only when its inclusion-plus-synergy score is higher than the tapped card's, shows its comparison line when `differences` is non-empty and none when empty, and a tapped card the page doesn't list shows "Not on this commander's page".
+- [x] **Step 4: Implement** the flag, the line and the note in `cardDialog.ts`; `listed` comes from the panel. **Run** `npm run check`; **commit** per file.
 
 ## Task 4: Loading, failure and the rules fallback
 
-- [ ] **Step 1: Failing e2e**: tapping a card before Find suggestions shows a loading line, starts the same load (no second EDHREC request when Find is pressed afterwards, checked on the mock's request log), then fills in; an EDHREC 403 (the `edgarFull` flow) shows options from the rules pool with the note "Matching is approximate" or, when none match, "No similar cards found for this deck yet."; a failed load shows a retry button and leaves the dialog usable; tapping a second card while the first is loading shows the second card's options only.
-- [ ] **Step 2: Implement** `find()` reuse (a click on the existing Find button, guarded so a run in progress isn't restarted), `status` and `source` states, `onUpdate` redraw of an open dialog, and a run token so a late reply for a closed or changed dialog is ignored.
-- [ ] **Step 3: Run** `npm run check`; **commit** per file.
+- [x] **Step 1: Failing e2e**: tapping a card before Find suggestions shows a loading line, starts the same load (no second EDHREC request when Find is pressed afterwards, checked on the mock's request log), then fills in; an EDHREC 403 (the `edgarFull` flow) shows options from the rules pool with the note "Matching is approximate" or, when none match, "No similar cards found for this deck yet."; a failed load shows a retry button and leaves the dialog usable; tapping a second card while the first is loading shows the second card's options only.
+- [x] **Step 2: Implement** `find()` reuse (a click on the existing Find button, guarded so a run in progress isn't restarted), `status` and `source` states, `onUpdate` redraw of an open dialog, and a run token so a late reply for a closed or changed dialog is ignored.
+- [x] **Step 3: Run** `npm run check`; **commit** per file.
 
 ## Task 5: Tune, time and document
 
-- [ ] **Step 1: Record** one artifact-heavy commander with many mana rocks and dual lands into its own flow's fixture map (`RECORD=1 npx vitest run tests/unit/record-fixtures.test.ts`, extended for it); other flows' totals must not move.
-- [ ] **Step 2: Failing fixture tests** in `similar.test.ts`: on the Edgar page, Skullclamp's options are draw or artifact cards and exclude Sol Ring; on the new commander, a mana rock's options are all mana rocks and a dual land's all lands. Tune the starting constants until these pass, and write the final values and the three commanders checked into this plan under "Tuning results".
-- [ ] **Step 3: Timing test**: `similarTo` plus `compare` over a 290-card pool and a 100-card deck finishes in under 100 ms (`performance.now()`, generous margin for CI).
-- [ ] **Step 4: Docs**: set the spec's status to `current`; add a line to CLAUDE.md "Architecture" for `src/lib/similar.ts` and `src/ui/cardDialog.ts`; mark this plan `done`; run `tools/doc-index.sh`.
-- [ ] **Step 5: Run** `npm run check` and `tools/doc-index.sh --check`; finish with `/go`.
+- [x] **Step 1: Record** one artifact-heavy commander with many mana rocks and dual lands into its own flow's fixture map (`RECORD=1 npx vitest run tests/unit/record-fixtures.test.ts`, extended for it); other flows' totals must not move. *(Done: one commander, Breya, Etherium Shaper, recorded 2026-11-06 into its own `tests/fixtures/edhrec-breya.json`; `RECORD=1` recorder extended.)*
+- [x] **Step 2: Failing fixture tests** in `similar.test.ts`: on the Edgar page, Skullclamp's options are draw or artifact cards and exclude Sol Ring; on the new commander, a mana rock's options are all mana rocks and a dual land's all lands. Tune the starting constants until these pass, and write the final values and the three commanders checked into this plan under "Tuning results". *(Done, with differences: the fixture tests live in `tests/unit/similar-fixtures.test.ts`, not `similar.test.ts`; two commanders were checked, Edgar Markov and Breya, not three; constants tuned to MIN 0.4, FIT 0.7, ROLE 0.25, TYPE 0.2, see "Tuning results".)*
+- [x] **Step 3: Timing test**: `similarTo` plus `compare` over a 290-card pool and a 100-card deck finishes in under 100 ms (`performance.now()`, generous margin for CI). *(Done: in `similar-fixtures.test.ts`, over Breya's 295 page cards, taps from Edgar's 78 different deck cards.)*
+- [x] **Step 4: Docs**: set the spec's status to `current`; add a line to CLAUDE.md "Architecture" for `src/lib/similar.ts` and `src/ui/cardDialog.ts`; mark this plan `done`; run `tools/doc-index.sh`.
+- [ ] **Step 5: Run** `npm run check` and `tools/doc-index.sh --check`; finish with `/go`. *(Not ticked: `npm run check` and `tools/doc-index.sh --check` ran at each task and again after the final fixes, but finishing with `/go` is still to do.)*
 
 ## Tuning results
 
