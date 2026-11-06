@@ -32,6 +32,8 @@ const CARD_KEYS = [
   'finishes', 'prices', 'tcgplayer_id', 'tcgplayer_etched_id', 'image_uris', 'card_faces', 'object',
 ];
 
+const COMPARE_KEYS = ['produced_mana', 'power', 'toughness'];
+
 /** Keeps only the EDHREC page fields src/lib/edhrec.ts reads, in the same shape, so fixtures stay small. */
 export function trimEdhrec(body: unknown): unknown {
   if (!body || typeof body !== 'object') return body;
@@ -56,17 +58,19 @@ export function trimEdhrec(body: unknown): unknown {
 }
 
 /** Keeps only the card fields Swapsmith reads, so fixtures stay small. */
-export function trim(body: unknown, opts: { allLegalities?: boolean } = {}): unknown {
+export function trim(body: unknown, opts: { allLegalities?: boolean; compareFields?: boolean } = {}): unknown {
   if (!body || typeof body !== 'object') return body;
   const b = body as Record<string, unknown>;
   if (b.object === 'list') return { ...b, data: (b.data as unknown[]).map((c) => trim(c, opts)) };
   if (b.object !== 'card') return b;
   const out: Record<string, unknown> = {};
   for (const k of CARD_KEYS) if (k in b) out[k] = b[k];
+  // The fields src/lib/similar.ts compares on; only recordings made for it keep them, so older fixtures stay as recorded.
+  if (opts.compareFields) for (const k of COMPARE_KEYS) if (k in b) out[k] = b[k];
   const img = (u: unknown) => (u && typeof u === 'object' ? { small: (u as Record<string, string>).small, normal: (u as Record<string, string>).normal } : undefined);
   if (out.image_uris) out.image_uris = img(out.image_uris);
   if (Array.isArray(out.card_faces)) {
-    out.card_faces = (out.card_faces as Array<Record<string, unknown>>).map((f) => ({ name: f.name, oracle_id: f.oracle_id, type_line: f.type_line, oracle_text: f.oracle_text, ...(f.image_uris ? { image_uris: img(f.image_uris) } : {}) }));
+    out.card_faces = (out.card_faces as Array<Record<string, unknown>>).map((f) => ({ name: f.name, oracle_id: f.oracle_id, type_line: f.type_line, oracle_text: f.oracle_text, ...(opts.compareFields ? { mana_cost: f.mana_cost, power: f.power, toughness: f.toughness } : {}), ...(f.image_uris ? { image_uris: img(f.image_uris) } : {}) }));
   }
   const legal = out.legalities as Record<string, string> | undefined;
   if (legal) out.legalities = opts.allLegalities ? legal : { commander: legal.commander };

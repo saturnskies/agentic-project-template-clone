@@ -37,6 +37,7 @@ Status: **current** = in force or in progress; **draft** = proposed, not approve
 - [2026-11-05-owned-per-deck.md](superpowers/plans/2026-11-05-owned-per-deck.md) — done, 2026-11-05 — Make "Owned" belong to each deck instead of one list shared by every deck, with a migration so no one loses the ticks they already made — two test-gated slices (storage and migration, then the screens)
 - [2026-11-05-suggestions-tab-status.md](superpowers/plans/2026-11-05-suggestions-tab-status.md) — done, 2026-11-05 — A small status badge on the Suggestions tab (Searching, Ready, Failed) so a search started in the Suggestions pane is visible from the Cards pane on a phone — one test-gated slice
 - [2026-11-05-undo-remove-and-short-rows.md](superpowers/plans/2026-11-05-undo-remove-and-short-rows.md) — done, 2026-11-05 — Two follow-ups from the 2026-11-05 UI critique (29/40) — Undo for removing a card, and shorter phone list rows by showing a quantity only above 1
+- [2026-11-06-swap-from-card.md](superpowers/plans/2026-11-06-swap-from-card.md) — done, 2026-11-06 — Plan for swap from a card — tap a deck card, see similar cards from decks with the same commander, popularity and comparison side by side, swap in one tap; five test-gated slices
 
 ## docs/superpowers/specs/
 
@@ -44,6 +45,7 @@ Status: **current** = in force or in progress; **draft** = proposed, not approve
 - [2026-11-03-recommendations-revamp.md](superpowers/specs/2026-11-03-recommendations-revamp.md) — current, 2026-11-04 — Recommendations revamp spec — EDHREC per-commander deck data (inclusion, synergy, themes, brackets, average deck) as the main signal, grouped by card category with gap hints, and a wider Scryfall rules fallback
 - [2026-11-04-browse-tab.md](superpowers/specs/2026-11-04-browse-tab.md) — current, 2026-11-04 — Browse tab spec — search every card by name, set, type, tribe, keyword, role, color identity, mana value, rarity and price (plus raw Scryfall syntax), image grid or list, sorting, Load more, and a card detail with Add to deck and Mark as owned
 - [2026-11-04-tab-bar-life-counter.md](superpowers/specs/2026-11-04-tab-bar-life-counter.md) — current, 2026-11-04 — Tab bar and Life Counter spec — bottom tabs (Decks, Browse, Life Counter) with hash routes and per-tab place, plus an offline 1–6 player life counter with commander damage, poison, undo, wake lock and a saved game
+- [2026-11-06-swap-from-card.md](superpowers/specs/2026-11-06-swap-from-card.md) — current, 2026-11-06 — Swap from a card design — tap a deck card, see similar cards from decks with the same commander that fit the deck's mechanics, with popularity and a plain comparison side by side, and swap in one tap
 
 ## tutorial/
 

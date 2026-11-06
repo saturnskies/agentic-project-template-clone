@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { composite, contrastRatio, effectiveBackground, parseColor } from '../support/contrast';
-import { openEdgarDeck, paneBar, seedEdgarDeck, showPane, suggestionsPanel } from './helpers';
+import { openEdgarDeck, paneBar, row, seedEdgarDeck, showPane, suggestionsPanel } from './helpers';
 
 // Phone layout fixes (docs/superpowers/plans/2026-11-04-phone-layout.md). These check what the page
 // really renders, in both colour schemes. They never assert prices: re-recording fixtures moves them.
@@ -258,7 +258,7 @@ test.describe('Cards | Suggestions switch', () => {
     await expect(page.getByTestId('deck-count')).toHaveText('101 / 100 cards');
     await showPane(page, 'Cards');
     await expect(page.getByTestId('deck-count')).toHaveText('101 / 100 cards');
-    await expect(page.locator('table.cards').getByRole('link', { name: 'Indulgent Aristocrat' })).toHaveCount(1);
+    await expect(row(page, 'Indulgent Aristocrat')).toHaveCount(1);
   });
 
   test('a change made in the list updates suggestions while they are hidden', async ({ page }) => {

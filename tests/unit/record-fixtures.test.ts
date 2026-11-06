@@ -19,6 +19,8 @@ import { gameChangerCount } from '../../src/scryfall/names';
 import { searchCards } from '../../src/scryfall/browse';
 import { cardsByOracleId, printings } from '../../src/scryfall/cards';
 import { SORTS } from '../../src/lib/browse';
+import { pageRoles, scoredPage } from '../support/swap-pool';
+import { BREYA } from '../support/swap-samples';
 import { BASIC_SWAMP_QUERY, COMMANDER_TYPED, SAMPLES, SOLPHIM_TYPED } from '../support/browse-samples';
 
 /**
@@ -249,6 +251,36 @@ describe.runIf(process.env.RECORD === '1')('record Scryfall fixtures', () => {
     writeFileSync(new URL('../fixtures/scryfall-edgar-resolve.json', import.meta.url), JSON.stringify(map, null, 1) + '\n');
     expect(Object.keys(map).length).toBeGreaterThan(2);
   }, 120_000);
+
+  // Breya, Etherium Shaper (W/U/B/R, artifacts) plays dozens of mana rocks and dual lands, which is what tests/unit/similar-fixtures.test.ts
+  // needs to check that a mana rock's options are mana rocks and a dual land's are lands. Recorded 2026-11-06. Kept apart from the Edgar
+  // flow so no other fixture or pinned e2e total moves; unlike the Edgar recordings it keeps produced_mana, power and toughness.
+  it('records the Breya EDHREC page, its Scryfall name lookups and role lookups', async () => {
+    const map: FixtureMap = {};
+    const recording: typeof fetch = async (input, init) => {
+      const headers = { ...Object.fromEntries(new Headers(init?.headers)), 'User-Agent': 'Swapsmith-fixture-recorder/0.1' };
+      const res = await fetch(input, { ...init, headers });
+      const url = String(input);
+      const body = await res.clone().json().catch(() => null);
+      // Role lookups are only read for the card's name and Oracle ID.
+      const roleSearch = decodeURIComponent(url).includes('q=otag:');
+      const kept = roleSearch && body?.object === 'list' ? { ...body, data: body.data.map((c: Record<string, unknown>) => ({ object: 'card', id: c.id, oracle_id: c.oracle_id, name: c.name })) } : body;
+      map[requestKey(init?.method ?? 'GET', url, init?.body as string | undefined)] = { status: res.status, body: url.startsWith(EDHREC_BASE) ? trimEdhrec(kept) : trim(kept, { compareFields: true }) };
+      return res;
+    };
+    const edhrec = createEdhrecClient({ fetch: recording, cache: memoryCache() });
+    const scryfall = createClient({ fetch: recording, cache: memoryCache() });
+
+    const commander = (await cardByName(scryfall, BREYA.commander))!;
+    expect(commander.color_identity).toEqual(BREYA.colorIdentity);
+    const { page, scored } = await scoredPage(edhrec, scryfall, { ...BREYA, filter: { bracket: null, theme: null, budget: false } });
+    // The roles of every page card, for the tapped card (a deck card, whose roles the deck's own lookup gives).
+    await pageRoles(scryfall, page);
+
+    writeFileSync(new URL('../fixtures/edhrec-breya.json', import.meta.url), JSON.stringify(map) + '\n');
+    console.log(`Breya: ${page.candidates.length} page cards, ${scored.length} scored`);
+    expect(page.candidates.length).toBeGreaterThan(200);
+  }, 600_000);
 });
 
 describe.runIf(process.env.RECORD === '1')('record Browse fixtures', () => {

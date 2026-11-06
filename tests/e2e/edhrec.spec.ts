@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { edgarEdhrec, edgarFull, mockScryfall, seedEdgarDeck, showPane } from './helpers';
+import { edgarEdhrec, edgarFull, mockScryfall, row, seedEdgarDeck, showPane } from './helpers';
 
 // The full Edgar Markov deck, with EDHREC's Edgar pages and their Scryfall lookups recorded 2026-11-03
 // (tests/fixtures/edhrec-edgar.json). Prices are that recording's. The deck runs no Game Changers, so
@@ -38,7 +38,7 @@ test('upgrades come from what Edgar Markov decks play, grouped by category, incl
   const names = await panel.locator('.sugg-name').allTextContents();
   expect(names).not.toContain('Swamp');
   for (const name of names) {
-    await expect(page.getByRole('row').filter({ has: page.getByRole('link', { name, exact: true }) })).toHaveCount(0);
+    await expect(row(page, name)).toHaveCount(0);
   }
   expect(misses).toEqual([]);
 });

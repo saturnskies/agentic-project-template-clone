@@ -32,7 +32,8 @@ const ROLE_WEIGHT = 0.25;
 const REPLACE_MIN_PRICE = 5;
 const REPLACE_MAX_SHARE = 0.5;
 
-const isLand = (typeLine: string) => /\bLand\b/.test(typeLine.split(' // ')[0]);
+/** A land on its front face: a modal spell/land card is a land only when its front face is. */
+export const isLand = (typeLine: string) => /\bLand\b/.test(typeLine.split(' // ')[0]);
 
 /** How much a deck card earns its place, on the same scale as suggestion scores (without the owned bonus). */
 export function keepScore(card: DeckCardFacts, profile: DeckProfile, maxRank: number): number {

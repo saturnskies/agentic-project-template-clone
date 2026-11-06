@@ -46,7 +46,8 @@ const MATCH_WEIGHT = 0.5;
 // Roles count for less than the deck's own tribe and themes: on 2026-11-02, Dusk // Dawn (one theme,
 // three roles) outranked Indulgent Aristocrat (tribe plus three themes) for a Vampire deck.
 const ROLE_WEIGHT = 0.25;
-const OWNED_BONUS = 0.3;
+/** Added to a card's score when owned: it moves the card up the list, and is not part of how played the card is. */
+export const OWNED_BONUS = 0.3;
 
 export function tierOf(price: number): Tier {
   return price < BUDGET_MAX ? 'budget' : price <= MID_MAX ? 'mid' : 'premium';
