@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { THEMES, type DeckProfile } from '../../src/lib/profile';
-import { FIT_BAR, MIN_SIMILARITY, normalizeText, similarity, similarTo, type Tapped } from '../../src/lib/similar';
+import { BETTER_MARGIN, compare, FIT_BAR, MIN_SIMILARITY, normalizeText, similarity, similarTo, type Tapped } from '../../src/lib/similar';
 import type { Suggestion } from '../../src/lib/suggest';
 import type { ScryCard } from '../../src/scryfall/types';
 
@@ -153,9 +153,113 @@ describe('similarTo', () => {
     expect(out[0].similarity).toBeGreaterThan(out[2].similarity);
   });
 
-  it('leaves betterFit and differences for later: false and empty', () => {
+  it('flags an option more played than the tapped card by BETTER_MARGIN, at the margin and not below it', () => {
+    // 0.6 - 0.5 is 0.09999999999999998 in floating point, so the margin is compared with a tolerance of 1e-9.
+    expect(BETTER_MARGIN).toBe(0.1);
+    const at = similarTo(tapped(tappedPlainDual, { score: 0.5 }), [sugg(untappedPlainDual, { score: 0.6 })], noProfile);
+    expect(at[0].betterFit).toBe(true);
+    const under = similarTo(tapped(tappedPlainDual, { score: 0.5 }), [sugg(untappedPlainDual, { score: 0.59 })], noProfile);
+    expect(under[0].betterFit).toBe(false);
+  });
+
+  it('keeps an option that is not more played in the list, unflagged', () => {
+    const out = similarTo(tapped(tappedPlainDual, { score: 0.9 }), [sugg(untappedPlainDual, { score: 0.2 })], noProfile);
+    expect(out.map((o) => [o.suggestion.card.name, o.betterFit])).toEqual([['Temple Garden', false]]);
+  });
+
+  it('flags every option with a positive score when the tapped card scores 0 (not on the page)', () => {
+    const second = card({ name: 'Second Land', type_line: 'Land', oracle_text: '{T}: Add {G} or {W}.' });
+    const none = card({ name: 'Zero Land', type_line: 'Land', oracle_text: '{T}: Add {G} or {W}.' });
+    const pool = [sugg(untappedPlainDual, { score: 0.1 }), sugg(second, { score: 0.8 }), sugg(none, { score: 0.05 })];
+    const out = similarTo(tapped(tappedPlainDual, { score: 0 }), pool, noProfile);
+    const flags = Object.fromEntries(out.map((o) => [o.suggestion.card.name, o.betterFit]));
+    expect(flags).toEqual({ 'Temple Garden': true, 'Second Land': true, 'Zero Land': false });
+  });
+
+  it('fills differences with the phrases compare gives for the tapped card and the option', () => {
     const [option] = similarTo(tapped(tappedPlainDual), [sugg(untappedPlainDual)], noProfile);
-    expect(option.betterFit).toBe(false);
-    expect(option.differences).toEqual([]);
+    expect(option.differences).toEqual(compare(tappedPlainDual, untappedPlainDual));
+    expect(option.differences).toEqual(['Enters untapped instead of tapped']);
+  });
+});
+
+// compare(tapped, option) says how the option differs from the card the owner tapped. Costs are Scryfall's.
+describe('compare', () => {
+  const sphere = card({ name: "Commander's Sphere", type_line: 'Artifact', cmc: 3, oracle_text: "{T}, Sacrifice Commander's Sphere: Draw a card.\n{T}: Add one mana of any color in your commander's color identity.", produced_mana: ['W', 'U', 'B', 'R', 'G'] });
+  const signet = card({ name: 'Arcane Signet', type_line: 'Artifact', cmc: 2, oracle_text: "{T}: Add one mana of any color in your commander's color identity.", produced_mana: ['W', 'U', 'B', 'R', 'G'] });
+
+  it('says an option costs less or more, from the mana value', () => {
+    expect(compare(sphere, signet)).toEqual(['Costs 1 less']);
+    expect(compare(signet, sphere)).toEqual(['Costs 1 more']);
+    expect(compare(card({ name: 'A', cmc: 1 }), card({ name: 'B', cmc: 3 }))).toEqual(['Costs 2 more']);
+  });
+
+  it('says an untapped land enters untapped instead of tapped', () => {
+    expect(compare(tappedDual, untappedDual)).toEqual(['Enters untapped instead of tapped']);
+    expect(compare(tappedPlainDual, untappedPlainDual)).toEqual(['Enters untapped instead of tapped']);
+  });
+
+  it('says an option enters tapped when only it does', () => {
+    expect(compare(untappedPlainDual, tappedPlainDual)).toEqual(['Enters tapped instead of untapped']);
+  });
+
+  it('does not claim a conditional "enters tapped unless"', () => {
+    const checkLand = card({ name: 'Clifftop Retreat', type_line: 'Land', oracle_text: 'Clifftop Retreat enters tapped unless you control a Mountain or a Plains.\n{T}: Add {R} or {W}.' });
+    expect(compare(tappedPlainDual, checkLand)).toEqual([]);
+    expect(compare(checkLand, untappedPlainDual)).toEqual([]);
+    const fast = card({ name: 'Inspiring Vantage', type_line: 'Land', oracle_text: 'Inspiring Vantage enters tapped unless you control two or fewer other lands.\n{T}: Add {R} or {W}.' });
+    expect(compare(tappedPlainDual, fast)).toEqual([]);
+  });
+
+  it('says which colors an option makes that the tapped card does not, and which it no longer makes', () => {
+    const rg = card({ name: 'RG', type_line: 'Land', produced_mana: ['R', 'G'] });
+    const gu = card({ name: 'GU', type_line: 'Land', produced_mana: ['G', 'U'] });
+    expect(compare(rg, gu)).toEqual(['Also makes {U}', 'No longer makes {R}']);
+    const rock = card({ name: 'Rock', type_line: 'Artifact', produced_mana: ['C'] });
+    expect(compare(rock, card({ name: 'Rock2', type_line: 'Artifact', produced_mana: ['C', 'U', 'B'] }))).toEqual(['Also makes {U}{B}']);
+  });
+
+  it('says changed power and toughness for creatures only', () => {
+    const bears = card({ name: 'Grizzly Bears', type_line: 'Creature — Bear', power: '2', toughness: '2' });
+    const bigger = card({ name: 'Runeclaw Bear', type_line: 'Creature — Bear', power: '3', toughness: '3' });
+    expect(compare(bears, bigger)).toEqual(['3/3 instead of 2/2']);
+    expect(compare(bears, bears)).toEqual([]);
+    const odd = card({ name: 'Tarmogoyf', type_line: 'Creature — Lhurgoyf', power: '*', toughness: '1+*' });
+    expect(compare(bears, odd)).toEqual([]);
+    const vehicle = card({ name: 'Smuggler', type_line: 'Artifact — Vehicle', power: '4', toughness: '4' });
+    expect(compare(card({ name: 'Other', type_line: 'Artifact — Vehicle', power: '2', toughness: '2' }), vehicle)).toEqual([]);
+  });
+
+  it('says gained and lost keywords', () => {
+    const plain = card({ name: 'P', keywords: ['Lifelink', 'Vigilance'] });
+    const other = card({ name: 'O', keywords: ['Flying', 'Vigilance'] });
+    expect(compare(plain, other)).toEqual(['Gains flying', 'Loses lifelink']);
+  });
+
+  it('gives at most 3 phrases, in the order cost, tapped, colors, stats, keywords', () => {
+    const a = card({ name: 'A', type_line: 'Creature — Elf', cmc: 4, oracle_text: 'A enters tapped.', produced_mana: ['G'], power: '2', toughness: '2', keywords: ['Lifelink'] });
+    const b = card({ name: 'B', type_line: 'Creature — Elf', cmc: 3, oracle_text: 'Flying', produced_mana: ['G', 'U'], power: '3', toughness: '3', keywords: ['Flying'] });
+    expect(compare(a, b)).toEqual(['Costs 1 less', 'Enters untapped instead of tapped', 'Also makes {U}']);
+  });
+
+  it('is empty when nothing on the list differs', () => {
+    expect(compare(signet, signet)).toEqual([]);
+    expect(compare(solRing, fellwarStone)).toEqual([]);
+  });
+
+  it('makes no claim from data a card does not have: vanilla, no cmc, no produced_mana, no keywords', () => {
+    const vanilla = card({ name: 'Vanilla' });
+    expect(compare(vanilla, card({ name: 'Other Vanilla' }))).toEqual([]);
+    expect(compare(vanilla, signet)).toEqual([]);
+    expect(compare(signet, vanilla)).toEqual([]);
+    expect(compare(card({ name: 'X', cmc: 2 }), card({ name: 'Y' }))).toEqual([]);
+    for (const phrase of compare(sphere, signet)) expect(phrase).not.toMatch(/NaN|undefined/);
+  });
+
+  it('compares the front face of a double-faced card and claims no cost, colors or keywords from the whole card', () => {
+    const pathway = card({ name: 'Blightstep Pathway // Searstep Pathway', type_line: 'Land // Land', cmc: 0, produced_mana: ['B', 'R'], keywords: [], card_faces: [{ name: 'Blightstep Pathway', type_line: 'Land', oracle_text: '{T}: Add {B}.' }, { name: 'Searstep Pathway', type_line: 'Land', oracle_text: '{T}: Add {R}.' }] });
+    expect(compare(untappedPlainDual, pathway)).toEqual([]);
+    const tappedFront = card({ name: 'Front // Back', type_line: 'Land // Land', card_faces: [{ name: 'Front', type_line: 'Land', oracle_text: 'Front enters tapped.\n{T}: Add {G}.' }, { name: 'Back', type_line: 'Land', oracle_text: '{T}: Add {W}.' }] });
+    expect(compare(tappedFront, untappedPlainDual)).toEqual(['Enters untapped instead of tapped']);
   });
 });
