@@ -36,7 +36,7 @@ The Swaps tab starts from the best cards to add and picks a weak card to cut. Th
 - **Entry:** tap a card's name in the deck list; a dialog opens (same pattern as the printing picker). The Owned, Keep, printing and remove controls stay on the row.
 - **Layout (mockup "A"):** your card pinned on top, with cost, price, text and popularity. Options listed below it, each with name (TCGplayer link), cost, price, popularity, the comparison line, card text, and a Swap button.
 - **Popularity and comparison both shown.** When no clear difference can be stated, show popularity and the text side by side only. The card stays in the list.
-- **Show all similar, flag the better ones:** cards less played than yours still appear, unflagged. A **Better fit** flag marks cards more played than yours for this commander.
+- **Show all similar, flag the better ones:** cards with a lower score than yours still appear, unflagged. A **Better fit** flag marks cards with a higher inclusion-plus-synergy score than yours for this commander. It says nothing about speed or efficiency.
 - **Keep:** a card marked Keep can still be tapped and gets options and a working Swap. Keep only keeps it out of the automatic cut suggestions (Swaps and Cheaper).
 - **No EDHREC page for the commander:** use the Scryfall rules fallback and say matching is approximate.
 
@@ -61,7 +61,7 @@ Candidates are the EDHREC page's cards (about 290, already with Scryfall text, p
 1. **Similar job:** a similarity from 0 to 1, computed locally. Main signal is overlap of normalised rules text (own name replaced by `~`, reminder text removed, numbers and mana symbols normalised); a bonus for shared role tags (ramp, card draw, removal, board wipe); a smaller bonus for the same main type. A land only matches lands. Below a minimum similarity the card isn't shown.
 2. **Fits the deck:** the candidate must not drift from the deck's profile (`deckProfile`: tribe and themes). It fits if it is of the deck's tribe or matches one of its themes, or shares a role with the tapped card, or its text similarity is above a high bar. The last clause is needed because role tags (Scryfall `otag`, via `deckRoles`) cover only ramp, card draw, removal and board wipe, and are looked up for the 60 best candidates only. A dual land or an elf has no role tag, so for them text similarity carries the match.
 3. **Order:** similarity first, then the commander score (`inclusion + max(0, synergy) + owned bonus`). Top 10, with **Show more** for 10 more.
-4. **Better fit flag:** the candidate's commander score is higher than the tapped card's (`edhrecKeepScores`; a card the page doesn't list scores 0).
+4. **Better fit flag:** the candidate's page score (`inclusion + max(0, synergy)`, without the owned bonus, which only orders) is higher than the tapped card's (`edhrecKeepScores`; a card the page doesn't list scores 0).
 
 ### Comparison
 
@@ -95,7 +95,7 @@ A plain line such as "Costs 1 less · enters untapped instead of tapped" for dif
 - **Role tags exist, partly.** `src/scryfall/roles.ts` tags four roles through Scryfall `otag` searches, and `src/ui/suggestions.ts` looks them up for the deck and the 60 best candidates. This design reuses them and does not build a new tagger; dual lands, elves and the like are matched by text similarity and the deck profile.
 - **The pool is the whole EDHREC page.** `res.candidates` holds every page card as a full Scryfall card, so mana cost, produced mana, power and toughness and text are all there for `compare`. The scored pool and loading state live inside the suggestions panel's closure today and need exposing to the dialog (a small refactor, first task of the plan).
 - **No Scryfall page for the commander (fallback):** the dialog shows what the v1 pool contains for that card's job, with "No similar cards found for this deck yet." when none. No extra searches keyed to the tapped card, which keeps the dialog fast.
-- **Better fit** means the candidate's commander score beats the tapped card's by at least 0.1. A tapped card the page doesn't list (under about 4% of decks) shows "Not on this commander's page" and every option may be flagged, which is true to the data.
+- **Better fit** means the candidate's inclusion-plus-synergy score on the commander's page, owned bonus left out, beats the tapped card's by at least 0.1. The label says so ("Higher inclusion and synergy score than {card} for this commander"). A tapped card the page doesn't list (under about 4% of decks) shows "Not on this commander's page" and every option may be flagged, which is true to the data.
 - **Double-faced and split cards:** compare the front face's text and type line; a modal land-spell counts as a land only when its front face is a land.
 - **Fixtures:** record one extra commander with many mana rocks and dual lands (for example an artifact-heavy one) into its own flow's fixture map only, so the pinned e2e totals of the other flows don't move.
 - **After a swap:** the dialog closes and the pool is rescored against the new deck (`edhrecScored` already takes the deck's card ids), so the swapped-in card no longer appears as an option. The pool stays loaded across tab changes within the same deck view.
