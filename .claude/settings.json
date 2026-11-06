@@ -89,6 +89,11 @@
         "hooks": [
           {
             "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR}/.claude/hooks/session-start.sh\"",
+            "timeout": 120
+          },
+          {
+            "type": "command",
             "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/stop-verify.js\" --baseline",
             "timeout": 10
           }
