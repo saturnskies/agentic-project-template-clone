@@ -29,6 +29,9 @@ test('share a deck by link; a friend sees it read-only and can save a copy', asy
   await expect(friend.getByText('A shared deck.')).toBeVisible();
   await expect(friend.getByTestId('deck-total')).toHaveText('$39.93');
   await expect(friend.getByRole('row').filter({ hasText: 'Edgar Markov' })).toContainText('INR #328');
+  // A shared deck has no suggestions, so a card's name stays a TCGplayer link instead of opening the card dialog.
+  await expect(friend.getByRole('row').filter({ hasText: 'Sol Ring' }).getByRole('link', { name: 'Sol Ring' })).toHaveAttribute('href', /^https:\/\/www\.tcgplayer\.com\/product\/\d+$/);
+  await expect(friend.getByRole('button', { name: 'Sol Ring', exact: true })).toHaveCount(0);
   // Read-only: no editing controls, and nothing saved yet.
   await expect(friend.getByRole('checkbox')).toHaveCount(0);
   await expect(friend.getByRole('button', { name: /^Remove / })).toHaveCount(0);
