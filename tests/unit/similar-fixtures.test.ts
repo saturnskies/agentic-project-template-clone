@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createEdhrecClient } from '../../src/edhrec/page';
 import type { Deck } from '../../src/lib/deck';
 import { deckProfile, type DeckProfile } from '../../src/lib/profile';
-import { similarTo, type Tapped } from '../../src/lib/similar';
+import { compare, similarTo, type Tapped } from '../../src/lib/similar';
 import { scoreEdhrec, type Suggestion } from '../../src/lib/suggest';
 import { isLand } from '../../src/lib/swaps';
 import { createClient, memoryCache } from '../../src/scryfall/client';
@@ -117,6 +117,29 @@ describe('Breya, Etherium Shaper (mana rocks and dual lands)', () => {
     }
     // Not all: Tundra's whole text is reminder text, which matching drops.
     expect(withOptions / duals.length).toBeGreaterThan(0.8);
+  });
+});
+
+describe('Breya, comparison lines from real card text', () => {
+  // Scryfall's own wording: "This land enters tapped." (never the card's name), "As this land enters, you may pay 2 life. If you don't, it enters tapped."
+  const real = async (name: string) => (await loadBreya()).cards.find((c) => c.name === name)!;
+
+  it('says a tri-land that always enters tapped, against an untapped dual, enters untapped instead of tapped, and the reverse the other way', async () => {
+    const [triland, untapped] = [await real('Arcane Sanctum'), await real('Caves of Koilos')];
+    expect(text(triland)).toContain('This land enters tapped.');
+    expect(compare(triland, untapped)).toContain('Enters untapped instead of tapped');
+    expect(compare(untapped, triland)).toContain('Enters tapped instead of untapped');
+    const bridge = await real('Razortide Bridge');
+    expect(text(bridge)).toContain('This land enters tapped.');
+    expect(compare(bridge, untapped)).toContain('Enters untapped instead of tapped');
+  });
+
+  it('claims nothing from a land that enters tapped only sometimes', async () => {
+    const [triland, untapped, ...sometimes] = [await real('Arcane Sanctum'), await real('Caves of Koilos'), await real('Archway of Innovation'), await real('Steam Vents'), await real('Sea of Clouds')];
+    for (const land of sometimes) {
+      expect(text(land), land.name).toMatch(/enters tapped|it enters tapped/);
+      for (const phrase of [...compare(land, untapped), ...compare(untapped, land), ...compare(land, triland), ...compare(triland, land)]) expect(phrase, land.name).not.toMatch(/Enters (un)?tapped/);
+    }
   });
 });
 
