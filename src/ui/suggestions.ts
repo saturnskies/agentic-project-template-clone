@@ -532,7 +532,11 @@ export function suggestionsPanel(
         popularity: entry ? `In ${Math.round(entry.inclusion * 100)}% of ${commanderName} decks` : undefined,
       };
     }
-    if (pool) return { status: 'ready', source: 'rules', options: similarTo(tapped, scoreSuggestions(pool, { colorIdentity: profile.colorIdentity, oracleIds }, ownedIds()), profile), listed: true };
+    if (pool) {
+      // The rules scores aren't commander popularity, so nothing here can be "more played for this commander".
+      const options = similarTo(tapped, scoreSuggestions(pool, { colorIdentity: profile.colorIdentity, oracleIds }, ownedIds()), profile).map((o) => ({ ...o, betterFit: false }));
+      return { status: 'ready', source: 'rules', options, listed: true };
+    }
     // EDHREC is still loading, or it had nothing and the rules-based pool is loading; a failed pool is all there is to say.
     return { status: poolError ? 'failed' : 'loading' };
   };
