@@ -105,9 +105,9 @@ In `src/ui/cardDialog.ts`: `cardDialog(panel: SwapPanel, swap: PanelActions['swa
 
 - [ ] **Step 1: Record** one artifact-heavy commander with many mana rocks and dual lands into its own flow's fixture map (`RECORD=1 npx vitest run tests/unit/record-fixtures.test.ts`, extended for it); other flows' totals must not move.
 - [ ] **Step 2: Failing fixture tests** in `similar.test.ts`: on the Edgar page, Skullclamp's options are draw or artifact cards and exclude Sol Ring; on the new commander, a mana rock's options are all mana rocks and a dual land's all lands. Tune the starting constants until these pass, and write the final values and the three commanders checked into this plan under "Tuning results".
-- [ ] **Step 4: Timing test**: `similarTo` plus `compare` over a 290-card pool and a 100-card deck finishes in under 100 ms (`performance.now()`, generous margin for CI).
-- [ ] **Step 5: Docs**: set the spec's status to `current`; add a line to CLAUDE.md "Architecture" for `src/lib/similar.ts` and `src/ui/cardDialog.ts`; mark this plan `done`; run `tools/doc-index.sh`.
-- [ ] **Step 6: Run** `npm run check` and `tools/doc-index.sh --check`; finish with `/go`.
+- [ ] **Step 3: Timing test**: `similarTo` plus `compare` over a 290-card pool and a 100-card deck finishes in under 100 ms (`performance.now()`, generous margin for CI).
+- [ ] **Step 4: Docs**: set the spec's status to `current`; add a line to CLAUDE.md "Architecture" for `src/lib/similar.ts` and `src/ui/cardDialog.ts`; mark this plan `done`; run `tools/doc-index.sh`.
+- [ ] **Step 5: Run** `npm run check` and `tools/doc-index.sh --check`; finish with `/go`.
 
 ## Tuning results
 
