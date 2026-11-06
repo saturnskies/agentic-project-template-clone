@@ -168,7 +168,7 @@ describe('similarTo', () => {
     expect(out[0].similarity).toBeGreaterThan(out[2].similarity);
   });
 
-  it('flags an option more played than the tapped card by BETTER_MARGIN, at the margin and not below it', () => {
+  it('flags an option with a higher page score than the tapped card by BETTER_MARGIN, at the margin and not below it', () => {
     // 0.6 - 0.5 is 0.09999999999999998 in floating point, so the margin is compared with a tolerance of 1e-9.
     expect(BETTER_MARGIN).toBe(0.1);
     const at = similarTo(tapped(tappedPlainDual, { score: 0.5 }), [sugg(untappedPlainDual, { score: 0.6 })], noProfile);
@@ -177,7 +177,7 @@ describe('similarTo', () => {
     expect(under[0].betterFit).toBe(false);
   });
 
-  it('keeps an option that is not more played in the list, unflagged', () => {
+  it('keeps an option with a lower page score in the list, unflagged', () => {
     const out = similarTo(tapped(tappedPlainDual, { score: 0.9 }), [sugg(untappedPlainDual, { score: 0.2 })], noProfile);
     expect(out.map((o) => [o.suggestion.card.name, o.betterFit])).toEqual([['Temple Garden', false]]);
   });
