@@ -148,7 +148,7 @@ describe('Breya, keyword phrases from real keywords arrays', () => {
   const keywordPhrases = (phrases: string[]) => phrases.filter((p) => /^(Gains|Loses) /.test(p));
 
   it('says nothing for keywords that are not abilities a creature has: Equip, Treasure, Scry, Investigate', async () => {
-    const [clamp, satchel, manufactor, signet, alibou] = [await real('Skullclamp'), await real("Detective's Satchel"), await real('Academy Manufactor'), await real('Arcane Signet'), await real('Alibou, Ancient Witness')];
+    const [clamp, satchel, manufactor, alibou] = [await real('Skullclamp'), await real("Detective's Satchel"), await real('Academy Manufactor'), await real('Alibou, Ancient Witness')];
     expect([clamp, satchel, manufactor, alibou].map((c) => c.keywords)).toEqual([['Equip'], ['Investigate'], ['Treasure', 'Food'], ['Scry']]);
     expect(keywordPhrases(compare(clamp, satchel))).toEqual([]);
     expect(keywordPhrases(compare(satchel, manufactor))).toEqual([]);
