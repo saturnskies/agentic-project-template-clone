@@ -403,31 +403,72 @@ test('a reply that lands after the dialog was closed opens nothing', async ({ pa
   await expect(openDialogs(page)).toHaveCount(0);
 });
 
-test('a load that fails shows Try again, leaves the dialog usable, and Try again loads the options', async ({ page }) => {
-  // EDHREC answers 403 and every rules search fails (the client retries each with backoff before giving up).
-  test.setTimeout(240_000);
+test('a load that fails shows Try again, leaves the dialog usable, and Try again runs the panel\'s search again', async ({ page }) => {
+  // EDHREC answers 403 and every rules search answers 500, which the client does not retry (it retries only 429s and dropped
+  // connections), so the failure is quick. A fake clock skips the client's 500 ms spacing between searches.
   await openEdgar(page);
-  const poolSearches = /api\.scryfall\.com\/cards\/search\?q=f%3Acommander[^&]*prefer%3Ausd-low/;
-  await page.route(poolSearches, (route) => route.abort());
-  await nameButton(page, 'Arcane Signet').click();
+  let searches = 0;
+  await page.route(/api\.scryfall\.com\/cards\/search\?q=f%3Acommander[^&]*prefer%3Ausd-low/, (route) => {
+    searches += 1;
+    return route.fulfill({ status: 500, json: { object: 'error', details: 'down' } });
+  });
+  await page.clock.install();
   const dialog = page.getByRole('dialog', { name: 'Arcane Signet' });
+  const retry = dialog.getByRole('button', { name: 'Try again' });
+  const untilFailed = () => expect.poll(async () => (await page.clock.runFor(1000), await retry.count()), { timeout: 10_000 }).toBe(1);
+
+  await nameButton(page, 'Arcane Signet').click();
   await expect(dialog.getByText('Finding similar cards…')).toBeVisible();
-  await expect(dialog.getByRole('button', { name: 'Try again' })).toBeVisible({ timeout: 180_000 });
+  await untilFailed();
   await expect(dialog.getByText("Couldn't load the cards to compare with")).toBeVisible();
   await expect(dialog.getByRole('region', { name: 'Your card' })).toContainText("{T}: Add one mana of any color in your commander's color identity.");
+  const firstRound = searches;
+  expect(firstRound).toBeGreaterThan(0);
+
   // Still a working dialog: Escape closes it, and the next tap shows the same failure.
   await page.keyboard.press('Escape');
   await expect(openDialogs(page)).toHaveCount(0);
   await nameButton(page, 'Arcane Signet').click();
-  await expect(page.getByRole('dialog', { name: 'Arcane Signet' }).getByRole('button', { name: 'Try again' })).toBeVisible();
-  await page.getByRole('dialog', { name: 'Arcane Signet' }).getByRole('button', { name: 'Close' }).click();
+  await expect(retry).toBeVisible();
+  await dialog.getByRole('button', { name: 'Close' }).click();
   await expect(openDialogs(page)).toHaveCount(0);
 
-  // Scryfall is back: Try again runs the panel's search and the dialog fills in.
-  await page.unroute(poolSearches);
-  await nameButton(page, 'Blasphemous Act').click();
-  const again = page.getByRole('dialog', { name: 'Blasphemous Act' });
-  await again.getByRole('button', { name: 'Try again' }).click();
-  await expect(again.getByText('No similar cards found for this deck yet.')).toBeVisible({ timeout: 30_000 });
-  await expect(again.getByRole('button', { name: 'Try again' })).toHaveCount(0);
+  // Try again is the panel's own Find: the loading line returns, the searches run again, and the button follows the new outcome.
+  await nameButton(page, 'Arcane Signet').click();
+  await retry.click();
+  await expect(dialog.getByText('Finding similar cards…')).toBeVisible();
+  await untilFailed();
+  expect(searches).toBeGreaterThan(firstRound);
+});
+
+test('a tapped card the panel has no data for says so, with no Try again, and starts no new search', async ({ page }) => {
+  // No path in the app leaves the dialog open on such a card: every deck change closes it first. So this holds the dialog
+  // open through a deck change (close() does nothing), which is the one way its card can go missing under it.
+  const misses = await foundEdgar(page);
+  await page.evaluate(() => {
+    (window as unknown as { keepOpen: boolean }).keepOpen = true;
+    const close = HTMLDialogElement.prototype.close;
+    HTMLDialogElement.prototype.close = function (this: HTMLDialogElement, ...args) {
+      if (!(window as unknown as { keepOpen: boolean }).keepOpen) close.apply(this, args);
+    };
+  });
+  let requests = 0;
+  // What a new Find would ask for first (the role lookups from the Find that already ran may still be finishing).
+  await page.route(/json\.edhrec\.com|api\.scryfall\.com\/cards\/search\?q=(is%3Agamechanger|f%3Acommander)/, (route) => ((requests += 1), route.fallback()));
+  await nameButton(page, 'Arcane Signet').click();
+  const dialog = page.getByRole('dialog', { name: 'Arcane Signet' });
+  await expect(dialog.getByRole('listitem').first()).toBeVisible();
+  // The dialog is modal, so a person cannot press Remove behind it; the script does.
+  await page.evaluate(() => document.querySelector<HTMLButtonElement>('[aria-label="Remove Arcane Signet"]')!.click());
+
+  await expect(dialog.getByText('No card details to compare for this card.')).toBeVisible();
+  await expect(dialog.getByRole('button', { name: 'Try again' })).toHaveCount(0);
+  await expect(dialog.getByRole('listitem')).toHaveCount(0);
+  // Nothing was searched and the Suggestions tab keeps what it had loaded.
+  await page.waitForTimeout(1500);
+  expect(requests).toBe(0);
+  await expect(page.getByTestId('edhrec-source')).toBeAttached();
+  // (By CSS: on a phone the Suggestions pane is hidden, and role queries skip hidden elements.)
+  await expect(page.locator('aside.suggestions > button.primary')).toHaveText('Refresh suggestions');
+  expect(misses).toEqual([]);
 });
