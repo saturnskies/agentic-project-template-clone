@@ -1,4 +1,6 @@
+import { readFileSync } from 'node:fs';
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import { frontFace } from '../../src/scryfall/cards';
 import type { FixtureMap } from '../support/fixtures';
 import { edgarEdhrec, edgarFull, mockScryfall, seedEdgarDeck, showPane, suggestionsPanel } from './helpers';
 
@@ -48,6 +50,7 @@ async function foundEdgar(page: Page, removed: string[] = [], edhrec: FixtureMap
   await showPane(page, 'Cards');
   return misses;
 }
+const edgarDeckJson = JSON.parse(readFileSync(new URL('../fixtures/edgar-deck.json', import.meta.url), 'utf8'));
 const nameButton = (page: Page, name: string) => page.locator('table.cards').getByRole('button', { name, exact: true });
 const TCGPLAYER = /^https:\/\/www\.tcgplayer\.com\/product\/\d+$/;
 
@@ -103,8 +106,9 @@ test('a land gets only lands, 10 at most, with Show more for the rest', async ({
 
 test('a card with no similar cards that fit says so', async ({ page }) => {
   await foundEdgar(page);
-  await nameButton(page, 'Blasphemous Act').click();
-  const dialog = page.getByRole('dialog', { name: 'Blasphemous Act' });
+  // Roles still load when the dialog opens, so it first says it is still checking; the empty line is the answer once they are in.
+  await nameButton(page, 'Master of Dark Rites').click();
+  const dialog = page.getByRole('dialog', { name: 'Master of Dark Rites' });
   await expect(dialog.getByTestId('tapped-popularity')).toHaveText(/^In \d+% of Edgar Markov decks$/);
   await expect(dialog).toContainText('No similar cards found for this deck yet.');
   await expect(dialog.getByRole('button', { name: 'Show more' })).toHaveCount(0);
@@ -353,6 +357,77 @@ test('tapping a card before Find suggestions starts the same load, shows a loadi
   await nameButton(page, 'Arcane Signet').click();
   await expect(page.getByRole('dialog', { name: 'Arcane Signet' }).getByRole('listitem').first()).toBeVisible();
   expect(held.requests.length).toBe(asked);
+});
+
+/**
+ * Holds the role searches for EDHREC's cards (Scryfall `otag:` queries over names that are not in the deck) until `release()`, so a test
+ * can act while roles are still loading. The deck's own role searches go through: the client keeps at most 4 requests open, so held
+ * searches that came first would starve the page's own lookups. Register it after mockScryfall.
+ */
+async function holdRoles(page: Page) {
+  const deck = new Set((edgarDeckJson.cards as Array<{ card: { name: string } }>).map((c) => frontFace(c.card.name)));
+  let release!: () => void;
+  const gate = new Promise<void>((resolve) => (release = resolve));
+  await page.route('https://api.scryfall.com/**', async (route) => {
+    const q = new URL(route.request().url()).searchParams.get('q') ?? '';
+    const first = /!"([^"]+)"/.exec(q)?.[1];
+    if (q.includes('otag:') && first && !deck.has(first)) await gate;
+    await route.fallback();
+  });
+  return { release };
+}
+const checking = (dialog: Locator) => dialog.getByText('Still checking what cards do…');
+
+test('while roles load, a card with no options yet says it is still checking, not that nothing fits; the empty line comes only once loading ends', async ({ page }) => {
+  await openEdgar(page, [], edgarEdhrec);
+  const held = await holdRoles(page);
+  await showPane(page, 'Suggestions');
+  await page.getByRole('button', { name: 'Find suggestions' }).click();
+  await expect(page.getByTestId('edhrec-source')).toBeVisible({ timeout: 15_000 });
+  await showPane(page, 'Cards');
+
+  // Skullclamp reads like no other card: only its role (draw) and type tie it to the cards that are options once roles are in.
+  await nameButton(page, 'Skullclamp').click();
+  const dialog = page.getByRole('dialog', { name: 'Skullclamp' });
+  await expect(checking(dialog)).toBeVisible();
+  await expect(dialog.getByTestId('tapped-popularity')).toBeVisible();
+  await expect(dialog.getByText('No similar cards found for this deck yet.')).toHaveCount(0);
+  await expect(dialog.getByRole('listitem')).toHaveCount(0);
+
+  held.release();
+  await expect(dialog.getByRole('list', { name: 'Similar cards' }).getByRole('listitem').first()).toBeVisible({ timeout: 20_000 });
+  await expect(checking(dialog)).toHaveCount(0);
+  await expect(dialog.getByText('No similar cards found for this deck yet.')).toHaveCount(0);
+
+  // A card that has none even with roles in says so, now that nothing is loading.
+  await page.keyboard.press('Escape');
+  await nameButton(page, 'Master of Dark Rites').click();
+  const none = page.getByRole('dialog', { name: 'Master of Dark Rites' });
+  await expect(none).toContainText('No similar cards found for this deck yet.');
+  await expect(checking(none)).toHaveCount(0);
+});
+
+test('a focused Swap button keeps focus when the panel redraws as roles load', async ({ page }) => {
+  await openEdgar(page, [], edgarEdhrec);
+  const held = await holdRoles(page);
+  await showPane(page, 'Suggestions');
+  await page.getByRole('button', { name: 'Find suggestions' }).click();
+  await expect(page.getByTestId('edhrec-source')).toBeVisible({ timeout: 15_000 });
+  await showPane(page, 'Cards');
+
+  await nameButton(page, 'Arcane Signet').click();
+  const dialog = page.getByRole('dialog', { name: 'Arcane Signet' });
+  const swap = swapButton(dialog, 'Arcane Signet', "Commander's Sphere");
+  await swap.focus();
+  // Marks this very button, so a redraw that replaces it is told apart from none at all.
+  await swap.evaluate((el) => el.setAttribute('data-before-redraw', ''));
+  await expect(swap).toBeFocused();
+
+  held.release();
+  // The panel redraws when the roles come in, and the list is built again: this is a new button, and it holds focus.
+  await expect(swap).not.toHaveAttribute('data-before-redraw', '', { timeout: 20_000 });
+  await expect(swap).toBeFocused();
+  await expect(dialog.getByRole('button', { name: /^Swap / }).filter({ hasText: 'Swap' }).first()).toBeVisible();
 });
 
 test('with no EDHREC page, the options come from the rules pool with a note that matching is approximate', async ({ page }) => {
