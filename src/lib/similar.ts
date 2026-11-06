@@ -18,6 +18,12 @@ export const FIT_BAR = 0.6;
 export const ROLE_BONUS = 0.15;
 /** Added when both cards have the same main type. */
 export const TYPE_BONUS = 0.1;
+/** An option is a better fit when its commander score beats the tapped card's by at least this much. */
+export const BETTER_MARGIN = 0.1;
+/** Floating-point slack for the margin: 0.6 - 0.5 is 0.09999999999999998, which still is a gap of 0.1. */
+const MARGIN_SLACK = 1e-9;
+/** Phrases shown at most per option. */
+const MAX_DIFFERENCES = 3;
 /** Options shown per page of the dialog. */
 export const PAGE_SIZE = 10;
 
@@ -84,6 +90,62 @@ export function similarity(tapped: ScryCard, other: ScryCard, sharedRole: boolea
   return Math.min(1, overlap + (sharedRole ? ROLE_BONUS : 0) + (sameType ? TYPE_BONUS : 0));
 }
 
+const multiFace = (c: ScryCard) => (c.card_faces?.length ?? 0) > 1;
+const frontStat = (c: ScryCard, k: 'power' | 'toughness') => c.card_faces?.[0]?.[k] ?? c[k];
+const symbols = (colors: string[]) => colors.map((x) => `{${x}}`).join('');
+
+/**
+ * Whether the front face always enters tapped, never does, or sometimes does ("enters tapped unless…", "if you
+ * don't, it enters tapped"). Only the first two are stated as a difference.
+ */
+function tappedState(card: ScryCard): 'always' | 'sometimes' | 'never' {
+  const text = normalizeText(card);
+  if (/(^|\. )~ enters (the battlefield )?tapped(\.|$)/.test(text)) return 'always';
+  return /\benters? (the battlefield )?tapped\b/.test(text) ? 'sometimes' : 'never';
+}
+
+/**
+ * How `option` differs from `tapped`, as at most MAX_DIFFERENCES short phrases about the option: mana value,
+ * enters tapped or untapped, mana colors made, power and toughness (creatures), keywords, in that order. Only
+ * what the card data states outright is claimed, so a missing field says nothing, and an empty list means no
+ * difference can be stated. A card with more than one face is compared by its front face's text and stats only:
+ * its mana value, produced mana and keywords cover every face.
+ */
+export function compare(tapped: ScryCard, option: ScryCard): string[] {
+  const out: string[] = [];
+  const faces = !multiFace(tapped) && !multiFace(option);
+
+  if (faces && tapped.cmc != null && option.cmc != null && tapped.cmc !== option.cmc) {
+    const gap = Math.abs(option.cmc - tapped.cmc);
+    out.push(`Costs ${gap} ${option.cmc < tapped.cmc ? 'less' : 'more'}`);
+  }
+
+  const was = tappedState(tapped);
+  const is = tappedState(option);
+  if (was === 'always' && is === 'never') out.push('Enters untapped instead of tapped');
+  if (was === 'never' && is === 'always') out.push('Enters tapped instead of untapped');
+
+  if (faces && tapped.produced_mana && option.produced_mana) {
+    const gained = option.produced_mana.filter((c) => !tapped.produced_mana!.includes(c));
+    const lost = tapped.produced_mana.filter((c) => !option.produced_mana!.includes(c));
+    if (gained.length) out.push(`Also makes ${symbols(gained)}`);
+    if (lost.length) out.push(`No longer makes ${symbols(lost)}`);
+  }
+
+  if (/\bCreature\b/.test(frontType(tapped)) && /\bCreature\b/.test(frontType(option))) {
+    const [p0, t0, p1, t1] = [frontStat(tapped, 'power'), frontStat(tapped, 'toughness'), frontStat(option, 'power'), frontStat(option, 'toughness')];
+    // Only plain numbers: "*" and "1+*" have no value to compare.
+    if ([p0, t0, p1, t1].every((v) => v != null && /^\d+$/.test(v)) && (p0 !== p1 || t0 !== t1)) out.push(`${p1}/${t1} instead of ${p0}/${t0}`);
+  }
+
+  if (faces && tapped.keywords && option.keywords) {
+    for (const k of option.keywords) if (!tapped.keywords.includes(k)) out.push(`Gains ${k.toLowerCase()}`);
+    for (const k of tapped.keywords) if (!option.keywords.includes(k)) out.push(`Loses ${k.toLowerCase()}`);
+  }
+
+  return out.slice(0, MAX_DIFFERENCES);
+}
+
 /**
  * Pool cards that do a similar job to the tapped card and fit the deck, best first (similarity, then
  * commander score). A land matches only lands and a nonland never a land. A card fits when it is of the
@@ -102,7 +164,12 @@ export function similarTo(tapped: Tapped, pool: Suggestion[], profile: DeckProfi
     const ofTribe = !!profile.tribe && creatureTypes(frontType(s.card)).includes(profile.tribe);
     const onTheme = profile.themes.some((t) => t.test.test(text));
     if (!(ofTribe || onTheme || sharedRole || sim >= FIT_BAR)) continue;
-    out.push({ suggestion: s, similarity: sim, betterFit: false, differences: [] });
+    out.push({
+      suggestion: s,
+      similarity: sim,
+      betterFit: s.score - tapped.score >= BETTER_MARGIN - MARGIN_SLACK,
+      differences: compare(tapped.card, s.card),
+    });
   }
   return out.sort((a, b) => b.similarity - a.similarity || b.suggestion.score - a.suggestion.score);
 }
