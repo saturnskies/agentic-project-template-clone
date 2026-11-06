@@ -1,6 +1,6 @@
 ---
 description: Plan for swap from a card — tap a deck card, see similar cards from decks with the same commander, popularity and comparison side by side, swap in one tap; five test-gated slices
-status: draft
+status: done
 updated: 2026-11-06
 ---
 
@@ -111,4 +111,34 @@ In `src/ui/cardDialog.ts`: `cardDialog(panel: SwapPanel, swap: PanelActions['swa
 
 ## Tuning results
 
-(filled in during Slice 5)
+Tuned 2026-11-06 with `tests/unit/similar-fixtures.test.ts` against real cards: Edgar Markov's bracket 2 page with the seeded 100-card Vampires deck (recorded 2026-11-03), and Breya, Etherium Shaper (W/U/B/R, artifacts), recorded 2026-11-06 into its own `tests/fixtures/edhrec-breya.json` (page, name lookups, role lookups; `trim` keeps `produced_mana`, `power` and `toughness` only when asked, so no other fixture or pinned e2e total moved). Breya was picked because her page holds 20 plain mana rocks (Signets, Talismans, Moxen, Sol Ring) and 22 two-colour lands, the cards the owner's moments are about. Pools are built as the panel builds them: roles are known for the 60 best page cards only, so most candidates have no role and text must carry the match. No Atraxa recording exists, so two commanders were checked, not three.
+
+| Constant | Start | Final | Why |
+|---|---|---|---|
+| `MIN_SIMILARITY` | 0.35 | 0.4 | Text alone must be a real overlap (4 words or pairs in 10); a role and a type together (0.45) still clear it |
+| `FIT_BAR` | 0.6 | 0.7 | Dark Ritual (text 0.60) fitted for Thran Dynamo; no role, tribe or theme tie now needs near-identical text |
+| `ROLE_BONUS` | 0.15 | 0.25 | Role tags are real Scryfall Tagger data; alone (0.25) it does not list a card |
+| `TYPE_BONUS` | 0.1 | 0.2 | Same main type; still smaller than the role bonus (spec), and alone it does not list a card |
+| `BETTER_MARGIN` | 0.1 | 0.1 | Not touched by these checks |
+
+What the starting values did: Skullclamp got no option (Skullclamp, Vanquisher's Banner and Herald's Horn all draw, but their texts share almost no words, so only role plus type can tie them, and 0.15 + 0.1 stayed under 0.35); Mana Vault and Liquimetal Torque got none; Thran Dynamo offered Dark Ritual. A grid over the four constants (computed once per tapped card and candidate, every combination of MIN 0.25 to 0.5, FIT 0.5 to 1.0, ROLE 0.1 to 0.4, TYPE 0.05 to 0.3, with TYPE smaller than ROLE as the spec says) found 39 combinations that pass both checks; 0.4 / 0.7 / 0.25 / 0.2 sits inside a plateau (MIN 0.35 to 0.5, FIT 0.7 to 0.8, ROLE 0.2 to 0.3, TYPE 0.15 to 0.25 all pass), so it does not rest on one card. Round numbers, no logic changed. A role and a type together now reach MIN_SIMILARITY, which reverses the old comment that the bonuses alone stay under it (updated, with its unit test): without it Skullclamp can have no neighbours.
+
+Before and after, top 10 (similarity in brackets):
+
+- **Skullclamp (Edgar)**: before: none. After: Vanquisher's Banner (0.50), Herald's Horn (0.47). Sol Ring is never listed.
+- **Thran Dynamo (Breya)**: before: Sol Ring (0.68), Dark Ritual (0.60), Arcane Signet (0.38). After: Sol Ring (0.88), Arcane Signet (0.57), Ashnod's Altar (0.53), Krark-Clan Ironworks (0.53), Ornithopter of Paradise (0.43).
+- **Haunted Ridge (Edgar)**: before and after the same 12 lands, same order: Shattered Sanctum, Sundown Pass, Vault of Champions, Luxury Suite, Spectator Seating, Smoldering Marsh, Isolated Chapel, Dragonskull Summit, Clifftop Retreat, Bloodfell Caves (scores 0.07 to 0.10 higher; the land rule keeps every option a land).
+
+Other lists after tuning (top 10):
+
+- **Edgar**: Arcane Signet: Commander's Sphere, Phyrexian Altar, Sol Ring, Orzhov Signet, Talisman of Hierarchy (was 4, no Talisman). Sol Ring: Orzhov Signet, Rakdos Signet, Boros Signet, Arcane Signet, Talisman of Hierarchy, Ashnod's Altar. Blood Artist: Falkenrath Noble, Vengeful Bloodwitch, Cruel Celebrant, Sanctum Seeker, Cordial Vampire, Marauding Blight-Priest, Butcher of Malakir, Edgar, Ancient Bloodlord, Dusk Legion Zealot (was 6). Vampire Nighthawk: Vampire of the Dire Moon, Gifted Aetherborn.
+- **Breya**: Sol Ring: the six Signets, Ashnod's Altar, Krark-Clan Ironworks, Arcane Signet, Ornithopter of Paradise. Fellwar Stone: Arcane Signet, Ornithopter of Paradise, Sol Ring, Ashnod's Altar, Krark-Clan Ironworks (was 2). Mind Stone (ramp and draw): Sol Ring, Ashnod's Altar, Krark-Clan Ironworks, Arcane Signet, Skullclamp, Mystic Forge, Baleful Strix, Jhoira, Weatherlight Captain (was 4; the draw cards come from its draw role). Hallowed Fountain: the five other shock lands. Mistvault Bridge: the other five Bridges, then four three-colour lands (0.95). Adarkar Wastes: Shivan Reef, Caves of Koilos, Battlefield Forge, Ancient Tomb.
+
+Known limits, seen in this data and left alone (no logic change in this task):
+
+- A land whose whole rules text is reminder text (Tundra, Underground Sea, Volcanic Island: "({T}: Add {W} or {U}.)") has no text after normalisation, so it gets no options. 3 of the 22 two-colour lands on Breya's page hit it, which is why the test asks for options on more than 80% of them and not all.
+- Command Tower has no options: its one-line "any color in your commander's color identity" text overlaps no land enough.
+- A plain mana rock gets other mana rocks only because roles and text agree; Mind Stone and Commander's Sphere (also card draw) get draw artifacts too, by design (shared role).
+- Role tags cover 60 candidates, so Thought Vessel or Mana Vault often see a short list (1 to 3 options).
+
+Timing: one tap (`similarTo` with `compare` for each option) over Breya's 295-card pool, for each of Edgar's 78 different deck cards (100 with copies), took 5 to 9 ms for the slowest card on this machine; the test asserts under 100 ms. No optimisation was needed (the tapped card's text is still normalised once per candidate; computing it once per call is the obvious fix if a slower phone needs it).
