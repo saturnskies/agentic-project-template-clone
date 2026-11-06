@@ -307,6 +307,17 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
       swapping = false;
     }
   };
+  /**
+   * A swap made from the card dialog (opened on the Cards pane), which also offers Undo here: the suggestions panel's own
+   * Undo banner is in another pane on a phone. Both end together, since `undo` and `commit` clear this offer.
+   */
+  const swapFromDialog = async (cutId: string, card: ScryCard) => {
+    const earlier = lastSwap;
+    const byKeyboard = !!document.activeElement?.matches(':focus-visible'); // as remove(): a keyboard user can't reach the bar in time
+    await swap(cutId, card);
+    // A swap that bailed leaves `lastSwap` as it was; offer Undo only for the one just made.
+    if (lastSwap && lastSwap !== earlier) removalUndo.offer(`Swapped ${lastSwap.label}.`, undo, byKeyboard);
+  };
   const undo = () => {
     if (!lastSwap) return;
     const { removed, index, addedOracleId } = lastSwap;
@@ -508,7 +519,7 @@ function renderDeckPage(view: HTMLElement, ctx: AppContext, start: Deck, readOnl
           },
         });
         columns.append(panel.root);
-        swapDialog = cardDialog(panel, swap);
+        swapDialog = cardDialog(panel, swapFromDialog);
         picker.after(swapDialog.root);
         const panes = paneSwitch(columns, panel.root);
         columns.after(panes.root);
