@@ -7,8 +7,9 @@ import { deckProfile, type DeckProfile } from '../lib/profile';
 import { tcgplayerUrl } from '../lib/price';
 import { byCategory, roleLookupNames, scoreEdhrec, scoreSuggestions, tierOf, TIERS, type PoolEntry, type Suggestion, type Tier } from '../lib/suggest';
 import type { Collection } from '../lib/owned';
+import { similarTo, type SwapOption, type Tapped } from '../lib/similar';
 import { cheaperReplacements, edhrecKeepScores, swapPairs } from '../lib/swaps';
-import { frontFace } from '../scryfall/cards';
+import { frontFace, looseName } from '../scryfall/cards';
 import type { PricedCard } from '../scryfall/resolve';
 import { gameChangerCount } from '../scryfall/names';
 import { deckRoles } from '../scryfall/roles';
@@ -52,13 +53,41 @@ export interface PanelActions {
   setBracket(bracket: number): void;
 }
 
+/** What the card dialog can show for a tapped card: nothing yet, a load in progress, a failed load, or its options. */
+export type SwapOptionsState =
+  | { status: 'idle' | 'loading' | 'failed' }
+  | {
+      status: 'ready';
+      source: 'edhrec' | 'rules';
+      options: SwapOption[];
+      /** False when EDHREC's page doesn't list the tapped card (it scores 0). Always true for the rules fallback, which has no page to be missing from. */
+      listed: boolean;
+      /** "In 45% of Edgar Markov decks", when the page lists the tapped card. */
+      popularity?: string;
+    };
+
+export type SwapPanel = ReturnType<typeof suggestionsPanel>;
+
 /**
  * Suggestions beside the deck: upgrades from what decks with this commander play on EDHREC, grouped
  * by category (recommendations spec), with v1's rules-based price tiers when EDHREC has nothing; and
  * v1's swap pairs and cheaper replacements. Searching happens on demand; after that, every deck
  * change recomputes the lists locally with no new requests.
  */
-export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], actions: PanelActions): { root: HTMLElement; refresh(): void } {
+export function suggestionsPanel(
+  ctx: AppContext,
+  priced: () => PricedCard[],
+  actions: PanelActions,
+): {
+  root: HTMLElement;
+  refresh(): void;
+  /** Starts a search as Find suggestions does; nothing happens while one is running. */
+  find(): void;
+  /** `fn` runs after every redraw of the panel, so an open card dialog can follow the pool as it loads. */
+  onUpdate(fn: () => void): void;
+  /** Cards similar to the deck card with this Oracle ID that fit the deck, from what the panel has loaded. */
+  swapOptions(oracleId: string): SwapOptionsState;
+} {
   let pool: PoolEntry[] | null = null;
   /** Set when every pool search failed. */
   let poolError = false;
@@ -361,7 +390,7 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
             ? h('p', { class: 'notice small', role: 'status' }, "Couldn't check what every suggested card does, so some are matched by type. Refresh suggestions to try again.")
             : null;
 
-  const draw = () => {
+  const render = () => {
     drawUndo();
     if (!profile) return;
     const deck = facts();
@@ -471,6 +500,43 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
     body.replaceChildren(...parts.filter((x): x is HTMLElement => !!x));
   };
 
+  const listeners: Array<() => void> = [];
+  const draw = () => {
+    render();
+    for (const fn of listeners) fn();
+  };
+
+  /** EDHREC's entry for a deck card, matched by loose front-face name as the keep scores are. */
+  const pageEntry = (res: Extract<EdhState, { status: 'ok' }>, name: string) => {
+    const key = looseName(frontFace(name));
+    return res.page.cards.find((c) => looseName(frontFace(c.name)) === key);
+  };
+
+  const swapOptions = (oracleId: string): SwapOptionsState => {
+    if (!profile) return { status: 'idle' };
+    const cards = priced();
+    const line = cards.find((p) => !p.isCommander && p.entry.card.oracleId === oracleId);
+    if (!line?.card) return { status: 'failed' };
+    const deck = facts();
+    const oracleIds = new Set(deck.map((c) => c.oracleId));
+    const mine = deck.find((c) => c.oracleId === oracleId);
+    const tapped: Tapped = { card: line.card, oracleId, roles: mine?.roles ?? [], score: 0 };
+    if (edh?.status === 'ok') {
+      tapped.score = edhrecKeepScores(deck, edh.page).get(oracleId) ?? 0;
+      const entry = pageEntry(edh, line.entry.card.name);
+      return {
+        status: 'ready',
+        source: 'edhrec',
+        options: similarTo(tapped, edhrecScored(edh, oracleIds), profile),
+        listed: !!entry,
+        popularity: entry ? `In ${Math.round(entry.inclusion * 100)}% of ${commanderName} decks` : undefined,
+      };
+    }
+    if (pool) return { status: 'ready', source: 'rules', options: similarTo(tapped, scoreSuggestions(pool, { colorIdentity: profile.colorIdentity, oracleIds }, ownedIds()), profile), listed: true };
+    // EDHREC is still loading, or it had nothing and the rules-based pool is loading; a failed pool is all there is to say.
+    return { status: poolError ? 'failed' : 'loading' };
+  };
+
   /** Whether a search left anything to show: EDHREC's page, or the rules-based pool. (A function, so a run's awaits are not narrowed away.) */
   const hasResults = () => edh?.status === 'ok' || pool != null;
 
@@ -546,5 +612,13 @@ export function suggestionsPanel(ctx: AppContext, priced: () => PricedCard[], ac
     }
   });
 
-  return { root, refresh: draw };
+  return {
+    root,
+    refresh: draw,
+    find: () => {
+      if (!find.disabled) find.click();
+    },
+    onUpdate: (fn) => void listeners.push(fn),
+    swapOptions,
+  };
 }
