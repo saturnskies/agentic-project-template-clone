@@ -53,9 +53,12 @@ export interface PanelActions {
   setBracket(bracket: number): void;
 }
 
-/** What the card dialog can show for a tapped card: nothing yet, a load in progress, a failed load, or its options. */
+/**
+ * What the card dialog can show for a tapped card: nothing yet, a load in progress, a failed load (Try again can help),
+ * a card there is nothing to compare (no Scryfall data, or no longer in the deck; Try again cannot help), or its options.
+ */
 export type SwapOptionsState =
-  | { status: 'idle' | 'loading' | 'failed' }
+  | { status: 'idle' | 'loading' | 'failed' | 'unavailable' }
   | {
       status: 'ready';
       source: 'edhrec' | 'rules';
@@ -516,7 +519,7 @@ export function suggestionsPanel(
     if (!profile) return { status: 'idle' };
     const cards = priced();
     const line = cards.find((p) => !p.isCommander && p.entry.card.oracleId === oracleId);
-    if (!line?.card) return { status: 'failed' };
+    if (!line?.card) return { status: 'unavailable' };
     const deck = facts();
     const oracleIds = new Set(deck.map((c) => c.oracleId));
     const mine = deck.find((c) => c.oracleId === oracleId);
