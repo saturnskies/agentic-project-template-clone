@@ -26,16 +26,22 @@ const withPage = (map: FixtureMap, edit: { decks?: Record<string, number>; witho
     return v;
   });
 
+/** Opens the Edgar deck (without `removed` cards, which then count as candidates) on the Cards pane, before any search. `edhrec` undefined means EDHREC answers 403. */
+async function openEdgar(page: Page, removed: string[] = [], edhrec?: FixtureMap) {
+  const misses = await mockScryfall(page, withCosts(edgarFull), edhrec && withCosts(edhrec));
+  const deck = await seedEdgarDeck(page);
+  await page.goto(`./#/deck/${deck.id}`);
+  await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
+  for (const name of removed) await page.getByRole('button', { name: `Remove ${name}` }).click();
+  return misses;
+}
+
 /**
  * Opens the Edgar deck (without `removed` cards, which then count as candidates), runs Find suggestions, waits for
  * EDHREC's page and the role lookups, and leaves the Cards pane showing.
  */
 async function foundEdgar(page: Page, removed: string[] = [], edhrec: FixtureMap = edgarEdhrec) {
-  const misses = await mockScryfall(page, withCosts(edgarFull), withCosts(edhrec));
-  const deck = await seedEdgarDeck(page);
-  await page.goto(`./#/deck/${deck.id}`);
-  await expect(page.getByTestId('deck-count')).toHaveText('100 / 100 cards');
-  for (const name of removed) await page.getByRole('button', { name: `Remove ${name}` }).click();
+  const misses = await openEdgar(page, removed, edhrec);
   await showPane(page, 'Suggestions');
   await page.getByRole('button', { name: 'Find suggestions' }).click();
   await expect(page.getByTestId('edhrec-source')).toBeVisible({ timeout: 15_000 });
@@ -303,4 +309,125 @@ test('the rules-based fallback never shows Better fit: it has no commander page 
   await expect(dialog.getByRole('listitem').first()).toBeVisible();
   await expect(dialog.getByText('Better fit')).toHaveCount(0);
   await expect(dialog.getByText('More played than')).toHaveCount(0);
+});
+
+// Loading, failure and the fallback. Tapping a card before any search starts the panel's own Find; the dialog never loads anything itself.
+
+/** Holds every EDHREC reply until `release()`, and logs the requests, so a test can act while the page is still loading. Register it after mockScryfall. */
+async function holdEdhrec(page: Page) {
+  const requests: string[] = [];
+  let release!: () => void;
+  const gate = new Promise<void>((resolve) => (release = resolve));
+  await page.route('https://json.edhrec.com/**', async (route) => {
+    requests.push(route.request().url());
+    await gate;
+    await route.fallback();
+  });
+  return { requests, release };
+}
+const openDialogs = (page: Page) => page.locator('dialog[open]');
+
+test('tapping a card before Find suggestions starts the same load, shows a loading line, then fills in with no second EDHREC request', async ({ page }) => {
+  await openEdgar(page, [], edgarEdhrec);
+  const held = await holdEdhrec(page);
+  await nameButton(page, 'Arcane Signet').click();
+  const dialog = page.getByRole('dialog', { name: 'Arcane Signet' });
+  await expect(dialog.getByText('Finding similar cards…')).toBeVisible();
+  // It is the panel's own search: its button is busy, and pressing it again (here by script, as the disabled button takes no clicks) starts nothing.
+  await expect.poll(() => held.requests.length).toBeGreaterThan(0);
+  await page.evaluate(() => document.querySelectorAll<HTMLButtonElement>('aside.suggestions > button').forEach((b) => b.click()));
+  held.release();
+  await expect(dialog.getByRole('list', { name: 'Similar cards' }).getByRole('listitem').first()).toBeVisible({ timeout: 15_000 });
+  await expect(dialog.getByText('Finding similar cards…')).toHaveCount(0);
+  await expect(dialog.getByText('Matching is approximate')).toHaveCount(0);
+  // The one live region holds only the loading, failed and empty lines: it stays in the tree (empty now) and never wraps the list.
+  const live = await dialog.evaluate((el) => {
+    const regions = [...el.querySelectorAll<HTMLElement>('[role=status]')].filter((r) => !r.closest('.swap-option'));
+    return { count: regions.length, text: regions[0]?.textContent, hidden: regions[0] ? getComputedStyle(regions[0]).display === 'none' : null, wrapsList: !!el.querySelector('[role=status] ul') };
+  });
+  expect(live).toEqual({ count: 1, text: '', hidden: false, wrapsList: false });
+  expect(held.requests.length).toBe(new Set(held.requests).size);
+  // Closing and tapping again shows the options at once, and still asks for nothing more.
+  const asked = held.requests.length;
+  await page.keyboard.press('Escape');
+  await nameButton(page, 'Arcane Signet').click();
+  await expect(page.getByRole('dialog', { name: 'Arcane Signet' }).getByRole('listitem').first()).toBeVisible();
+  expect(held.requests.length).toBe(asked);
+});
+
+test('with no EDHREC page, the options come from the rules pool with a note that matching is approximate', async ({ page }) => {
+  await openEdgar(page, ['Sol Ring', 'Skullclamp', 'Blasphemous Act']);
+  await nameButton(page, 'Arcane Signet').click();
+  const dialog = page.getByRole('dialog', { name: 'Arcane Signet' });
+  await expect(dialog.getByRole('listitem').first()).toBeVisible({ timeout: 30_000 });
+  await expect(dialog.getByText('Matching is approximate')).toBeVisible();
+  await expect(dialog.getByText('Better fit')).toHaveCount(0);
+});
+
+test('with no EDHREC page and nothing in the rules pool for the card, the dialog says so', async ({ page }) => {
+  await openEdgar(page);
+  await nameButton(page, 'Blasphemous Act').click();
+  const dialog = page.getByRole('dialog', { name: 'Blasphemous Act' });
+  await expect(dialog.getByText('No similar cards found for this deck yet.')).toBeVisible({ timeout: 30_000 });
+  await expect(dialog.getByRole('listitem')).toHaveCount(0);
+  await expect(dialog.getByRole('button', { name: 'Show more' })).toHaveCount(0);
+});
+
+test('a card tapped while the first card is still loading shows only its own options, and a reply for a closed dialog opens nothing', async ({ page }) => {
+  await openEdgar(page, [], edgarEdhrec);
+  const held = await holdEdhrec(page);
+  await nameButton(page, 'Arcane Signet').click();
+  await expect(page.getByRole('dialog', { name: 'Arcane Signet' }).getByText('Finding similar cards…')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(openDialogs(page)).toHaveCount(0);
+  await nameButton(page, 'Sol Ring').click();
+  const dialog = page.getByRole('dialog', { name: 'Sol Ring' });
+  await expect(dialog.getByText('Finding similar cards…')).toBeVisible();
+  held.release();
+  await expect(dialog.getByRole('listitem').first()).toBeVisible({ timeout: 15_000 });
+  await expect(openDialogs(page)).toHaveCount(1);
+  await expect(dialog.getByRole('button', { name: /^Swap Sol Ring for / }).first()).toBeVisible();
+  await expect(dialog.getByRole('button', { name: /^Swap Arcane Signet for / })).toHaveCount(0);
+  await expect(dialog.getByRole('region', { name: 'Your card' })).toBeVisible();
+});
+
+test('a reply that lands after the dialog was closed opens nothing', async ({ page }) => {
+  await openEdgar(page, [], edgarEdhrec);
+  const held = await holdEdhrec(page);
+  await nameButton(page, 'Arcane Signet').click();
+  await expect(page.getByRole('dialog', { name: 'Arcane Signet' }).getByText('Finding similar cards…')).toBeVisible();
+  await page.keyboard.press('Escape');
+  held.release();
+  await showPane(page, 'Suggestions');
+  await expect(page.getByTestId('edhrec-source')).toBeVisible({ timeout: 15_000 });
+  await expect(openDialogs(page)).toHaveCount(0);
+});
+
+test('a load that fails shows Try again, leaves the dialog usable, and Try again loads the options', async ({ page }) => {
+  // EDHREC answers 403 and every rules search fails (the client retries each with backoff before giving up).
+  test.setTimeout(240_000);
+  await openEdgar(page);
+  const poolSearches = /api\.scryfall\.com\/cards\/search\?q=f%3Acommander[^&]*prefer%3Ausd-low/;
+  await page.route(poolSearches, (route) => route.abort());
+  await nameButton(page, 'Arcane Signet').click();
+  const dialog = page.getByRole('dialog', { name: 'Arcane Signet' });
+  await expect(dialog.getByText('Finding similar cards…')).toBeVisible();
+  await expect(dialog.getByRole('button', { name: 'Try again' })).toBeVisible({ timeout: 180_000 });
+  await expect(dialog.getByText("Couldn't load the cards to compare with")).toBeVisible();
+  await expect(dialog.getByRole('region', { name: 'Your card' })).toContainText("{T}: Add one mana of any color in your commander's color identity.");
+  // Still a working dialog: Escape closes it, and the next tap shows the same failure.
+  await page.keyboard.press('Escape');
+  await expect(openDialogs(page)).toHaveCount(0);
+  await nameButton(page, 'Arcane Signet').click();
+  await expect(page.getByRole('dialog', { name: 'Arcane Signet' }).getByRole('button', { name: 'Try again' })).toBeVisible();
+  await page.getByRole('dialog', { name: 'Arcane Signet' }).getByRole('button', { name: 'Close' }).click();
+  await expect(openDialogs(page)).toHaveCount(0);
+
+  // Scryfall is back: Try again runs the panel's search and the dialog fills in.
+  await page.unroute(poolSearches);
+  await nameButton(page, 'Blasphemous Act').click();
+  const again = page.getByRole('dialog', { name: 'Blasphemous Act' });
+  await again.getByRole('button', { name: 'Try again' }).click();
+  await expect(again.getByText('No similar cards found for this deck yet.')).toBeVisible({ timeout: 30_000 });
+  await expect(again.getByRole('button', { name: 'Try again' })).toHaveCount(0);
 });
