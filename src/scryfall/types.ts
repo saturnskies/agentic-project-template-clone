@@ -11,6 +11,10 @@ export interface ScryCard {
   type_line?: string;
   mana_cost?: string;
   cmc?: number;
+  /** Mana colors (and C) the card can produce, when it can. */
+  produced_mana?: string[];
+  power?: string;
+  toughness?: string;
   rarity?: string;
   keywords?: string[];
   oracle_text?: string;
@@ -25,7 +29,7 @@ export interface ScryCard {
   tcgplayer_etched_id?: number;
   purchase_uris?: { tcgplayer?: string };
   image_uris?: { small?: string; normal?: string; art_crop?: string };
-  card_faces?: Array<{ name: string; oracle_id?: string; type_line?: string; oracle_text?: string; image_uris?: { small?: string; normal?: string; art_crop?: string } }>;
+  card_faces?: Array<{ name: string; oracle_id?: string; type_line?: string; mana_cost?: string; oracle_text?: string; power?: string; toughness?: string; image_uris?: { small?: string; normal?: string; art_crop?: string } }>;
 }
 
 export interface ScryList<T> {
