@@ -67,6 +67,8 @@ export type SwapOptionsState =
       listed: boolean;
       /** "In 45% of Edgar Markov decks", when the page lists the tapped card. */
       popularity?: string;
+      /** True while roles are still loading (the deck's, or EDHREC's cards'): matching by job is not final, so an empty list isn't an answer yet. */
+      checking: boolean;
     };
 
 export type SwapPanel = ReturnType<typeof suggestionsPanel>;
@@ -248,8 +250,9 @@ export function suggestionsPanel(
       edh = res;
       startPool();
     }
-    draw();
+    // The lookup starts before the draw, so the card dialog's first redraw already knows roles are loading.
     if (res.status === 'ok') lookupCandidateRoles();
+    draw();
   };
 
   /** v1's rules-based pool, for when EDHREC has nothing: price tiers, swaps and cheaper replacements. */
@@ -524,6 +527,7 @@ export function suggestionsPanel(
     const oracleIds = new Set(deck.map((c) => c.oracleId));
     const mine = deck.find((c) => c.oracleId === oracleId);
     const tapped: Tapped = { card: line.card, oracleId, roles: mine?.roles ?? [], score: 0 };
+    const checking = rolesState === 'loading' || (edh?.status === 'ok' && candidateRolesState === 'loading');
     if (edh?.status === 'ok') {
       tapped.score = edhrecKeepScores(deck, edh.page).get(oracleId) ?? 0;
       const entry = pageEntry(edh, line.entry.card.name);
@@ -533,12 +537,13 @@ export function suggestionsPanel(
         options: similarTo(tapped, edhrecScored(edh, oracleIds), profile),
         listed: !!entry,
         popularity: entry ? `In ${Math.round(entry.inclusion * 100)}% of ${commanderName} decks` : undefined,
+        checking,
       };
     }
     if (pool) {
       // The rules scores aren't commander popularity, so nothing here can be a higher score on this commander's page.
       const options = similarTo(tapped, scoreSuggestions(pool, { colorIdentity: profile.colorIdentity, oracleIds }, ownedIds()), profile).map((o) => ({ ...o, betterFit: false }));
-      return { status: 'ready', source: 'rules', options, listed: true };
+      return { status: 'ready', source: 'rules', options, listed: true, checking };
     }
     // EDHREC is still loading, or it had nothing and the rules-based pool is loading; a failed pool is all there is to say.
     return { status: poolError ? 'failed' : 'loading' };
